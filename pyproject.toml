@@ -1,0 +1,30 @@
+[build-system]
+requires = [
+  "setuptools>=61.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kex"
+description = "A Kivy extension library."
+version = "0.0.1"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Natural Language :: English",
+  "Intended Audience :: Developers",
+]
+dependencies = [
+  "Kivy==2.1.0",
+  "arrow==1.2.3",
+]
+
+[tool.setuptools.packages.find]
+include = [
+  "kex",
+]
