@@ -77,6 +77,20 @@ class XRelative(XMixin, kv.RelativeLayout):
 class XAnchor(XMixin, kv.AnchorLayout):
     """AnchorLayout."""
 
+    @classmethod
+    def wrap(
+        cls,
+        w: kv.Widget,
+        padding_weight: tuple[float, float] = (0.95, 0.95),
+        **kwargs,
+    ):
+        padding_anchor = cls()
+        padding_anchor.set_size(hx=padding_weight[0], hy=padding_weight[1])
+        padding_anchor.add(w)
+        anchor = cls(**kwargs)
+        anchor.add(padding_anchor)
+        return anchor
+
 
 Direction = Literal["vertical", "horizontal"]
 
