@@ -93,6 +93,7 @@ from .widgets.uix import (
     XModal as Modal,
 )
 from .widgets.list import XList as List
+from .widgets.inputpanel import InputPanel, InputPanelWidget
 from .widgets.hotkeycontroller import HotkeyController
 from .widgets.app import XApp as App
 
