@@ -78,6 +78,8 @@ from .widgets.uix import (
     XButton as Button,
     XToggleButton as ToggleButton,
     XEntry as Entry,
+    XIntEntry as IntEntry,
+    XFloatEntry as FloatEntry,
     XSlider as Slider,
     XSliderText as SliderText,
     XSpinner as Spinner,

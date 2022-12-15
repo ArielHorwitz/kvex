@@ -1,6 +1,7 @@
 """UI widgets."""
 
 from typing import Optional, Any, Mapping
+import re
 from .. import kivy as kv
 from . import XMixin
 from ..util import ColorType, XColor
@@ -171,6 +172,28 @@ class XEntry(XMixin, kv.TextInput):
                 self.cancel_selection()
                 self.focus = True
         return r
+
+
+class XIntEntry(XEntry):
+    digits_pattern = re.compile('[^0-9]')
+
+    def insert_text(self, substring, *args, **kwargs):
+        s = re.sub(self.digits_pattern, '', substring)
+        return super().insert_text(s, *args, **kwargs)
+
+
+class XFloatEntry(XEntry):
+    digits_pattern = re.compile('[^0-9]')
+
+    def insert_text(self, substring, *args, **kwargs):
+        if '.' in self.text:
+            s = re.sub(self.digits_pattern, '', substring)
+        else:
+            s = '.'.join(
+                re.sub(self.digits_pattern, '', s)
+                for s in substring.split('.', 1)
+            )
+        return super().insert_text(s, *args, **kwargs)
 
 
 class XSlider(XMixin, kv.Slider):
