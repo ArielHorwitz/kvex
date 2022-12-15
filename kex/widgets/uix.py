@@ -5,7 +5,6 @@ from .. import kivy as kv
 from . import XMixin
 from ..util import ColorType, XColor
 from .layouts import XBox, XAnchor
-from .input_manager import XInputManager
 
 
 class XLabel(XMixin, kv.Label):
@@ -422,8 +421,6 @@ class XModal(XAnchor):
     def __init__(self, container: XAnchor, name: str = "Unnamed", **kwargs):
         super().__init__(**kwargs)
         self.container = container
-        self.im = XInputManager(name=name, active=False)
-        self.im.register("Dismiss", self.dismiss, "escape", consume_keys=False)
         self.bind(parent=self._on_parent)
 
     def toggle(self, *args, set_as: Optional[bool] = None):

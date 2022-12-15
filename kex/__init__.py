@@ -90,10 +90,7 @@ from .widgets.uix import (
     XModal as Modal,
 )
 from .widgets.list import XList as List
-from .widgets.input_manager import (
-    XInputManager as InputManager,
-    XInputManagerGroup as InputManagerGroup,
-)
+from .widgets.hotkeycontroller import HotkeyController
 from .widgets.app import XApp as App
 
 
