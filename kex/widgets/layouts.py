@@ -158,9 +158,11 @@ class XScroll(XMixin, kv.ScrollView):
         self.scroll_amount = scroll_amount
         self.bar_width = 15
         self.scroll_type = ["bars"]
-        self.view = self.add_widget(view)
+        self.view = view
+        self.add_widget(view)
         self.bind(size=self._on_size, on_touch_down=self._on_touch_down)
         self.view.bind(size=self._on_size)
+        self._on_size()
 
     @property
     def scroll_dir(self):
@@ -191,7 +193,7 @@ class XScroll(XMixin, kv.ScrollView):
             return False
         if not self.collide_point(*m.pos):
             return False
-        return self.do_scroll(m.button != "scrollup")
+        return self.do_scroll(up=m.button != "scrollup")
 
     def do_scroll(self, count: int = 1, /, *, up: bool = False):
         """Scroll down or up by count times self.scroll_amount."""
