@@ -62,9 +62,13 @@ class StringInputWidget(BaseInputWidget):
     wtype = "str"
     _entry_class = XEntry
     _text_default = ""
+    _password = False
 
     def _get_widget(self, w: XInputPanelWidget):
-        self._entry = self._entry_class(text=w.default or self._text_default)
+        self._entry = self._entry_class(
+            text=w.default or self._text_default,
+            password=self._password,
+        )
         return self._entry
 
     def get_value(self) -> str:
@@ -137,6 +141,11 @@ class FloatInputWidget(StringInputWidget):
         self._entry.text = str(value)
 
 
+class PasswordInputWidget(StringInputWidget):
+    wtype = "password"
+    _password = True
+
+
 class ChoiceInputWidget(BaseInputWidget):
     wtype = "choice"
 
@@ -167,6 +176,7 @@ INPUT_WIDGET_CLASSES: dict[str, BaseInputWidget] = dict(
     bool=BooleanInputWidget,
     int=IntInputWidget,
     float=FloatInputWidget,
+    password=PasswordInputWidget,
     choice=ChoiceInputWidget,
 )
 
@@ -182,8 +192,9 @@ class XInputPanel(XAnchor):
     def __init__(
         self,
         widgets: dict[str, XInputPanelWidget],
-        orientation: str = "vertical",
         /,
+        *,
+        orientation: str = "vertical",
         **kwargs,
     ):
         """Initialize the class.
