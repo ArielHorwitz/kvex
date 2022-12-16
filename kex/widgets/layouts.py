@@ -16,7 +16,8 @@ class XZBox(XMixin, kv.GridLayout):
 
     def __init__(
         self,
-        orientation: Literal["horizontal", "vertical"] = "horizontal",
+        *,
+        orientation: str = "horizontal",
         **kwargs,
     ):
         """Initialize the class."""
@@ -27,9 +28,7 @@ class XZBox(XMixin, kv.GridLayout):
             kwargs["orientation"] = "lr-bt"
             kwargs["cols"] = 1
         else:
-            raise ValueError(
-                'FlipZIndex orientation must be "horizontal" or "vertical"'
-            )
+            raise ValueError('orientation must be "horizontal" or "vertical"')
         super().__init__(**kwargs)
 
     def add_widget(self, *args, **kwargs):
