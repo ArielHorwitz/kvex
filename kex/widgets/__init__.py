@@ -86,7 +86,7 @@ class XMixin:
         """Set the background/foreground of the widget."""
         is_bg = attribute_name == "_bg"
         if color is None:
-            color = XColor(0.1, 0.1, 0.1, 1) if is_bg else XColor(1, 1, 1, 1)
+            color = XColor(1, 1, 1, 1)
         image, color_instruction = self._get_image(attribute_name)
         if image:
             color_instruction.rgba = color.rgba

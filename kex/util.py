@@ -50,9 +50,9 @@ class XColor:
 
     def __init__(
         self,
-        r: float = 0,
-        g: float = 0,
-        b: float = 0,
+        r: float = 1,
+        g: float = 1,
+        b: float = 1,
         a: float = 1,
         v: float = 1,
     ):
