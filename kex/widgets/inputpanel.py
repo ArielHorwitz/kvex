@@ -27,7 +27,7 @@ class XInputPanelWidget:
     label_hint: float = 1
     italic: bool = True
     bold: bool = False
-    justify: bool = True
+    halign: Optional[str] = None
     choices: list = field(default_factory=list)
 
 
@@ -36,13 +36,14 @@ class BaseInputWidget(XBox):
         assert w.widget == self.wtype
         self.specification = w
         super().__init__(orientation=w.orientation)
+        default_halign = "right" if w.orientation == "horizontal" else "center"
         # Build
         self.label = XLabel(
             text=w.label,
             padding=(10, 5),
             italic=w.italic,
             bold=w.bold,
-            halign="right" if w.justify else "center",
+            halign=w.halign or default_halign,
         )
         self.widget = self._get_widget(w)
         assert self.widget is not None
@@ -66,7 +67,7 @@ class StringInputWidget(BaseInputWidget):
 
     def _get_widget(self, w: XInputPanelWidget):
         self._entry = self._entry_class(
-            text=w.default or self._text_default,
+            text=str(w.default or self._text_default),
             password=self._password,
         )
         return self._entry
@@ -76,7 +77,7 @@ class StringInputWidget(BaseInputWidget):
 
     def set_value(self, value: Optional[str] = None, /):
         if value is None:
-            value = self.specification.default
+            value = self.specification.default or self._text_default
         self._entry.text = value
 
     def set_enabled(self, set_as: Optional[bool] = None, /):
