@@ -52,6 +52,7 @@ from .util import (
     random_color,
     center_sprite,
     text_texture,
+    from_atlas,
     restart_script,
     placeholder,
     consume_args,
@@ -95,6 +96,7 @@ from .widgets.uix import (
 from .widgets.list import XList as List
 from .widgets.inputpanel import InputPanel, InputPanelWidget
 from .widgets.hotkeycontroller import HotkeyController
+from .widgets.atlas import XAtlasPreview as AtlasPreview
 from .widgets.app import XApp as App
 
 

@@ -185,6 +185,10 @@ def text_texture(text, **kwargs):
     return label.texture
 
 
+def from_atlas(name: str, /) -> str:
+    return f"atlas://data/images/defaulttheme/{name}"
+
+
 def restart_script(*args, **kwargs):
     """Restart the Python script. Ignores all arguments."""
     os.execl(sys.executable, sys.executable, *sys.argv)
