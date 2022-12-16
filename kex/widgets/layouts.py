@@ -1,6 +1,6 @@
 """Layout widgets."""
 
-from typing import Literal
+from typing import Literal, Optional
 from .. import kivy as kv
 from . import XMixin
 
@@ -90,6 +90,47 @@ class XAnchor(XMixin, kv.AnchorLayout):
         anchor = cls(**kwargs)
         anchor.add_widget(padding_anchor)
         return anchor
+
+
+class XCurtain(XAnchor):
+    """AnchorLayout that can show or hide it's content."""
+
+    content = kv.ObjectProperty(None, allownone=True)
+    showing = kv.BooleanProperty(True)
+    dynamic = kv.BooleanProperty(False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.bind(
+            content=self._on_properties,
+            showing=self._on_properties,
+            dynamic=self._on_properties,
+        )
+        self._on_properties()
+
+    def _on_properties(self, *args):
+        if self.showing and self.content:
+            if self.content.parent:
+                self.clear_widgets()
+            if not self.content.parent:
+                self.add_widget(self.content)
+            if self.dynamic:
+                self.set_size(*self.content.size)
+        else:
+            self.clear_widgets()
+            if self.dynamic:
+                self.set_size(0, 0)
+
+    def show(self, *args, **kwargs):
+        self.showing = True
+
+    def hide(self, *args, **kwargs):
+        self.showing = False
+
+    def toggle(self, *args, set_as: Optional[bool] = None, **kwargs):
+        if set_as is None:
+            set_as = not self.showing
+        self.showing = set_as
 
 
 Direction = Literal["vertical", "horizontal"]

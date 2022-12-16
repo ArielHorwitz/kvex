@@ -70,6 +70,7 @@ from .widgets.layouts import (
     XRelative as Relative,
     XStack as Stack,
     XAnchor as Anchor,
+    XCurtain as Curtain,
     XScroll as Scroll,
 )
 from .widgets.uix import (
