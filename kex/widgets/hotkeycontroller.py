@@ -1,7 +1,7 @@
-"""HotkeyController.
+"""XHotkeyController.
 
-For simple use cases, use `HotkeyController.register` to register and bind your
-hotkeys. For more advanced use cases, the HotkeyController class provides a way
+For simple use cases, use `XHotkeyController.register` to register and bind your
+hotkeys. For more advanced use cases, the XHotkeyController class provides a way
 to set which controls are active using a tree.
 
 ### Hotkeys
@@ -9,7 +9,7 @@ Hotkeys are represented using strings with a simple format: modifiers then
 key name. The modifiers are as follows: '^' ctrl, '!' alt, '+' shift, '#'
 super/meta. E.g. 'g', 'f1', '^+ s'.
 
-Set `HotkeyController.log_press` to see key names as they are pressed.
+Set `XHotkeyController.log_press` to see key names as they are pressed.
 
 ### Control tree
 A control can be named with a path using dot (`.`) notation. For example a
@@ -20,7 +20,7 @@ The controller's "active path" determines which controls are active based on
 their paths. A control is active when it's path is part of the active path.
 E.g. the active path 'root.app' will enable 'root.app.login' and 'root.quit'
 but not 'root.debug.log' and not 'root.app.game.move'. See
-`HotkeyController.is_active`.
+`XHotkeyController.is_active`.
 """
 
 from .. import kivy as kv
@@ -99,7 +99,7 @@ def _fix_modifier_order(k: str) -> str:
     return f"{sorted_mods} {key}"
 
 
-class HotkeyController:
+class XHotkeyController:
     """See module documentation for details."""
 
     def __init__(
@@ -170,7 +170,7 @@ class HotkeyController:
         if control not in self.registered_controls:
             raise RuntimeError(
                 f"Cannot bind to unregistered control {control!r}."
-                f" Use HotkeyController.register()."
+                f" Use XHotkeyController.register()."
             )
         if self.log_bind:
             self.logger(f"Binding {control!r} to {callback}")

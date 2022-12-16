@@ -64,40 +64,40 @@ from .util import (
 )
 from .widgets import XMixin, XWidget
 from .widgets.layouts import (
-    XBox as Box,
-    XZBox as ZBox,
-    XDBox as DBox,
-    XGrid as Grid,
-    XRelative as Relative,
-    XStack as Stack,
-    XAnchor as Anchor,
-    XCurtain as Curtain,
-    XScroll as Scroll,
+    XBox,
+    XZBox,
+    XDBox,
+    XGrid,
+    XRelative,
+    XStack,
+    XAnchor,
+    XCurtain,
+    XScroll,
 )
 from .widgets.uix import (
-    XLabel as Label,
-    XCheckBox as CheckBox,
-    XButton as Button,
-    XToggleButton as ToggleButton,
-    XEntry as Entry,
-    XIntEntry as IntEntry,
-    XFloatEntry as FloatEntry,
-    XSlider as Slider,
-    XSliderText as SliderText,
-    XSpinner as Spinner,
-    XDropDown as DropDown,
-    XPickColor as PickColor,
-    XSelectColor as SelectColor,
-    XScreenManager as ScreenManager,
-    XScreen as Screen,
-    XModalView as ModalView,
-    XModal as Modal,
+    XLabel,
+    XCheckBox,
+    XButton,
+    XToggleButton,
+    XEntry,
+    XIntEntry,
+    XFloatEntry,
+    XSlider,
+    XSliderText,
+    XSpinner,
+    XDropDown,
+    XPickColor,
+    XSelectColor,
+    XScreenManager,
+    XScreen,
+    XModalView,
+    XModal,
 )
-from .widgets.list import XList as List
-from .widgets.inputpanel import InputPanel, InputPanelWidget
-from .widgets.hotkeycontroller import HotkeyController
-from .widgets.atlas import XAtlasPreview as AtlasPreview
-from .widgets.app import XApp as App
+from .widgets.list import XList
+from .widgets.inputpanel import XInputPanel, XInputPanelWidget
+from .widgets.hotkeycontroller import XHotkeyController
+from .widgets.atlas import XAtlasPreview
+from .widgets.app import XApp
 
 
 __all__ = []

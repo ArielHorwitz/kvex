@@ -19,7 +19,7 @@ HEIGHT_UNIT = 40
 
 
 @dataclass
-class InputPanelWidget:
+class XInputPanelWidget:
     label: str
     widget: str = "str"
     default: Any = None
@@ -32,7 +32,7 @@ class InputPanelWidget:
 
 
 class BaseInputWidget(XBox):
-    def __init__(self, w: InputPanelWidget):
+    def __init__(self, w: XInputPanelWidget):
         assert w.widget == self.wtype
         self.specification = w
         super().__init__(orientation=w.orientation)
@@ -63,7 +63,7 @@ class StringInputWidget(BaseInputWidget):
     _entry_class = XEntry
     _text_default = ""
 
-    def _get_widget(self, w: InputPanelWidget):
+    def _get_widget(self, w: XInputPanelWidget):
         self._entry = self._entry_class(text=w.default or self._text_default)
         return self._entry
 
@@ -85,7 +85,7 @@ class StringInputWidget(BaseInputWidget):
 class BooleanInputWidget(BaseInputWidget):
     wtype = "bool"
 
-    def _get_widget(self, w: InputPanelWidget):
+    def _get_widget(self, w: XInputPanelWidget):
         self._checkbox = XCheckBox(active=w.default or False)
         if w.orientation == "vertical":
             return self._checkbox
@@ -140,7 +140,7 @@ class FloatInputWidget(StringInputWidget):
 class ChoiceInputWidget(BaseInputWidget):
     wtype = "choice"
 
-    def _get_widget(self, w: InputPanelWidget):
+    def _get_widget(self, w: XInputPanelWidget):
         self._spinner = XSpinner(
             value=w.default or "",
             values=w.choices,
@@ -171,7 +171,7 @@ INPUT_WIDGET_CLASSES: dict[str, BaseInputWidget] = dict(
 )
 
 
-class InputPanel(XAnchor):
+class XInputPanel(XAnchor):
     reset_text = kv.StringProperty("Reset")
     """Text for the reset button, leave empty to hide."""
     invoke_text = kv.StringProperty("Send")
@@ -181,7 +181,7 @@ class InputPanel(XAnchor):
 
     def __init__(
         self,
-        widgets: dict[str, InputPanelWidget],
+        widgets: dict[str, XInputPanelWidget],
         orientation: str = "vertical",
         /,
         **kwargs,
