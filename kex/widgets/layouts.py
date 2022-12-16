@@ -32,10 +32,10 @@ class XZBox(XMixin, kv.GridLayout):
             )
         super().__init__(**kwargs)
 
-    def add(self, *children, **kwargs):
+    def add_widget(self, *args, **kwargs):
         """Overrides base method to insert correctly."""
-        for child in children:
-            super().add(child, insert_last=True, **kwargs)
+        kwargs["insert_last"] = True
+        super().add_widget(*args, **kwargs)
 
 
 class XDBox(XMixin, kv.GridLayout):
@@ -46,10 +46,10 @@ class XDBox(XMixin, kv.GridLayout):
         super().__init__(cols=cols, **kwargs)
         self.bind(children=self._resize)
 
-    def add(self, w: XMixin, *args, **kwargs):
+    def add_widget(self, w, *args, **kwargs):
         """Overrides XMixin `add` in order to bind to size changes."""
         w.bind(size=self._resize)
-        super().add(w, *args, **kwargs)
+        super().add_widget(w, *args, **kwargs)
         kv.Clock.schedule_once(self._resize, 0)
 
     def _resize(self, *a):
@@ -86,9 +86,9 @@ class XAnchor(XMixin, kv.AnchorLayout):
     ):
         padding_anchor = cls()
         padding_anchor.set_size(hx=padding_weight[0], hy=padding_weight[1])
-        padding_anchor.add(w)
+        padding_anchor.add_widget(w)
         anchor = cls(**kwargs)
-        anchor.add(padding_anchor)
+        anchor.add_widget(padding_anchor)
         return anchor
 
 
@@ -117,7 +117,7 @@ class XScroll(XMixin, kv.ScrollView):
         self.scroll_amount = scroll_amount
         self.bar_width = 15
         self.scroll_type = ["bars"]
-        self.view = self.add(view)
+        self.view = self.add_widget(view)
         self.bind(size=self._on_size, on_touch_down=self._on_touch_down)
         self.view.bind(size=self._on_size)
 

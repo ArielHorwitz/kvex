@@ -8,25 +8,18 @@ from ..util import XColor
 class XMixin:
     """A mixin for kivy widgets with useful methods."""
 
-    def add(
+    def add_widgets(
         self,
         *children: tuple[kv.Widget, ...],
         insert_last: bool = False,
         **kwargs,
     ):
-        """Replacement for kivy's `add_widget` method.
-
-        Args:
-            children: Children to be added to the widget.
-            insert_last: If children should be added below all other children.
-                Overwrites the "index" argument from kwargs.
-            kwargs: Keyword arguments for kivy's `add_widget`.
-        """
+        """Add multiple widgets."""
         if not children:
             raise ValueError("Must supply children to add.")
-        if insert_last:
-            kwargs["index"] = len(self.children)
         for child in children:
+            if insert_last:
+                kwargs["index"] = len(self.children)
             self.add_widget(child, **kwargs)
 
     def set_size(

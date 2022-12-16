@@ -232,8 +232,7 @@ class XSliderText(XBox):
         self.label = XLabel(**label_kwargs)
         self.label.set_size(hx=0.2)
         self.slider = XSlider(**slider_kwargs)
-        self.add(self.label)
-        self.add(self.slider)
+        self.add_widgets(self.label, self.slider)
         self.slider.bind(value=self._set_text)
         self._set_text(self, self.slider.value)
 
@@ -299,8 +298,9 @@ class XPickColor(XBox):
                 "value_track_width": "6dp",
                 "cursor_size": (0, 0),
             } | kwargs
-            s = self.add(XSliderText(**slider_kwargs))
+            s = XSliderText(**slider_kwargs)
             s.slider.bind(value=update_color)
+            self.add_widget(s)
             self.sliders.append(s)
         self.r, self.g, self.b, self.a = self.sliders
         self.set_color(self.color)
@@ -348,7 +348,7 @@ class XSelectColor(XLabelClick):
         self.picker = XPickColor()
         self.dropdown = XDropDown(auto_width=False, on_dismiss=self._on_color)
         self.dropdown.set_size(*self.picker.size)
-        self.dropdown.add(self.picker)
+        self.dropdown.add_widget(self.picker)
         self.picker.bind(size=lambda w, s: self.dropdown.set_size(*s))
         self.bind(on_release=self.dropdown.open)
         self.on_color()
@@ -370,9 +370,10 @@ class XScreen(XMixin, kv.Screen):
         super().__init__(**kwargs)
         self.view = None
 
-    def add(self, *args, **kwargs):
+    def add_widget(self, w, *args, **kwargs):
         """Overrides base method to set the view."""
-        self.view = super().add(*args, **kwargs)
+        self.view = w
+        super().add_widget(w, *args, **kwargs)
         if len(self.children) > 1:
             raise RuntimeError(
                 f"Cannot add more than 1 widget to XScreen: {self.children=}"
@@ -396,8 +397,8 @@ class XScreenManager(XMixin, kv.ScreenManager):
 
     def add_screen(self, name: str, widget: XMixin) -> XScreen:
         """Add a screen."""
-        screen = self.add(XScreen(name=name))
-        screen.add(widget)
+        screen = self.add_widget(XScreen(name=name))
+        screen.add_widget(widget)
         return screen
 
     def switch_name(self, name: str) -> bool:
@@ -429,8 +430,8 @@ class XScreenManager(XMixin, kv.ScreenManager):
         sm = cls(**kwargs)
         for n, w in widgets.items():
             screen = XScreen(name=n)
-            screen.add(w)
-            sm.add(screen)
+            screen.add_widget(w)
+            sm.add_widget(screen)
         return sm
 
 

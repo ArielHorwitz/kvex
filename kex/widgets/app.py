@@ -26,7 +26,7 @@ class XOverlay(kv.FocusBehavior, XAnchor):
         self.label = XLabel(**kwargs)
         self.label.set_size(x=500, y=150)
         self.label.make_bg(XColor.from_name("red", 0.15))
-        self.add(self.label)
+        self.add_widget(self.label)
 
 
 class XApp(kv.App):
@@ -81,9 +81,9 @@ class XApp(kv.App):
         """Schedule *func* to be called *fps* times per seconds."""
         kv.Clock.schedule_once(lambda *a: kv.Clock.schedule_interval(func, 1 / fps))
 
-    def add(self, *args, **kwargs):
+    def add_widget(self, *args, **kwargs):
         """Add a widget to the root widget."""
-        return self.root.add(*args, **kwargs)
+        return self.root.add_widget(*args, **kwargs)
 
     @property
     def mouse_pos(self) -> tuple[float, float]:
@@ -196,7 +196,7 @@ class XApp(kv.App):
         self.__overlay = XOverlay(**kwargs)
         self.__overlay.focus = True
         self.block_input = True
-        self.add(self.__overlay)
+        self.add_widget(self.__overlay)
 
     def __destroy_overlay(self, after: Optional[Callable] = None):
         self.root.remove_widget(self.__overlay)
