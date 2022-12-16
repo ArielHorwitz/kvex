@@ -52,12 +52,29 @@ class XLabelClick(kv.ButtonBehavior, XLabel):
     pass
 
 
-class XCheckBox(XMixin, kv.CheckBox):
-    """CheckBox."""
+class XCheckBox(kv.FocusBehavior, XMixin, kv.CheckBox):
+    """CheckBox with focus."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.make_bg(source="atlas://data/images/defaulttheme/button_disabled")
+        self._bg_color.a = int(self.focus)
 
     def toggle(self, *a):
         """Toggle the active state."""
         self.active = not self.active
+
+    def on_focus(self, w, focus):
+        self._bg_color.a = int(focus)
+
+    def keyboard_on_key_down(self, window, keycode, text, modifiers):
+        """Implement toggling."""
+        key, _ = keycode
+        if key in {13, 32, 271}:  # enter, spacebar, numpadenter
+            self.toggle()
+        if key == 27:  # ignore escape
+            return False
+        return super().keyboard_on_key_down(window, keycode, text, modifiers)
 
 
 class XButton(XMixin, kv.Button):
