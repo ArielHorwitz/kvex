@@ -47,7 +47,7 @@ class XDBox(XMixin, kv.GridLayout):
         self.bind(children=self._resize)
 
     def add_widget(self, w, *args, **kwargs):
-        """Overrides XMixin `add` in order to bind to size changes."""
+        """Overrides base method in order to bind to size changes."""
         w.bind(size=self._resize)
         super().add_widget(w, *args, **kwargs)
         kv.Clock.schedule_once(self._resize, 0)
@@ -141,7 +141,7 @@ class XScroll(XMixin, kv.ScrollView):
 
     def __init__(
         self,
-        view: XMixin,
+        view: kv.Widget,
         scroll_dir: Direction = "vertical",
         scroll_amount: float = 50,
         **kwargs,
