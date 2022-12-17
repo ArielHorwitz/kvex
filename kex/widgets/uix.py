@@ -127,7 +127,7 @@ class XToggleButton(kv.ToggleButtonBehavior, XButton):
         self.active = self.state == "down"
 
 
-class XEntry(XFocusBehavior, XWidget, kv.TextInput):
+class XInput(XFocusBehavior, XWidget, kv.TextInput):
     """TextInput with sane defaults."""
 
     select_on_focus = kv.BooleanProperty(False)
@@ -189,7 +189,7 @@ class XEntry(XFocusBehavior, XWidget, kv.TextInput):
         return super().keyboard_on_key_down(w, key_pair, text, mods)
 
 
-class XIntEntry(XEntry):
+class XIntInput(XInput):
     digits_pattern = re.compile('[^0-9]')
 
     def insert_text(self, substring, *args, **kwargs):
@@ -197,7 +197,7 @@ class XIntEntry(XEntry):
         return super().insert_text(s, *args, **kwargs)
 
 
-class XFloatEntry(XEntry):
+class XFloatInput(XInput):
     digits_pattern = re.compile('[^0-9]')
 
     def insert_text(self, substring, *args, **kwargs):

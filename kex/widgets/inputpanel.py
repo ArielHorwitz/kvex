@@ -7,9 +7,9 @@ from .layouts import XAnchor, XDBox, XBox
 from .uix import (
     XLabel,
     XButton,
-    XEntry,
-    XIntEntry,
-    XFloatEntry,
+    XInput,
+    XIntInput,
+    XFloatInput,
     XCheckBox,
     XSpinner,
 )
@@ -61,7 +61,7 @@ class BaseInputWidget(XBox):
 
 class StringInputWidget(BaseInputWidget):
     wtype = "str"
-    _entry_class = XEntry
+    _entry_class = XInput
     _text_default = ""
     _password = False
 
@@ -116,7 +116,7 @@ class BooleanInputWidget(BaseInputWidget):
 
 class IntInputWidget(StringInputWidget):
     wtype = "int"
-    _entry_class = XIntEntry
+    _entry_class = XIntInput
     _text_default = "0"
 
     def get_value(self) -> int:
@@ -130,7 +130,7 @@ class IntInputWidget(StringInputWidget):
 
 class FloatInputWidget(StringInputWidget):
     wtype = "float"
-    _entry_class = XFloatEntry
+    _entry_class = XFloatInput
     _text_default = "0"
 
     def get_value(self) -> float:
