@@ -58,6 +58,9 @@ class BaseInputWidget(XBox):
             set_as = not self.label.disabled
         self.label.disabled = set_as
 
+    def set_focus(self):
+        pass
+
 
 class StringInputWidget(BaseInputWidget):
     wtype = "str"
@@ -86,6 +89,9 @@ class StringInputWidget(BaseInputWidget):
             set_as = not self._entry.disabled
         self._entry.disabled = set_as
 
+    def set_focus(self):
+        self._entry.focus = True
+
 
 class BooleanInputWidget(BaseInputWidget):
     wtype = "bool"
@@ -112,6 +118,9 @@ class BooleanInputWidget(BaseInputWidget):
         if set_as is None:
             set_as = not self._checkbox.disabled
         self._checkbox.disabled = set_as
+
+    def set_focus(self):
+        self._checkbox.focus = True
 
 
 class IntInputWidget(StringInputWidget):
