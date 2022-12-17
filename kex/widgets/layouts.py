@@ -80,11 +80,12 @@ class XAnchor(XWidget, kv.AnchorLayout):
     def wrap(
         cls,
         w: kv.Widget,
-        padding_weight: tuple[float, float] = (0.95, 0.95),
+        x: float = 0.95,
+        y: float = 0.95,
         **kwargs,
     ):
         padding_anchor = cls()
-        padding_anchor.set_size(hx=padding_weight[0], hy=padding_weight[1])
+        padding_anchor.set_size(hx=x, hy=y)
         padding_anchor.add_widget(w)
         anchor = cls(**kwargs)
         anchor.add_widget(padding_anchor)

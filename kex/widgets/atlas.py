@@ -20,7 +20,7 @@ class XAtlasPreview(XScroll):
             image.set_size(50, 50)
             box = XBox(orientation="vertical")
             box.add_widgets(label, XAnchor.wrap(image))
-            frame = XAnchor.wrap(box, padding_weight=(0.9, 0.9))
+            frame = XAnchor.wrap(box)
             frame.set_size(100, 125)
             frame.make_bg(XColor(v=0.15), source=from_atlas("textinput_active"))
             stack.add_widget(frame)
