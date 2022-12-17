@@ -68,6 +68,7 @@ from kivy.graphics.instructions import InstructionGroup
 from kivy.graphics import (
     Color,
     Rectangle,
+    BorderImage,
     Rotate,
     PushMatrix,
     PopMatrix,

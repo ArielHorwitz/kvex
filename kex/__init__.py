@@ -29,6 +29,7 @@ from .kivy import (
     InstructionGroup,
     Color,
     Rectangle,
+    BorderImage,
     Rotate,
     PushMatrix,
     PopMatrix,
