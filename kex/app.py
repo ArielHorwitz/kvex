@@ -10,7 +10,13 @@ app.run()
 from typing import Callable, Optional
 from functools import partial
 from . import kivy as kv
-from .util import XColor, queue_around_frame, restart_script
+from .util import (
+    XColor,
+    queue_around_frame,
+    restart_script,
+    consume_args,
+    schedule_interval,
+)
 from .behaviors import XFocusBehavior
 from .win_focus_patch import XWindowFocusPatch
 from .widgets.layouts import XAnchor
@@ -33,6 +39,8 @@ class XOverlay(XFocusBehavior, XAnchor):
 class XApp(kv.App):
     """See module documentation for details."""
 
+    current_focus = kv.ObjectProperty(None, allownone=True)
+    """Widget that currently has focus."""
     block_input = kv.BooleanProperty(False)
     """If all user input should be blocked."""
 
@@ -45,13 +53,18 @@ class XApp(kv.App):
         self.enable_escape_exit(escape_exits)
         super().__init__(**kwargs)
         self.root = XAnchor()
+        self.keyboard = kv.Window.request_keyboard(consume_args, None)
         self.__restart_flag = False
         self.__overlay = None
+        schedule_interval(self._check_focus, 0)
         kv.Window.bind(
             on_touch_down=self._filter_touch,
             on_touch_up=self._filter_touch,
             on_touch_move=self._filter_touch,
         )
+
+    def _check_focus(self, *args):
+        self.current_focus = self.keyboard.target
 
     def run(self, *args, allow_restart: bool = True, **kwargs) -> int:
         """Run asyncronously.
