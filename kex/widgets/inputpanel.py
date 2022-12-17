@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from typing import Any, Optional, Callable
 from .. import kivy as kv
-from .layouts import XAnchor, XDBox, XBox
+from .layouts import XAnchor, XDBox, XBox, XCurtain
 from .uix import (
     XLabel,
     XButton,
@@ -24,6 +24,7 @@ class XInputPanelWidget:
     widget: str = "str"
     default: Any = None
     orientation: str = "horizontal"
+    showing: bool = True
     label_hint: float = 1
     italic: bool = True
     bold: bool = False
@@ -220,20 +221,18 @@ class XInputPanel(XAnchor):
         self,
         widgets: dict[str, XInputPanelWidget],
         /,
-        *,
-        orientation: str = "vertical",
         **kwargs,
     ):
         """Initialize the class.
 
         Args:
             widgets: Dictionary of names to widgets.
-            orientation: Passed to the BoxLayout.
         """
         super().__init__(**kwargs)
         self.widgets: dict[str, BaseInputWidget] = dict()
+        self._curtains: dict[str, XCurtain] = dict()
         # Widgets
-        self._main_frame = XBox() if orientation == "horizontal" else XDBox()
+        self._main_frame = XDBox()
         self.add_widget(self._main_frame)
         self._reset_btn = XButton(text=self.reset_text, on_release=self.reset_defaults)
         self._invoke_btn = XButton(text=self.invoke_text, on_release=self._do_invoke)
@@ -243,8 +242,11 @@ class XInputPanel(XAnchor):
         for name, w in widgets.items():
             iw_cls = INPUT_WIDGET_CLASSES[w.widget]
             input_widget = iw_cls(w, self._do_values, self._do_invoke)
+            curtain = XCurtain(content=input_widget, showing=w.showing)
+            curtain.set_size(y=input_widget.height)
             self.widgets[name] = input_widget
-            self._main_frame.add_widget(input_widget)
+            self._curtains[name] = curtain
+            self._main_frame.add_widget(curtain)
         # Controls
         controls = XBox()
         if self.reset_text:
@@ -252,10 +254,10 @@ class XInputPanel(XAnchor):
         if self.invoke_text:
             controls.add_widget(self._invoke_btn_frame)
         if len(controls.children) == 1:
-            if orientation == "vertical":
-                controls = XAnchor.wrap(controls, x=.5)
+            controls = XAnchor.wrap(controls, x=.5)
         controls.set_size(y=HEIGHT_UNIT)
-        self._main_frame.add_widget(controls)
+        if len(controls.children) > 0:
+            self._main_frame.add_widget(controls)
         # Bindings
         self.bind(
             reset_text=self._on_reset_text,
@@ -263,6 +265,11 @@ class XInputPanel(XAnchor):
         )
         self.register_event_type("on_invoke")
         self.register_event_type("on_values")
+
+    def get_value(self, widget_name: str, /) -> Any:
+        """Get a value by name."""
+        widget = self.widgets[widget_name]
+        return widget.get_value()
 
     def get_values(self) -> dict[str, Any]:
         """Get all values."""
@@ -272,6 +279,21 @@ class XInputPanel(XAnchor):
         """Reset all values to their defaults."""
         for iw in self.widgets.values():
             iw.set_value()
+
+    def set_focus(self, widget_name: str, /):
+        """Focus a widget by name."""
+        widget = self.widgets[widget_name]
+        widget.set_focus()
+
+    def set_enabled(self, widget_name: str, set_as: bool = True, /):
+        """Enable or disable a widget by name."""
+        widget = self.widgets[widget_name]
+        widget.set_enabled(set_as)
+
+    def set_showing(self, widget_name: str, set_as: bool = True, /):
+        """Show or hide a widget by name."""
+        curtain = self._curtains[widget_name]
+        curtain.showing = set_as
 
     def on_invoke(self, values: dict):
         """Triggered when the invoke button is pressed or otherwise sent by user."""
