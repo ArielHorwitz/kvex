@@ -139,7 +139,7 @@ class XInput(XFocusBehavior, XWidget, kv.TextInput):
         background_color: list[float] = (0.2, 0.2, 0.2, 1),
         foreground_color: list[float] = (1, 1, 1, 1),
         disabled_foreground_color: list[float] = (0.5, 0.5, 0.5, 0.5),
-        text_validate_unfocus: bool = True,
+        text_validate_unfocus: bool = False,
         write_tab: bool = False,
         **kwargs,
     ):
@@ -153,7 +153,7 @@ class XInput(XFocusBehavior, XWidget, kv.TextInput):
             text_validate_unfocus: If focus should be removed after validation
                 (pressing enter on a single-line widget).
             write_tab: Allow tabs to be written.
-            kwargs: keyword arguments for TextInput.
+            kwargs: Keyword arguments for TextInput.
         """
         super().__init__(
             background_color=background_color,
