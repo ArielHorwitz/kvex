@@ -33,6 +33,7 @@ class XList(XFocusBehavior, XRelative):
     bg_color = kv.ColorProperty([0.05, 0.075, 0.1, 1])
     fg_color = kv.ColorProperty([0, 0.5, 0.5, 0.5])
     enable_shifting = kv.BooleanProperty(False)
+    invoke_double_tap_only = kv.BooleanProperty(True)
     _label_kwargs = kv.DictProperty()
 
     def __init__(self, **kwargs):
@@ -96,14 +97,17 @@ class XList(XFocusBehavior, XRelative):
         r = super().on_touch_down(touch)
         if not self.collide_point(*touch.pos):
             return r
+        disable_invoke = False
         rel_pos = self.to_widget(*touch.pos)
         idx = int((self.height - rel_pos[1]) // self.item_height)
+        if idx >= len(self.items):
+            idx = len(self.items) - 1
+            disable_invoke = True
+        self.select(idx)
         if idx == self.selection:
-            self.invoke()
-        else:
-            if idx >= len(self.items):
-                idx = self.selection
-            self.select(idx)
+            disable_by_dtap = self.invoke_double_tap_only and not touch.is_double_tap
+            if not disable_invoke and not disable_by_dtap:
+                self.invoke()
         return True
 
     def _refresh_selection_graphics(self, *args):
