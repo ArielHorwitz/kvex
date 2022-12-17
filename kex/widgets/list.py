@@ -93,18 +93,18 @@ class XList(XFocusBehavior, XRelative):
 
     def on_touch_down(self, touch):
         """Override base method."""
+        r = super().on_touch_down(touch)
         if not self.collide_point(*touch.pos):
-            return
-        touch.grab(self)
-        self.focus = True
+            return r
         rel_pos = self.to_widget(*touch.pos)
         idx = int((self.height - rel_pos[1]) // self.item_height)
-        if idx >= len(self.items):
-            return
         if idx == self.selection:
             self.invoke()
         else:
+            if idx >= len(self.items):
+                idx = self.selection
             self.select(idx)
+        return True
 
     def _refresh_selection_graphics(self, *args):
         idx = self.selection
