@@ -9,11 +9,11 @@ app.run()
 """
 from typing import Callable, Optional
 from functools import partial
-from .. import kivy as kv
-from ..util import XColor, queue_around_frame, restart_script
-from .layouts import XAnchor
-from .uix import XLabel
-from .win_focus_patch import WindowFocusPatch
+from . import kivy as kv
+from .util import XColor, queue_around_frame, restart_script
+from .win_focus_patch import XWindowFocusPatch
+from .widgets.layouts import XAnchor
+from .widgets.uix import XLabel
 
 
 class XOverlay(kv.FocusBehavior, XAnchor):
@@ -39,7 +39,7 @@ class XApp(kv.App):
 
     def __init__(self, escape_exits: bool = False, **kwargs):
         """Initialize the class."""
-        self.__window_focus_path = WindowFocusPatch()
+        self.__window_focus_path = XWindowFocusPatch()
         self.disable_multitouch()
         self.enable_escape_exit(escape_exits)
         super().__init__(**kwargs)

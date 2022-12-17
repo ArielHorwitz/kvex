@@ -62,7 +62,7 @@ from .util import (
     snoozing_trigger,
     queue_around_frame,
 )
-from .widgets import XMixin, XWidget
+from .widgets import XWidget
 from .widgets.layouts import (
     XBox,
     XZBox,
@@ -97,7 +97,8 @@ from .widgets.list import XList
 from .widgets.inputpanel import XInputPanel, XInputPanelWidget
 from .widgets.hotkeycontroller import XHotkeyController
 from .widgets.atlas import XAtlasPreview
-from .widgets.app import XApp
+from .behaviors import XFocusBehavior
+from .app import XApp
 
 
 __all__ = []

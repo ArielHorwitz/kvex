@@ -24,7 +24,7 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 
 
-class WindowFocusPatch:
+class XWindowFocusPatch:
     def __init__(self):
         Window.bind(
             focus=self._on_focus,

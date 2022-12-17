@@ -5,7 +5,7 @@ from .. import kivy as kv
 from ..util import XColor
 
 
-class XMixin:
+class XWidget:
     """A mixin for kivy widgets with useful methods."""
 
     def add_widgets(
@@ -113,8 +113,3 @@ class XMixin:
     def app(self):
         """Get the running app."""
         return kv.App.get_running_app()
-
-
-class XWidget(XMixin, kv.Widget):
-    """Kivy Widget with XMixin"""
-    pass

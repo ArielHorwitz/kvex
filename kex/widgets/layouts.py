@@ -2,16 +2,16 @@
 
 from typing import Literal, Optional
 from .. import kivy as kv
-from . import XMixin
+from . import XWidget
 
 
-class XBox(XMixin, kv.BoxLayout):
+class XBox(XWidget, kv.BoxLayout):
     """BoyLayout."""
 
     pass
 
 
-class XZBox(XMixin, kv.GridLayout):
+class XZBox(XWidget, kv.GridLayout):
     """Behaves like a Box where widgets are drawn in reverse order."""
 
     def __init__(
@@ -37,7 +37,7 @@ class XZBox(XMixin, kv.GridLayout):
         super().add_widget(*args, **kwargs)
 
 
-class XDBox(XMixin, kv.GridLayout):
+class XDBox(XWidget, kv.GridLayout):
     """Behaves like a Box that will dynamically resize based on children's height."""
 
     def __init__(self, cols: int = 1, **kwargs):
@@ -55,25 +55,25 @@ class XDBox(XMixin, kv.GridLayout):
         self.set_size(hx=1, y=sum([c.height for c in self.children]))
 
 
-class XGrid(XMixin, kv.GridLayout):
+class XGrid(XWidget, kv.GridLayout):
     """GridLayout."""
 
     pass
 
 
-class XStack(XMixin, kv.StackLayout):
+class XStack(XWidget, kv.StackLayout):
     """StackLayout."""
 
     pass
 
 
-class XRelative(XMixin, kv.RelativeLayout):
+class XRelative(XWidget, kv.RelativeLayout):
     """RelativeLayout."""
 
     pass
 
 
-class XAnchor(XMixin, kv.AnchorLayout):
+class XAnchor(XWidget, kv.AnchorLayout):
     """AnchorLayout."""
 
     @classmethod
@@ -135,7 +135,7 @@ class XCurtain(XAnchor):
 Direction = Literal["vertical", "horizontal"]
 
 
-class XScroll(XMixin, kv.ScrollView):
+class XScroll(XWidget, kv.ScrollView):
     """ScrollView."""
 
     def __init__(

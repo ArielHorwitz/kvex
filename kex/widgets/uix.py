@@ -3,12 +3,12 @@
 from typing import Optional, Any, Mapping
 import re
 from .. import kivy as kv
-from . import XMixin
+from . import XWidget
 from ..util import ColorType, XColor
 from .layouts import XBox, XAnchor
 
 
-class XLabel(XMixin, kv.Label):
+class XLabel(XWidget, kv.Label):
     """Label."""
 
     def __init__(self, fixed_width: bool = False, **kwargs):
@@ -52,7 +52,7 @@ class XLabelClick(kv.ButtonBehavior, XLabel):
     pass
 
 
-class XCheckBox(kv.FocusBehavior, XMixin, kv.CheckBox):
+class XCheckBox(kv.FocusBehavior, XWidget, kv.CheckBox):
     """CheckBox with focus."""
 
     def __init__(self, *args, **kwargs):
@@ -77,7 +77,7 @@ class XCheckBox(kv.FocusBehavior, XMixin, kv.CheckBox):
         return super().keyboard_on_key_down(window, keycode, text, modifiers)
 
 
-class XButton(XMixin, kv.Button):
+class XButton(XWidget, kv.Button):
     """Button."""
 
     def __init__(
@@ -128,7 +128,7 @@ class XToggleButton(kv.ToggleButtonBehavior, XButton):
         self.active = self.state == "down"
 
 
-class XEntry(XMixin, kv.TextInput):
+class XEntry(XWidget, kv.TextInput):
     """TextInput with sane defaults."""
 
     select_on_focus = kv.BooleanProperty(False)
@@ -213,7 +213,7 @@ class XFloatEntry(XEntry):
         return super().insert_text(s, *args, **kwargs)
 
 
-class XSlider(XMixin, kv.Slider):
+class XSlider(XWidget, kv.Slider):
     """Slider."""
 
     pass
@@ -261,7 +261,7 @@ class XSliderText(XBox):
         self.label.text = str(f"{self.prefix}{value}")
 
 
-class XSpinner(XMixin, kv.Spinner):
+class XSpinner(XWidget, kv.Spinner):
     """Spinner."""
 
     value = kv.StringProperty("")
@@ -289,7 +289,7 @@ class XSpinner(XMixin, kv.Spinner):
         self.on_select(data)
 
 
-class XDropDown(XMixin, kv.DropDown):
+class XDropDown(XWidget, kv.DropDown):
     """DropDown."""
 
     pass
@@ -379,7 +379,7 @@ class XSelectColor(XLabelClick):
         self.text = text
 
 
-class XScreen(XMixin, kv.Screen):
+class XScreen(XWidget, kv.Screen):
     """Screen that can only contain one widget."""
 
     def __init__(self, **kwargs):
@@ -397,7 +397,7 @@ class XScreen(XMixin, kv.Screen):
             )
 
 
-class XScreenManager(XMixin, kv.ScreenManager):
+class XScreenManager(XWidget, kv.ScreenManager):
     """ScreenManager with custom transition behavior."""
 
     transition_speed = kv.NumericProperty(0.4)
@@ -412,7 +412,7 @@ class XScreenManager(XMixin, kv.ScreenManager):
             duration=self.transition_speed,
         )
 
-    def add_screen(self, name: str, widget: XMixin) -> XScreen:
+    def add_screen(self, name: str, widget: XWidget) -> XScreen:
         """Add a screen."""
         screen = self.add_widget(XScreen(name=name))
         screen.add_widget(widget)
@@ -442,7 +442,7 @@ class XScreenManager(XMixin, kv.ScreenManager):
         return 0 < self.current_screen.transition_progress < 1
 
     @classmethod
-    def from_widgets(cls, widgets: Mapping[str, XMixin], **kwargs) -> "XScreenManager":
+    def from_widgets(cls, widgets: Mapping[str, XWidget], **kwargs) -> "XScreenManager":
         """Create an XScreenManager from a dictionary of screen names and widgets."""
         sm = cls(**kwargs)
         for n, w in widgets.items():
@@ -452,7 +452,7 @@ class XScreenManager(XMixin, kv.ScreenManager):
         return sm
 
 
-class XModalView(XMixin, kv.ModalView):
+class XModalView(XWidget, kv.ModalView):
     pass
 
 
