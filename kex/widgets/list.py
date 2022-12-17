@@ -3,6 +3,7 @@
 from typing import Optional
 from .. import kivy as kv
 from ..util import text_texture
+from ..behaviors import XFocusBehavior
 from .layouts import XRelative
 
 
@@ -16,7 +17,7 @@ cache_get = kv.Cache.get
 cache_remove = kv.Cache.remove
 
 
-class XList(kv.FocusBehavior, XRelative):
+class XList(XFocusBehavior, XRelative):
 
     font_name = kv.StringProperty("Roboto")
     font_size = kv.NumericProperty(16)

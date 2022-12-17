@@ -5,6 +5,7 @@ import re
 from .. import kivy as kv
 from . import XWidget
 from ..util import ColorType, XColor
+from ..behaviors import XFocusBehavior
 from .layouts import XBox, XAnchor
 
 
@@ -52,7 +53,7 @@ class XLabelClick(kv.ButtonBehavior, XLabel):
     pass
 
 
-class XCheckBox(kv.FocusBehavior, XWidget, kv.CheckBox):
+class XCheckBox(XFocusBehavior, XWidget, kv.CheckBox):
     """CheckBox with focus."""
 
     def __init__(self, *args, **kwargs):

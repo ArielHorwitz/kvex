@@ -11,12 +11,13 @@ from typing import Callable, Optional
 from functools import partial
 from . import kivy as kv
 from .util import XColor, queue_around_frame, restart_script
+from .behaviors import XFocusBehavior
 from .win_focus_patch import XWindowFocusPatch
 from .widgets.layouts import XAnchor
 from .widgets.uix import XLabel
 
 
-class XOverlay(kv.FocusBehavior, XAnchor):
+class XOverlay(XFocusBehavior, XAnchor):
     """Overlay to be displayed on top of other widgets."""
 
     def __init__(self, **kwargs):
