@@ -68,14 +68,12 @@ class XCheckBox(XFocusBehavior, XWidget, kv.CheckBox):
     def on_focus(self, w, focus):
         self._bg_color.a = int(focus)
 
-    def keyboard_on_key_down(self, window, keycode, text, modifiers):
+    def keyboard_on_key_down(self, w, key_pair, text, mods):
         """Implement toggling."""
-        key, _ = keycode
-        if key in {13, 32, 271}:  # enter, spacebar, numpadenter
+        keycode, key = key_pair
+        if key in {"enter", "numpadenter", "spacebar"}:
             self.toggle()
-        if key == 27:  # ignore escape
-            return False
-        return super().keyboard_on_key_down(window, keycode, text, modifiers)
+        return super().keyboard_on_key_down(w, key_pair, text, mods)
 
 
 class XButton(XWidget, kv.Button):
@@ -129,11 +127,11 @@ class XToggleButton(kv.ToggleButtonBehavior, XButton):
         self.active = self.state == "down"
 
 
-class XEntry(XWidget, kv.TextInput):
+class XEntry(XFocusBehavior, XWidget, kv.TextInput):
     """TextInput with sane defaults."""
 
     select_on_focus = kv.BooleanProperty(False)
-    deselect_on_escape = kv.BooleanProperty(False)
+    deselect_on_escape = kv.BooleanProperty(True)
 
     def __init__(
         self,
@@ -169,9 +167,10 @@ class XEntry(XWidget, kv.TextInput):
 
     def _on_textinput_focused(self, *args, **kwargs):
         """Overrides base method to handle selection on focus."""
-        super()._on_textinput_focused(*args, **kwargs)
+        r = super()._on_textinput_focused(*args, **kwargs)
         if self.focus and self.select_on_focus:
             self.select_all()
+        return r
 
     def reset_cursor_selection(self, *a):
         """Resets the cursor position and selection."""
@@ -180,16 +179,14 @@ class XEntry(XWidget, kv.TextInput):
         self.scroll_x = 0
         self.scroll_y = 0
 
-    def keyboard_on_key_down(self, window, keycode, text, modifiers):
-        """Override base method to deselect instead of defocus on escape."""
-        key, _ = keycode
-        r = super().keyboard_on_key_down(window, keycode, text, modifiers)
-        # Handle escape
-        if key == 27:
-            if not self.deselect_on_escape:
+    def keyboard_on_key_down(self, w, key_pair, text, mods):
+        """Override base method to deselect on escape."""
+        keycode, key = key_pair
+        if key == "escape":
+            if self.deselect_on_escape:
                 self.cancel_selection()
-                self.focus = True
-        return r
+            return True
+        return super().keyboard_on_key_down(w, key_pair, text, mods)
 
 
 class XIntEntry(XEntry):
