@@ -251,7 +251,8 @@ class XInputPanel(XAnchor):
         if self.invoke_text:
             controls.add_widget(self._invoke_btn_frame)
         if len(controls.children) == 1:
-            controls = XAnchor.wrap(controls, padding_weight=(.5, 0.9))
+            if orientation == "vertical":
+                controls = XAnchor.wrap(controls, padding_weight=(.5, 1))
         controls.set_size(y=HEIGHT_UNIT)
         self._main_frame.add_widget(controls)
         # Bindings
