@@ -1,7 +1,7 @@
 """Panel of simple input widgets."""
 
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any, Optional, Callable
 from .. import kivy as kv
 from .layouts import XAnchor, XDBox, XBox
 from .uix import (
@@ -32,7 +32,7 @@ class XInputPanelWidget:
 
 
 class BaseInputWidget(XBox):
-    def __init__(self, w: XInputPanelWidget):
+    def __init__(self, w: XInputPanelWidget, on_value: Callable, on_invoke: Callable):
         assert w.widget == self.wtype
         self.specification = w
         super().__init__(orientation=w.orientation)
@@ -45,7 +45,7 @@ class BaseInputWidget(XBox):
             bold=w.bold,
             halign=w.halign or default_halign,
         )
-        self.widget = self._get_widget(w)
+        self.widget = self._get_widget(w, on_value, on_invoke)
         assert self.widget is not None
         # Assemble
         height = HEIGHT_UNIT * (1 + (w.orientation == "vertical"))
@@ -68,11 +68,17 @@ class StringInputWidget(BaseInputWidget):
     _text_default = ""
     _password = False
 
-    def _get_widget(self, w: XInputPanelWidget):
+    def _get_widget(
+        self,
+        w: XInputPanelWidget,
+        on_value: Callable,
+        on_invoke: Callable,
+    ):
         self._entry = self._entry_class(
             text=str(w.default or self._text_default),
             password=self._password,
         )
+        self._entry.bind(text=on_value, on_text_validate=on_invoke)
         return self._entry
 
     def get_value(self) -> str:
@@ -96,8 +102,14 @@ class StringInputWidget(BaseInputWidget):
 class BooleanInputWidget(BaseInputWidget):
     wtype = "bool"
 
-    def _get_widget(self, w: XInputPanelWidget):
+    def _get_widget(
+        self,
+        w: XInputPanelWidget,
+        on_value: Callable,
+        on_invoke: Callable,
+    ):
         self._checkbox = XCheckBox(active=w.default or False)
+        self._checkbox.bind(active=on_value)
         if w.orientation == "vertical":
             return self._checkbox
         self._checkbox.set_size(x=HEIGHT_UNIT)
@@ -159,11 +171,17 @@ class PasswordInputWidget(StringInputWidget):
 class ChoiceInputWidget(BaseInputWidget):
     wtype = "choice"
 
-    def _get_widget(self, w: XInputPanelWidget):
+    def _get_widget(
+        self,
+        w: XInputPanelWidget,
+        on_value: Callable,
+        on_invoke: Callable,
+    ):
         self._spinner = XSpinner(
             value=w.default or "",
             values=w.choices,
         )
+        self._spinner.bind(value=on_value)
         return self._spinner
 
     def get_value(self) -> bool:
@@ -195,9 +213,7 @@ class XInputPanel(XAnchor):
     reset_text = kv.StringProperty("Reset")
     """Text for the reset button, leave empty to hide."""
     invoke_text = kv.StringProperty("Send")
-    """Text to show on the invoke button."""
-    invoke_callback = kv.ObjectProperty(None, allownone=True)
-    """Callback for when the invoke button is pressed."""
+    """Text to show on the invoke button, leave empty to hide."""
 
     def __init__(
         self,
@@ -219,13 +235,13 @@ class XInputPanel(XAnchor):
         self._main_frame = XBox() if orientation == "horizontal" else XDBox()
         self.add_widget(self._main_frame)
         self._reset_btn = XButton(text=self.reset_text, on_release=self.reset_defaults)
-        self._invoke_btn = XButton(text=self.invoke_text, on_release=self.do_invoke)
+        self._invoke_btn = XButton(text=self.invoke_text, on_release=self._do_invoke)
         self._reset_btn_frame = XAnchor.wrap(self._reset_btn)
         self._invoke_btn_frame = XAnchor.wrap(self._invoke_btn)
         # Input Widgets
         for name, w in widgets.items():
             iw_cls = INPUT_WIDGET_CLASSES[w.widget]
-            input_widget = iw_cls(w)
+            input_widget = iw_cls(w, self._do_values, self._do_invoke)
             self.widgets[name] = input_widget
             self._main_frame.add_widget(input_widget)
         # Controls
@@ -242,26 +258,35 @@ class XInputPanel(XAnchor):
         self.bind(
             reset_text=self._on_reset_text,
             invoke_text=self._on_invoke_text,
-            invoke_callback=self._on_invoke_callback,
         )
+        self.register_event_type("on_invoke")
+        self.register_event_type("on_values")
 
     def get_values(self) -> dict[str, Any]:
+        """Get all values."""
         return {name: iw.get_value() for name, iw in self.widgets.items()}
 
     def reset_defaults(self, *args, **kwargs):
+        """Reset all values to their defaults."""
         for iw in self.widgets.values():
             iw.set_value()
 
-    def do_invoke(self, *args):
-        if self.invoke_callback:
-            self.invoke_callback(self.get_values())
+    def on_invoke(self, values: dict):
+        """Triggered when the invoke button is pressed or otherwise sent by user."""
+        pass
 
-    def _on_invoke_callback(self, w, invoke_callback):
-        self._invoke_btn_frame.showing = bool(invoke_callback)
+    def on_values(self, values: dict):
+        """Triggered when any of the values change."""
+        pass
+
+    def _do_invoke(self, *args):
+        self.dispatch("on_invoke", self.get_values())
+
+    def _do_values(self, *args):
+        self.dispatch("on_values", self.get_values())
 
     def _on_reset_text(self, w, text):
         self._reset_btn.text = text
-        self._reset_btn_frame.showing = bool(text)
 
     def _on_invoke_text(self, w, text):
         self._invoke_btn.text = text
