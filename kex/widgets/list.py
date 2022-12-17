@@ -44,7 +44,7 @@ class XList(XFocusBehavior, XRelative):
         self._create_other_graphics()
         self._refresh_graphics()
         self._refresh_selection_graphics()
-        self.register_event_type("on_invoked")
+        self.register_event_type("on_invoke")
         self.bind(
             focus=self._on_focus,
             items=self._on_items,
@@ -239,9 +239,9 @@ class XList(XFocusBehavior, XRelative):
         """Invoke an item (as if it were selected and clicked)."""
         if index is None:
             index = self.selection
-        self.dispatch("on_invoked", index, self.items[index])
+        self.dispatch("on_invoke", index, self.items[index])
 
-    def on_invoked(self, index: int, label: str):
+    def on_invoke(self, index: int, label: str):
         """Triggered when an item was invoked."""
         pass
 
