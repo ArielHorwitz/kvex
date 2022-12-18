@@ -183,8 +183,7 @@ class XList(XFocusBehavior, XRelative):
         self._refresh_scroll_indicator()
 
     def _get_rect_pos(self, idx: int):
-        x, y = self.to_window(*self.pos)
-        return x, y + self.height - (self.item_height * (idx + 1))
+        return 0, self.height - (self.item_height * (idx + 1))
 
     def _refresh_items(self, *args):
         items = self.items
