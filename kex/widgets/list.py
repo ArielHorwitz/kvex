@@ -2,12 +2,13 @@
 
 from typing import Optional
 from .. import kivy as kv
-from ..util import text_texture
+from ..util import text_texture, from_atlas, XColor
 from ..behaviors import XFocusBehavior
 from .layouts import XRelative
 
 
-OUTLINE = "atlas://data/images/defaulttheme/bubble_btn_pressed"
+SELECTION_SOURCE = from_atlas("vkeyboard_background")
+SELECTION_ALPHA = 0.5, 1  # When focus is False, True respectively
 EMPTY_TEXTURE = text_texture(" ")
 
 # Cache setup
@@ -26,12 +27,12 @@ class XList(XFocusBehavior, XRelative):
     items = kv.ListProperty()
     selection = kv.NumericProperty(0)
     paging_size = kv.NumericProperty(None)
-    indicator_width = kv.NumericProperty(5)
-    indicator_color = kv.ColorProperty([0.5, 0.5, 0.5, 0.5])
+    scroll_width = kv.NumericProperty(5)
+    scroll_color = kv.ColorProperty([0.5, 0.5, 0.5, 0.5])
     shorten = kv.BooleanProperty(True)
     shorten_from = kv.StringProperty("center")
-    bg_color = kv.ColorProperty([0.05, 0.075, 0.1, 1])
-    fg_color = kv.ColorProperty([0, 0.5, 0.5, 0.5])
+    bg_color = kv.ColorProperty([0, 0, 0, 0])
+    selection_color = kv.ColorProperty([1, 1, 1, 0.5])
     enable_shifting = kv.BooleanProperty(False)
     invoke_double_tap_only = kv.BooleanProperty(True)
     _label_kwargs = kv.DictProperty()
@@ -47,19 +48,21 @@ class XList(XFocusBehavior, XRelative):
         self._refresh_selection_graphics()
         self.register_event_type("on_invoke")
         self.bind(
-            focus=self._on_focus,
+            focus=self._refresh_colors,
             items=self._on_items,
             scroll=self._on_scroll,
             size=self._on_geometry,
             pos=self._on_geometry,
             selection=self._on_selection,
+            bg_color=self._refresh_colors,
+            selection_color=self._refresh_colors,
+            scroll_color=self._refresh_colors,
             item_height=self._refresh_label_kwargs,
             item_padding=self._refresh_label_kwargs,
             font_name=self._refresh_label_kwargs,
             font_size=self._refresh_label_kwargs,
             shorten=self._refresh_label_kwargs,
             shorten_from=self._refresh_label_kwargs,
-            indicator_color=self._refresh_scroll_indicator_color,
             _label_kwargs=self._on_label_kwargs,
         )
 
@@ -121,7 +124,7 @@ class XList(XFocusBehavior, XRelative):
         rect_count = len(self._rects)
         item_count = len(self.items)
         widget_height = self.height
-        indicator_width = self.indicator_width
+        indicator_width = self.scroll_width
         # Find relative scroll of indicator top and bottom edges
         indicator_rel_top = 1 - scroll / item_count
         indicator_rel_height = min(rect_count, item_count) / item_count
@@ -142,28 +145,32 @@ class XList(XFocusBehavior, XRelative):
         self._scroll_indicator.pos = self.x + indicator_x, self.y + indicator_y
         self._scroll_indicator.size = indicator_width, indicator_height
 
-    def _refresh_scroll_indicator_color(self, *args):
-        self._scroll_indicator_color.rgba = self.indicator_color
-
     def _on_geometry(self, *args):
         self._bg.size = self.size
-        self._bg.pos = self.pos
         self._refresh_label_kwargs()
         self._refresh_graphics()
 
     def _create_other_graphics(self, *args):
-        self.canvas.before.clear()
         with self.canvas.before:
             self._bg_color = kv.Color(*self.bg_color)
             self._bg = kv.Rectangle(size=(50, 50))
             kv.Color()
-        self.canvas.after.clear()
-        with self.canvas.after:
-            self._selection_rect_color = kv.Color(*self.fg_color)
-            self._selection_rect = kv.Rectangle(source=OUTLINE, size=(50, 50))
-            self._scroll_indicator_color = kv.Color(*self.indicator_color)
+            self._selection_rect_color = kv.Color(*self.selection_color)
+            self._selection_rect = kv.BorderImage(
+                source=SELECTION_SOURCE,
+                size=(50, 50),
+            )
+            self._scroll_indicator_color = kv.Color(*self.scroll_color)
             self._scroll_indicator = kv.Rectangle()
             kv.Color()
+        self._refresh_colors()
+
+    def _refresh_colors(self, *args):
+        self._bg_color.rgba = XColor(*self.bg_color).rgba
+        self._scroll_indicator_color.rgba = XColor(*self.scroll_color).rgba
+        selection = XColor(*self.selection_color)
+        self._selection_rect_color.rgba = selection.rgba
+        self._selection_rect_color.a *= SELECTION_ALPHA[int(self.focus)]
 
     def _refresh_graphics(self, *args):
         self.canvas.clear()
@@ -299,8 +306,3 @@ class XList(XFocusBehavior, XRelative):
         new_index = max(0, min(new_index, len(items)))
         items.insert(new_index, moving)
         self.items = items
-
-    def on_focus(self, w, focus):
-        """Alternate the alpha channel of the selection highlight."""
-        focus_strength = (2 / 3) + (int(focus) / 3)
-        self._selection_rect_color.a = self.fg_color[3] * focus_strength
