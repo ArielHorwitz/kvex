@@ -212,7 +212,7 @@ INPUT_WIDGET_CLASSES: dict[str, BaseInputWidget] = dict(
 
 
 class XInputPanel(XAnchor):
-    reset_text = kv.StringProperty("Reset")
+    reset_text = kv.StringProperty("Reset defaults")
     """Text for the reset button, leave empty to hide."""
     invoke_text = kv.StringProperty("Send")
     """Text to show on the invoke button, leave empty to hide."""
