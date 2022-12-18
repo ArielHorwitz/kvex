@@ -81,7 +81,7 @@ class XButton(XWidget, kv.Button):
 
     def __init__(
         self,
-        background_color: ColorType = XColor.from_name("blue", 0.5).rgba,
+        background_color: ColorType = XColor.from_name("blue", v=0.5).rgba,
         **kwargs,
     ):
         """Initialize the class.

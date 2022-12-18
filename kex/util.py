@@ -54,6 +54,7 @@ class XColor:
         g: float = 1,
         b: float = 1,
         a: float = 1,
+        *,
         v: float = 1,
     ):
         """Initialize the class.
@@ -69,18 +70,18 @@ class XColor:
         self.__rgba = r, g, b, a
 
     @classmethod
-    def from_name(cls, name: ColorName, v: float = 1, a: float = 1) -> "XColor":
+    def from_name(cls, name: ColorName, /, *, a: float = 1, v: float = 1) -> "XColor":
         """Return a `XColor` from color name."""
         color = [c * v for c in COLORS[name]]
         return cls(*color, a)
 
     @classmethod
-    def from_random(cls, v: float = 1, a: float = 1) -> "XColor":
+    def from_random(cls, *, a: float = 1, v: float = 1) -> "XColor":
         """Get a new `XColor` with random values."""
         color = tuple(random.random() * v for _ in range(3))
         return cls(*color, a)
 
-    def alternate_color(self, drift: float = 0.5) -> "XColor":
+    def alternate_color(self, *, drift: float = 0.5) -> "XColor":
         """Return a color that is offset from self by *drift* amount."""
         alt_rgb = [(c + drift) % 1 for c in self.rgb]
         return self.__class__(*alt_rgb, self.a)
