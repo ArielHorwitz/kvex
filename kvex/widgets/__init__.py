@@ -1,4 +1,4 @@
-"""Custom Kex widgets."""
+"""Custom Kvex widgets."""
 
 from typing import Optional, Literal, Union
 from .. import kivy as kv

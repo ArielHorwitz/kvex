@@ -173,7 +173,7 @@ class XApp(kv.App):
     ):
         """Queue a function with a temporary `XOverlay` that blocks input.
 
-        Uses the `kex.util.queue_around_frame` decorator to draw a frame before
+        Uses the `kvex.util.queue_around_frame` decorator to draw a frame before
         calling the function, otherwise the added overlay will not be seen
         until execution is yielded to kivy's clock.
 

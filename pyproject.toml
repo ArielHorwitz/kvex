@@ -5,8 +5,8 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "kex"
-description = "A Kivy extension library."
+name = "kvex"
+description = "A Kivy extension library for desktop applications."
 version = "0.0.1"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -26,5 +26,5 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 include = [
-  "kex*",
+  "kvex*",
 ]

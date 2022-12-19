@@ -1,4 +1,4 @@
-"""The Kex library.
+"""Kvex - A Kivy extension library for desktop applications.
 
 An extension of the [Kivy](https://kivy.org/) library. It focuses on programmatically
 writing Kivy desktop apps.

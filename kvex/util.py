@@ -1,4 +1,4 @@
-"""Kex utilities."""
+"""Kvex utilities."""
 
 from typing import Optional, Literal, Any, Callable
 from functools import partial, wraps
