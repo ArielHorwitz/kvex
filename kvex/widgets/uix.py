@@ -259,38 +259,36 @@ class XSliderText(XBox):
         self.label.text = str(f"{self.prefix}{value}")
 
 
-class XSpinner(XWidget, kv.Spinner):
-    """Spinner."""
-
-    value = kv.StringProperty("")
-
-    def __init__(self, update_main_text: bool = True, **kwargs):
-        """Same keyword arguments for Spinner.
-
-        Args:
-            update_main_text: Update the button text based on the selected value.
-        """
-        super().__init__(**kwargs)
-        self.update_main_text = update_main_text
-        if update_main_text:
-            self.text_autoupdate = True
-
-    def on_select(self, data):
-        """Overrides base method."""
-        pass
-
-    def _on_dropdown_select(self, instance, data, *largs):
-        if self.update_main_text:
-            self.text = data
-        self.value = data
-        self.is_open = False
-        self.on_select(data)
-
-
 class XDropDown(XWidget, kv.DropDown):
     """DropDown."""
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.make_bg(XColor(v=0, a=0.75))
+
+
+class XSpinnerOption(kv.SpinnerOption):
+    """SpinnerOption."""
+
     pass
+
+
+class XSpinner(XWidget, kv.Spinner):
+    """Spinner."""
+
+    def __init__(self, *args, **kwargs):
+        kwargs = dict(dropdown_cls=XDropDown, option_cls=XSpinnerOption) | kwargs
+        super().__init__(*args, **kwargs)
+        self.register_event_type("on_select")
+
+    def on_select(self, index: int, text: str):
+        pass
+
+    def _on_dropdown_select(self, w, text, *largs):
+        if self.text_autoupdate:
+            self.text = text
+        self.is_open = False
+        self.dispatch("on_select", self.values.index(text), text)
 
 
 class XPickColor(XBox):

@@ -180,19 +180,20 @@ class ChoiceInputWidget(BaseInputWidget):
         on_invoke: Callable,
     ):
         self._spinner = XSpinner(
-            value=w.default or "",
+            text=w.default or "",
             values=w.choices,
+            text_autoupdate=True,
         )
-        self._spinner.bind(value=on_value)
+        self._spinner.bind(text=on_value)
         return self._spinner
 
     def get_value(self) -> bool:
-        return self._spinner.value
+        return self._spinner.text
 
-    def set_value(self, value: Optional[bool] = None, /):
+    def set_value(self, value: Optional[str] = None, /):
         if value is None:
             value = self.specification.default or ""
-        self._spinner.value = value
+        self._spinner.text = value
 
     def set_enabled(self, set_as: Optional[bool] = None, /):
         super().set_enabled(set_as)

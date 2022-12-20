@@ -86,6 +86,7 @@ from .widgets.uix import (
     XSlider,
     XSliderText,
     XSpinner,
+    XSpinnerOption,
     XDropDown,
     XPickColor,
     XSelectColor,
