@@ -96,6 +96,7 @@ from .widgets.uix import (
     XModal,
 )
 from .widgets.list import XList
+from .widgets.buttonbar import XButtonBar
 from .widgets.inputpanel import XInputPanel, XInputPanelWidget
 from .widgets.hotkeycontroller import XHotkeyController
 from .widgets.atlas import XAtlasPreview
