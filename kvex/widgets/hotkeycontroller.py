@@ -198,6 +198,22 @@ class XHotkeyController:
         control_path = ".".join(control.split(".")[:-1])
         return self.active_path.startswith(control_path)
 
+    def invoke(self, control: str, /) -> Any:
+        """Invoke a control's callback.
+
+        Returns:
+            Return value of the control's callback.
+
+        Raises:
+            `MissingCallbackError` if control has no callback.
+        """
+        callback = self._callbacks.get(control)
+        if not callback:
+            raise MissingCallbackError(f"{control!r} has no callback.")
+        if self.log_callback:
+            self.logger(f"Control {control!r} invoking {callback}")
+        return callback()
+
     def _on_key_down(
         self,
         window: kv.Window,
@@ -218,13 +234,11 @@ class XHotkeyController:
             # Skip if path is not active
             if not self.is_active(path):
                 continue
-            # Skip if no callback
-            callback = self._callbacks.get(path)
-            if not callback:
+            # Try invoking
+            try:
+                self.invoke(path)
+            except MissingCallbackError:
                 continue
-            if self.log_callback:
-                self.logger(f"Control {path!r} invoking {callback}")
-            callback()
             consumed = True
             break
         return consumed
@@ -250,3 +264,9 @@ class XHotkeyController:
             ),
         ]
         self.logger("\n".join(strs))
+
+
+class MissingCallbackError(Exception):
+    """Called when trying to invoke a control without a callback."""
+
+    pass
