@@ -142,7 +142,7 @@ class XList(XFocusBehavior, XRelative):
         if broken_geometry:
             indicator_height = widget_height
             indicator_y = 0
-        self._scroll_indicator.pos = self.x + indicator_x, self.y + indicator_y
+        self._scroll_indicator.pos = indicator_x, indicator_y
         self._scroll_indicator.size = indicator_width, indicator_height
 
     def _on_geometry(self, *args):
