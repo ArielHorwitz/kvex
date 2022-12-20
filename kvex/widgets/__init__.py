@@ -24,8 +24,8 @@ class XWidget:
 
     def set_size(
         self,
-        x: Optional[float] = None,
-        y: Optional[float] = None,
+        x: Optional[float | str] = None,
+        y: Optional[float | str] = None,
         hx: float = 1,
         hy: float = 1,
     ):
@@ -45,7 +45,7 @@ class XWidget:
         x = self.width if x is None else x
         y = self.height if y is None else y
         self.size_hint = hx, hy
-        self.size = int(x), int(y)
+        self.size = x, y
 
     def set_position(self, x: float, y: float):
         """Set the x, y position of the widget."""
