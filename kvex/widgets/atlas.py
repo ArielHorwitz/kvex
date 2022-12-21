@@ -10,8 +10,28 @@ class XAtlasPreview(XScroll):
         super().__init__(view=self._get_stack())
         self.on_size()
         self.bind(size=self.on_size)
+        self.register_event_type("on_item")
+
+    def on_touch_down(self, touch):
+        consumed = super().on_touch_down(touch)
+        if consumed:
+            return consumed
+        if touch.button != "left":
+            return False
+        if not self.collide_point(*touch.pos):
+            return False
+        for name, w in self._widgets.items():
+            if w.collide_point(*w.to_widget(*touch.pos)):
+                self.dispatch("on_item", name)
+                return True
+        return False
+
+    def on_item(self, item: str):
+        """Dispatched when one of the atlas items has been clicked."""
+        print(f"Atlas item: {item!r}")
 
     def _get_stack(self):
+        self._widgets = dict()
         stack = XStack()
         for item in ATLAS_ITEMS:
             label = XLabel(text=item)
@@ -24,6 +44,7 @@ class XAtlasPreview(XScroll):
             frame.set_size(100, 125)
             frame.make_bg(XColor(v=0.15), source=from_atlas("textinput_active"))
             stack.add_widget(frame)
+            self._widgets[item] = frame
         return stack
 
     def on_size(self, *args):
