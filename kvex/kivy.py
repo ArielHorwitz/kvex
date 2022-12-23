@@ -67,11 +67,17 @@ from kivy.uix.screenmanager import (
 from kivy.graphics.instructions import InstructionGroup
 from kivy.graphics import (
     Color,
+    Point,
+    Line,
     Rectangle,
+    Triangle,
+    Ellipse,
+    Bezier,
+    Quad,
     BorderImage,
     Rotate,
-    PushMatrix,
-    PopMatrix,
+    Scale,
+    Translate,
 )
 
 # Audio

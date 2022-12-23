@@ -14,38 +14,7 @@ __os.environ["KIVY_NO_ARGS"] = "1"  # no consuming script arguments
 __os.environ["KCFG_KIVY_LOG_LEVEL"] = "warning"  # no spamming console on startup
 
 
-from .kivy import (
-    EventDispatcher,
-    ButtonBehavior,
-    FocusBehavior,
-    ToggleButtonBehavior,
-    NoTransition,
-    FadeTransition,
-    CardTransition,
-    SlideTransition,
-    SwapTransition,
-    WipeTransition,
-    ShaderTransition,
-    InstructionGroup,
-    Color,
-    Rectangle,
-    BorderImage,
-    Rotate,
-    PushMatrix,
-    PopMatrix,
-    ObjectProperty,
-    AliasProperty,
-    StringProperty,
-    NumericProperty,
-    BooleanProperty,
-    ListProperty,
-    DictProperty,
-    OptionProperty,
-    ReferenceListProperty,
-    CoreLabel,
-    CoreMarkupLabel,
-    escape_markup,
-)
+from .kivy import *
 from .util import (
     ColorType,
     XColor,
