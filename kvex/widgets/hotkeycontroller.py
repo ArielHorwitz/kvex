@@ -250,6 +250,12 @@ class XHotkeyController:
 
     def debug(self, *args, **kwargs):
         """Send debug info to logger."""
+        active_controls = []
+        for path in sorted(self.registered_controls):
+            active = "  ACTIVE" if self.is_active(path) else "INACTIVE"
+            callback = self._callbacks.get(path)
+            bound = f"\n             -> {callback}" if callback else ""
+            active_controls.append(f"  {active} {repr(path):<50}{bound}")
         strs = [
             f"Active path: {self.active_path}",
             "Bound hotkeys:",
@@ -258,10 +264,7 @@ class XHotkeyController:
                 for hk, control in self._hotkeys.items()
             ),
             "Active controls:",
-            *(
-                f"  {self.is_active(path)} {path!r}"
-                for path in self.registered_controls
-            ),
+            *active_controls,
         ]
         self.logger("\n".join(strs))
 
