@@ -127,7 +127,7 @@ class XHotkeyController:
         self.registered_controls: set[str] = set()
         self.active_path: Optional[str] = ""
         self._callbacks: dict[str, Callable] = dict()
-        self._hotkeys: dict[str, set] = collections.defaultdict(set)
+        self._hotkeys: dict[str, set[str]] = collections.defaultdict(set)
         self.logger: Callable = logger
         self.log_press: bool = log_press
         self.log_release: bool = log_release
