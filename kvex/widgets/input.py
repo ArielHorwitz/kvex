@@ -11,16 +11,7 @@ class XInput(XFocusBehavior, XWidget, kv.TextInput):
     select_on_focus = kv.BooleanProperty(False)
     deselect_on_escape = kv.BooleanProperty(True)
 
-    def __init__(
-        self,
-        multiline: bool = False,
-        background_color: list[float] = (0.2, 0.2, 0.2, 1),
-        foreground_color: list[float] = (1, 1, 1, 1),
-        disabled_foreground_color: list[float] = (0.5, 0.5, 0.5, 0.5),
-        text_validate_unfocus: bool = False,
-        write_tab: bool = False,
-        **kwargs,
-    ):
+    def __init__(self, **kwargs):
         """Initialize the class.
 
         Args:
@@ -33,15 +24,16 @@ class XInput(XFocusBehavior, XWidget, kv.TextInput):
             write_tab: Allow tabs to be written.
             kwargs: Keyword arguments for TextInput.
         """
-        super().__init__(
-            background_color=background_color,
-            foreground_color=foreground_color,
-            disabled_foreground_color=disabled_foreground_color,
-            multiline=multiline,
-            text_validate_unfocus=text_validate_unfocus,
-            write_tab=write_tab,
-            **kwargs,
-        )
+        kwargs = dict(
+            multiline=False,
+            background_color=(0.2, 0.2, 0.2, 1),
+            foreground_color=(1, 1, 1, 1),
+            disabled_foreground_color=(0.5, 0.5, 0.5, 0.5),
+            text_validate_unfocus=False,
+            write_tab=False,
+
+        ) | kwargs
+        super().__init__(**kwargs)
 
     def _on_textinput_focused(self, *args, **kwargs):
         """Overrides base method to handle selection on focus."""
