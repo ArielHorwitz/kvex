@@ -1,7 +1,8 @@
 """A widgets for viewing the textures in the defaulttheme atlas."""
 
 from ..util import from_atlas, XColor
-from .layouts import XScroll, XStack, XAnchor, XBox
+from .layouts import XStack, XAnchor, XBox
+from .scroll import XScroll
 from .label import XLabel
 
 
