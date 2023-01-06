@@ -95,6 +95,7 @@ class StringInputWidget(BaseInputWidget):
 
     def set_focus(self):
         self._entry.focus = True
+        self._entry.select_all()
 
 
 class BooleanInputWidget(BaseInputWidget):
