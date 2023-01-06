@@ -13,3 +13,8 @@ class XFocusBehavior(kv.FocusBehavior):
             self.focus = False
             return True
         return False
+
+
+__all__ = (
+    "XFocusBehavior",
+)

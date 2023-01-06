@@ -74,7 +74,7 @@ def _to_hotkey_format(
         key_name = key_name[-1]
         assert isinstance(int(key_name), int)  # Sanity check that we have a number key
     # Remove duplicate modifiers
-    modifiers = set(KEY2MOD[mod] for mod in modifiers)
+    modifiers = {KEY2MOD[mod] for mod in modifiers}
     modifiers -= {""}
     # Remove modifier if it is the main key being pressed
     # e.g. when key_name == "lctrl" then "ctrl" will be in modifiers
@@ -112,7 +112,7 @@ class XHotkeyController:
         log_callback: bool = False,
         honor_numlock: bool = True,
     ):
-        """Initialize the class. See module documentation for details.
+        """Initialize the class.
 
         Args:
             logger: Function to pass logging messages.
@@ -176,7 +176,7 @@ class XHotkeyController:
             self.logger(f"Binding {control!r} to {callback}")
         self._callbacks[control] = callback
 
-    def set(self, path: Optional[str], /):
+    def set_active(self, path: Optional[str], /):
         """Set the currently active path.
 
         Passing None will disable all controls. Passing an empty string will
@@ -273,3 +273,8 @@ class MissingCallbackError(Exception):
     """Called when trying to invoke a control without a callback."""
 
     pass
+
+
+__all__ = (
+    "XHotkeyController",
+)

@@ -2,7 +2,7 @@
 
 from typing import Literal, Optional
 from .. import kivy as kv
-from . import XWidget
+from .widget import XWidget
 
 
 class XBox(XWidget, kv.BoxLayout):
@@ -209,3 +209,16 @@ class XScroll(XWidget, kv.ScrollView):
         elif self.scroll_dir == "vertical":
             self.scroll_y = min(1, max(0, self.scroll_y + pixels_y * dir))
         return True
+
+
+__all__ = (
+    "XBox",
+    "XZBox",
+    "XDBox",
+    "XGrid",
+    "XRelative",
+    "XStack",
+    "XAnchor",
+    "XCurtain",
+    "XScroll",
+)

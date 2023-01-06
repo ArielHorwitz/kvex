@@ -20,7 +20,7 @@ from .util import (
 from .behaviors import XFocusBehavior
 from .win_focus_patch import XWindowFocusPatch
 from .widgets.layouts import XAnchor
-from .widgets.uix import XLabel
+from .widgets.label import XLabel
 
 
 class XOverlay(XFocusBehavior, XAnchor):
@@ -218,3 +218,8 @@ class XApp(kv.App):
         self.block_input = False
         if after is not None:
             after()
+
+
+__all__ = (
+    "XApp",
+)

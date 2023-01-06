@@ -306,3 +306,8 @@ class XList(XFocusBehavior, XRelative):
         new_index = max(0, min(new_index, len(items)))
         items.insert(new_index, moving)
         self.items = items
+
+
+__all__ = (
+    "XList",
+)

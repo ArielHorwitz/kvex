@@ -2,7 +2,7 @@
 
 from ..util import from_atlas, XColor
 from .layouts import XScroll, XStack, XAnchor, XBox
-from .uix import XLabel
+from .label import XLabel
 
 
 class XAtlasPreview(XScroll):
@@ -141,4 +141,9 @@ ATLAS_ITEMS = (
     "vkeyboard_disabled_key_normal",
     "vkeyboard_key_down",
     "vkeyboard_key_normal",
+)
+
+
+__all__ = (
+    "XAtlasPreview",
 )

@@ -187,6 +187,7 @@ def text_texture(text, **kwargs):
 
 
 def from_atlas(name: str, /) -> str:
+    """Get a path to a sprite name from the `defaulttheme` atlas."""
     return f"atlas://data/images/defaulttheme/{name}"
 
 
@@ -206,7 +207,7 @@ def placeholder(
     returns: Any = None,
     **wrapper_kwargs,
 ) -> Callable:
-    """Create a placeholder function that can consume all arguments passed to it."""
+    """Create a function That consumes all arguments and prints them."""
 
     def placeholder_inner(*args, **kwargs):
         print(
@@ -218,17 +219,32 @@ def placeholder(
     return placeholder_inner
 
 
-class SnoozingTrigger:
-    def __init__(self, *args, **kwargs):
-        self.ev = kv.Clock.create_trigger(*args, **kwargs)
-
-    def __call__(self, *args):
-        if self.ev.is_triggered:
-            self.ev.cancel()
-        self.ev()
-
-
+create_trigger = kv.Clock.create_trigger
 schedule_once = kv.Clock.schedule_once
 schedule_interval = kv.Clock.schedule_interval
-create_trigger = kv.Clock.create_trigger
-snoozing_trigger = SnoozingTrigger
+
+
+def snooze_trigger(ev: "kivy.clock.ClockEvent"):  # noqa: F821
+    """Cancel and reschedule a ClockEvent."""
+    if ev.is_triggered:
+        ev.cancel()
+    ev()
+
+
+__all__ = (
+    "ColorType",
+    "XColor",
+    "get_color",
+    "random_color",
+    "center_sprite",
+    "text_texture",
+    "from_atlas",
+    "restart_script",
+    "placeholder",
+    "consume_args",
+    "create_trigger",
+    "schedule_once",
+    "schedule_interval",
+    "snooze_trigger",
+    "queue_around_frame",
+)

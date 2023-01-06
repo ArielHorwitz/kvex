@@ -2,7 +2,8 @@
 from typing import Optional, Callable
 from functools import partial
 from .layouts import XAnchor, XBox
-from .uix import XDropDown, XSpinner, XSpinnerOption
+from .dropdown import XDropDown
+from .spinner import XSpinner, XSpinnerOption
 
 
 class XButtonBar(XAnchor):
@@ -28,7 +29,7 @@ class XButtonBar(XAnchor):
             display_as = category.capitalize()
         spinner = XSpinner(
             text=display_as,
-            option_cls=XButtonbarSpinnerOption,
+            option_cls=XButtonBarSpinnerOption,
         )
         self._spinners[category] = spinner
         self._box.add_widget(spinner)
@@ -86,7 +87,7 @@ class XButtonBar(XAnchor):
         self.dispatch("on_select", category, button)
 
 
-class XButtonbarSpinnerOption(XSpinnerOption):
+class XButtonBarSpinnerOption(XSpinnerOption):
     """SpinnerOption."""
     def __init__(self, *args, **kwargs):
         kwargs |= dict(
@@ -100,3 +101,9 @@ class XButtonbarSpinnerOption(XSpinnerOption):
 
     def on_size(self, w, size):
         self.text_size = size
+
+
+__all__ = (
+    "XButtonBar",
+    "XButtonBarSpinnerOption",
+)

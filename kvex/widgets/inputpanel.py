@@ -4,15 +4,11 @@ from dataclasses import dataclass, field
 from typing import Any, Optional, Callable
 from .. import kivy as kv
 from .layouts import XAnchor, XDBox, XBox, XCurtain
-from .uix import (
-    XLabel,
-    XButton,
-    XInput,
-    XIntInput,
-    XFloatInput,
-    XCheckBox,
-    XSpinner,
-)
+from .label import XLabel
+from .button import XButton
+from .input import XInput, XIntInput, XFloatInput
+from .checkbox import XCheckBox
+from .spinner import XSpinner
 
 
 HEIGHT_UNIT = 40
@@ -315,3 +311,9 @@ class XInputPanel(XAnchor):
 
     def _on_invoke_text(self, w, text):
         self._invoke_btn.text = text
+
+
+__all__ = (
+    "XInputPanel",
+    "XInputPanelWidget",
+)
