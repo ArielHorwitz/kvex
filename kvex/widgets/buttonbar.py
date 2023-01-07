@@ -60,8 +60,7 @@ class XButtonBar(XAnchor):
         spinner = self._spinners[category]
         spinner.values.append(display_as)
         self._names[category].append(name)
-        if callback:
-            self._callbacks[f"{category}.{name}"] = callback
+        self._callbacks[f"{category}.{name}"] = callback
 
     def get_button(
         self,
@@ -74,6 +73,10 @@ class XButtonBar(XAnchor):
             return spinner
         idx = self._names[category].index(button)
         return spinner._dropdown.container.children[-idx - 1]
+
+    def set_callback(self, category: str, button: str, callback: Callable, /):
+        """Change a callback."""
+        self._callbacks[f"{category}.{button}"] = callback
 
     def on_select(self, category: str, button: str):
         """Called when a button is pressed."""
