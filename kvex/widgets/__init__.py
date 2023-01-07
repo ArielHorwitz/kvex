@@ -7,6 +7,7 @@ from .button import *
 from .buttonbar import *
 from .checkbox import *
 from .color import *
+from .container import *
 from .dropdown import *
 from .hotkeycontroller import *
 from .input import *
