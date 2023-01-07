@@ -9,7 +9,7 @@ class XDropDown(XWidget, kv.DropDown):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.make_bg(XColor(v=0, a=0.75))
+        self.make_bg(XColor(v=0, a=0.95))
 
 
 __all__ = (
