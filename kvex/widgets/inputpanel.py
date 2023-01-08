@@ -11,7 +11,7 @@ from .checkbox import XCheckBox
 from .spinner import XSpinner
 
 
-HEIGHT_UNIT = "40dp"
+HEIGHT_UNIT = 40
 
 
 @dataclass
@@ -57,9 +57,10 @@ class BaseInputWidget(XBox):
         self.widget = self._get_widget(w, on_value, on_invoke)
         assert self.widget is not None
         # Assemble
+        # TODO make this work for both pixel and dp sizes?
         height = HEIGHT_UNIT * (1 + (w.orientation == "vertical"))
         self.set_size(y=height)
-        self.label.set_size(hx=w.label_hint)
+        self.label.set_size(hx=w.label_hint if w.orientation == "horizontal" else 1)
         self.add_widgets(self.label, self.widget)
 
     def set_enabled(self, set_as: Optional[bool] = None, /):
@@ -223,7 +224,7 @@ INPUT_WIDGET_TYPES = tuple(INPUT_WIDGET_CLASSES.keys())
 """Input widget types."""
 
 
-class XInputPanel(XAnchor):
+class XInputPanel(XDBox):
     """A widget containing arbitrary input widgets.
 
     Intended for forms or configuration user input.
@@ -249,8 +250,6 @@ class XInputPanel(XAnchor):
         self.widgets: dict[str, BaseInputWidget] = dict()
         self._curtains: dict[str, XCurtain] = dict()
         # Widgets
-        self._main_frame = XDBox()
-        self.add_widget(self._main_frame)
         self._reset_btn = XButton(text=self.reset_text, on_release=self.reset_defaults)
         self._invoke_btn = XButton(text=self.invoke_text, on_release=self._do_invoke)
         # Input Widgets
@@ -261,7 +260,7 @@ class XInputPanel(XAnchor):
             curtain.set_size(y=input_widget.height)
             self.widgets[name] = input_widget
             self._curtains[name] = curtain
-            self._main_frame.add_widget(curtain)
+            self.add_widget(curtain)
         # Controls
         controls = XBox()
         if self.reset_text:
@@ -272,7 +271,7 @@ class XInputPanel(XAnchor):
             controls = XAnchor.wrap(controls, x=.5)
         controls.set_size(y=HEIGHT_UNIT)
         if len(controls.children) > 0:
-            self._main_frame.add_widget(controls)
+            self.add_widget(controls)
         # Bindings
         self.bind(
             reset_text=self._on_reset_text,
