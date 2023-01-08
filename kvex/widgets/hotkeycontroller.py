@@ -1,31 +1,30 @@
 """XHotkeyController.
 
 For simple use cases, use `XHotkeyController.register` to register and bind your
-hotkeys. For more advanced use cases, the XHotkeyController class provides a way
-to set which controls are active using a tree.
+hotkeys. For more advanced use cases, the XHotkeyController class provides a way to set
+which controls are active using a tree.
 
 ### Hotkeys
-Hotkeys are represented using strings with a simple format: modifiers then
-key name. The modifiers are as follows: '^' ctrl, '!' alt, '+' shift, '#'
-super/meta. E.g. 'g', 'f1', '^+ s'.
+Hotkeys are represented using strings with a simple format: modifiers then key name. The
+modifiers are as follows: '^' ctrl, '!' alt, '+' shift, '#' super/meta. E.g. 'g', 'f1',
+'^+ s'.
 
 Set `XHotkeyController.log_press` to see key names as they are pressed.
 
 ### Control tree
-A control can be named with a path using dot (`.`) notation. For example a
-control named 'root.app.login' will be the 'login' control with the path
-'root.app'.
+A control can be named with a path using dot (`.`) notation. For example a control named
+'root.app.login' will be the 'login' control with the path 'root.app'.
 
-The controller's "active path" determines which controls are active based on
-their paths. A control is active when it's path is part of the active path.
-E.g. the active path 'root.app' will enable 'root.app.login' and 'root.quit'
-but not 'root.debug.log' and not 'root.app.game.move'. See
-`XHotkeyController.is_active`.
+The `XHotkeyController.active` property determines which controls are active based on
+their paths. A control is active when it's path is part of the `active` path. E.g. the
+active path 'root.app' will enable controls 'root.app.login' and 'root.quit' but not
+'root.debug.log' and not 'root.app.game.move'. See also `XHotkeyController.is_active`.
 """
 
-from .. import kivy as kv
-import collections
 from typing import TypeVar, Callable, Any, Optional
+import collections
+from .. import kivy as kv
+from .widget import XWidget
 
 
 KEYCODE_TEXT = {v: k for k, v in kv.Keyboard.keycodes.items()}
@@ -99,8 +98,38 @@ def _fix_modifier_order(k: str) -> str:
     return f"{sorted_mods} {key}"
 
 
-class XHotkeyController:
+class XHotkeyController(XWidget, kv.Widget):
     """See module documentation for details."""
+
+    _active_path = ""
+
+    def _get_active(self):
+        return self._active_path
+
+    def _set_active(self, path: Optional[str], /):
+        if path == self._active_path:
+            return False
+        assert path is None or isinstance(path, str)
+        if path in self.registered_controls:
+            raise RuntimeError(
+                f"Cannot set to control {path!r} as active."
+                f" Try setting the parent path instead."
+            )
+        self._active_path = path
+        if self.log_active:
+            self.logger(f"Active path: {path}")
+        callback = self._active_path_callbacks.get(path)
+        if callback:
+            callback()
+        return True
+
+    active = kv.AliasProperty(_get_active, _set_active)
+    """Currently active path.
+
+    Setting a non-empty string will filter active controls. Setting None will disable
+    all controls, and setting an empty string will enable all controls. See module
+    documentation for details.
+    """
 
     def __init__(
         self,
@@ -110,6 +139,7 @@ class XHotkeyController:
         log_register: bool = False,
         log_bind: bool = False,
         log_callback: bool = False,
+        log_active: bool = False,
         honor_numlock: bool = True,
     ):
         """Initialize the class.
@@ -121,19 +151,21 @@ class XHotkeyController:
             log_register: Log control registration.
             log_bind: Log control binding.
             log_callback: Log control events.
+            log_active: Log active path.
             honor_numlock: Convert numpad keys to numbers when numlock is
                 enabled.
         """
         self.registered_controls: set[str] = set()
-        self.active_path: Optional[str] = ""
         self._callbacks: dict[str, Callable] = dict()
         self._hotkeys: dict[str, set[str]] = collections.defaultdict(set)
+        self._active_path_callbacks: dict[str, Callable] = dict()
         self.logger: Callable = logger
         self.log_press: bool = log_press
         self.log_release: bool = log_release
         self.log_register: bool = log_register
         self.log_bind: bool = log_bind
         self.log_callback: bool = log_callback
+        self.log_active: bool = log_active
         self.honor_numlock: bool = honor_numlock
         kv.Window.bind(on_key_down=self._on_key_down, on_key_up=self._on_key_up)
 
@@ -182,21 +214,30 @@ class XHotkeyController:
         Passing None will disable all controls. Passing an empty string will
         enable all controls. See module documentation for details.
         """
-        if path in self.registered_controls:
-            raise RuntimeError(
-                f"Cannot set to control {path!r} as active."
-                f" Try setting the parent path instead."
-            )
         self.active_path = path
+
+    def set_active_callback(self, path: str, callback: Callable, /):
+        """Set a callback for when a path is activated.
+
+        Equivalent to:
+        ```python3
+        def callback():
+            if active_path == path:
+                ...
+
+        controller.bind(active=lambda *args: callback())
+        ```
+        """
+        self._active_path_callbacks[path] = callback
 
     def is_active(self, control: str, /) -> bool:
         """Check if a control is active. See module documentation for details."""
-        if self.active_path is None:
+        if self.active is None:
             return False
-        if self.active_path == "":
+        if self.active == "":
             return True
         control_path = ".".join(control.split(".")[:-1])
-        return self.active_path.startswith(control_path)
+        return self.active.startswith(control_path)
 
     def invoke(self, control: str, /) -> Any:
         """Invoke a control's callback.
@@ -257,7 +298,7 @@ class XHotkeyController:
             bound = f"\n             -> {callback}" if callback else ""
             active_controls.append(f"  {active} {repr(path):<50}{bound}")
         strs = [
-            f"Active path: {self.active_path}",
+            f"Active path: {self.active!r}",
             "Bound hotkeys:",
             *(
                 f"  {repr(hk):>20} {control!r}"
