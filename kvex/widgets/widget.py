@@ -1,3 +1,4 @@
+"""Home of `XWidget`."""
 
 from typing import Optional, Literal, Union
 from .. import kivy as kv
@@ -37,7 +38,7 @@ class XWidget:
             x: Width in pixels.
             y: Height in pixels.
             hx: Width hint.
-            yx: Height hint.
+            hy: Height hint.
         """
         hx = hx if x is None else None
         hy = hy if y is None else None
