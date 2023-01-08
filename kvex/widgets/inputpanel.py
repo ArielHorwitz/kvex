@@ -11,21 +11,33 @@ from .checkbox import XCheckBox
 from .spinner import XSpinner
 
 
-HEIGHT_UNIT = 40
+HEIGHT_UNIT = "40dp"
 
 
 @dataclass
 class XInputPanelWidget:
+    """Dataclass to configure a specific `XInputPanel` widget."""
+
     label: str
+    """Label text."""
     widget: str = "str"
+    """Widget type, one of `INPUT_WIDGET_TYPES`."""
     default: Any = None
+    """Default value of the input widget."""
     orientation: str = "horizontal"
+    """Orientation between label and input widget."""
     showing: bool = True
+    """If widget should be showing."""
     label_hint: float = 1
+    """Size hint of the label relative to the input widget."""
     italic: bool = True
+    """Italicized label."""
     bold: bool = False
+    """Enboldened label."""
     halign: Optional[str] = None
+    """Label text horizontal alignment."""
     choices: list = field(default_factory=list)
+    """Used by choice widgets."""
 
 
 class BaseInputWidget(XBox):
@@ -207,9 +219,16 @@ INPUT_WIDGET_CLASSES: dict[str, BaseInputWidget] = dict(
     password=PasswordInputWidget,
     choice=ChoiceInputWidget,
 )
+INPUT_WIDGET_TYPES = tuple(INPUT_WIDGET_CLASSES.keys())
+"""Input widget types."""
 
 
 class XInputPanel(XAnchor):
+    """A widget containing arbitrary input widgets.
+
+    Intended for forms or configuration user input.
+    """
+
     reset_text = kv.StringProperty("Reset defaults")
     """Text for the reset button, leave empty to hide."""
     invoke_text = kv.StringProperty("Send")
@@ -234,8 +253,6 @@ class XInputPanel(XAnchor):
         self.add_widget(self._main_frame)
         self._reset_btn = XButton(text=self.reset_text, on_release=self.reset_defaults)
         self._invoke_btn = XButton(text=self.invoke_text, on_release=self._do_invoke)
-        self._reset_btn_frame = XAnchor.wrap(self._reset_btn)
-        self._invoke_btn_frame = XAnchor.wrap(self._invoke_btn)
         # Input Widgets
         for name, w in widgets.items():
             iw_cls = INPUT_WIDGET_CLASSES[w.widget]
@@ -248,9 +265,9 @@ class XInputPanel(XAnchor):
         # Controls
         controls = XBox()
         if self.reset_text:
-            controls.add_widget(self._reset_btn_frame)
+            controls.add_widget(XAnchor.wrap(self._reset_btn))
         if self.invoke_text:
-            controls.add_widget(self._invoke_btn_frame)
+            controls.add_widget(XAnchor.wrap(self._invoke_btn))
         if len(controls.children) == 1:
             controls = XAnchor.wrap(controls, x=.5)
         controls.set_size(y=HEIGHT_UNIT)
@@ -317,4 +334,5 @@ class XInputPanel(XAnchor):
 __all__ = (
     "XInputPanel",
     "XInputPanelWidget",
+    "INPUT_WIDGET_TYPES",
 )
