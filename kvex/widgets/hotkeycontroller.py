@@ -117,7 +117,7 @@ class XHotkeyController(XWidget, kv.Widget):
             )
         self._active_path = path
         if self.log_active:
-            self.logger(f"Active path: {path}")
+            self.logger(f"{self.name!r} active path: {path!r}")
         callback = self._active_path_callbacks.get(path)
         if callback:
             callback()
@@ -133,6 +133,8 @@ class XHotkeyController(XWidget, kv.Widget):
 
     def __init__(
         self,
+        *,
+        name: str = "Unnamed",
         logger: Callable[[str], Any] = print,
         log_press: bool = False,
         log_release: bool = False,
@@ -146,6 +148,7 @@ class XHotkeyController(XWidget, kv.Widget):
 
         Args:
             logger: Function to pass logging messages.
+            name: Controller name, used for logging.
             log_press: Log key presses.
             log_release: Log key releases.
             log_register: Log control registration.
@@ -159,6 +162,7 @@ class XHotkeyController(XWidget, kv.Widget):
         self._callbacks: dict[str, Callable] = dict()
         self._hotkeys: dict[str, set[str]] = collections.defaultdict(set)
         self._active_path_callbacks: dict[str, Callable] = dict()
+        self.name = name
         self.logger: Callable = logger
         self.log_press: bool = log_press
         self.log_release: bool = log_release
@@ -189,7 +193,7 @@ class XHotkeyController(XWidget, kv.Widget):
         Can be used multiple times on the same control or hotkey.
         """
         if self.log_register:
-            self.logger(f"Registering {control!r} with {hotkey!r}")
+            self.logger(f"{self.name!r} registering {control=} with {hotkey=}")
         self._hotkeys[hotkey].add(control)
         self.registered_controls.add(control)
         if bind:
@@ -205,7 +209,7 @@ class XHotkeyController(XWidget, kv.Widget):
                 f" Use XHotkeyController.register()."
             )
         if self.log_bind:
-            self.logger(f"Binding {control!r} to {callback}")
+            self.logger(f"{self.name!r} binding {control=} to {callback=}")
         self._callbacks[control] = callback
 
     def set_active(self, path: Optional[str], /):
@@ -252,7 +256,7 @@ class XHotkeyController(XWidget, kv.Widget):
         if not callback:
             raise MissingCallbackError(f"{control!r} has no callback.")
         if self.log_callback:
-            self.logger(f"Control {control!r} invoking {callback}")
+            self.logger(f"{self.name!r} invoking {control!r} control: {callback}")
         return callback()
 
     def _on_key_down(
@@ -267,7 +271,8 @@ class XHotkeyController(XWidget, kv.Widget):
         kf = _to_hotkey_format(key_name, modifiers, honor_numlock=self.honor_numlock)
         if self.log_press:
             self.logger(
-                f"Pressed:  |{kf}| ({key=} {scancode=} {codepoint=} {modifiers=})"
+                f"{self.name!r} pressed: {kf!r}"
+                f" ({key=} {scancode=} {codepoint=} {modifiers=})"
             )
         paths = self._hotkeys.get(kf, set())
         consumed = False
@@ -287,7 +292,7 @@ class XHotkeyController(XWidget, kv.Widget):
     def _on_key_up(self, window: kv.Window, key: int, scancode: int):
         if self.log_release:
             key_name = KEYCODE_TEXT.get(key, "")
-            self.logger(f"Released: |{key_name}|")
+            self.logger(f"{self.name!r} released: {key_name!r}")
 
     def debug(self, *args, **kwargs):
         """Send debug info to logger."""
@@ -298,6 +303,7 @@ class XHotkeyController(XWidget, kv.Widget):
             bound = f"\n             -> {callback}" if callback else ""
             active_controls.append(f"  {active} {repr(path):<50}{bound}")
         strs = [
+            repr(self),
             f"Active path: {self.active!r}",
             "Bound hotkeys:",
             *(
@@ -308,6 +314,10 @@ class XHotkeyController(XWidget, kv.Widget):
             *active_controls,
         ]
         self.logger("\n".join(strs))
+
+    def __repr__(self):
+        """Repr."""
+        return f"<{self.__class__.__qualname__} '{self.name}' @ {id(self):x}>"
 
 
 class MissingCallbackError(Exception):
