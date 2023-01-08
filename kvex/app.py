@@ -10,8 +10,8 @@ app.run()
 from typing import Callable, Optional
 from functools import partial
 from . import kivy as kv
+from .colors import XColor
 from .util import (
-    XColor,
     queue_around_frame,
     restart_script,
     consume_args,

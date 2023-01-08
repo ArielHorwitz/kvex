@@ -1,6 +1,6 @@
 
 from .. import kivy as kv
-from ..util import XColor
+from ..colors import XColor
 from .widget import XWidget
 
 
@@ -9,7 +9,7 @@ class XDropDown(XWidget, kv.DropDown):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.make_bg(XColor(v=0, a=0.95))
+        self.make_bg(XColor(0, 0, 0, 0.95))
 
 
 __all__ = (

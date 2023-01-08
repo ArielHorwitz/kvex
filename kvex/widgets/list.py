@@ -2,7 +2,8 @@
 
 from typing import Optional
 from .. import kivy as kv
-from ..util import text_texture, from_atlas, XColor
+from ..util import text_texture, from_atlas
+from ..colors import XColor
 from ..behaviors import XFocusBehavior
 from .layouts import XRelative
 

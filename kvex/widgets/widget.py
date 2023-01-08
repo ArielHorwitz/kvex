@@ -2,7 +2,7 @@
 
 from typing import Optional, Literal, Union
 from .. import kivy as kv
-from ..util import XColor
+from ..colors import XColor
 
 
 class XWidget:

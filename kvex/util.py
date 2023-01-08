@@ -1,124 +1,10 @@
 """Kvex utilities."""
 
-from typing import Optional, Literal, Any, Callable
+from typing import Optional, Any, Callable
 from functools import partial, wraps
 import os
 import sys
-import random
 from . import kivy as kv
-
-
-COLORS = {
-    "black": (0.0, 0.0, 0.0),
-    "grey": (0.5, 0.5, 0.5),
-    "white": (1.0, 1.0, 1.0),
-    "red": (0.6, 0.0, 0.1),
-    "pink": (0.9, 0.3, 0.4),
-    "yellow": (0.8, 0.7, 0.1),
-    "orange": (0.7, 0.4, 0.0),
-    "lime": (0.1, 0.4, 0.0),
-    "green": (0.4, 0.7, 0.1),
-    "cyan": (0.1, 0.7, 0.7),
-    "blue": (0.1, 0.4, 0.9),
-    "navy": (0.0, 0.1, 0.5),
-    "violet": (0.7, 0.1, 0.9),
-    "purple": (0.4, 0.0, 0.7),
-    "magenta": (0.7, 0.0, 0.5),
-}
-ColorName = Literal[
-    "black",
-    "grey",
-    "white",
-    "red",
-    "pink",
-    "yellow",
-    "orange",
-    "lime",
-    "green",
-    "cyan",
-    "blue",
-    "navy",
-    "violet",
-    "purple",
-    "magenta",
-]
-ColorType = tuple[float, float, float, float]
-
-
-class XColor:
-    """A class to represent a color."""
-
-    def __init__(
-        self,
-        r: float = 1,
-        g: float = 1,
-        b: float = 1,
-        a: float = 1,
-        *,
-        v: float = 1,
-    ):
-        """Initialize the class.
-
-        Args:
-            r: Red component.
-            g: Green component.
-            b: Blue component.
-            a: Alpha component.
-            v: Value multiplier (multiplies `rgb` values).
-        """
-        r, g, b = r * v, g * v, b * v
-        self.__rgba = r, g, b, a
-
-    @classmethod
-    def from_name(cls, name: ColorName, /, *, a: float = 1, v: float = 1) -> "XColor":
-        """Return a `XColor` from color name."""
-        color = [c * v for c in COLORS[name]]
-        return cls(*color, a)
-
-    @classmethod
-    def from_random(cls, *, a: float = 1, v: float = 1) -> "XColor":
-        """Get a new `XColor` with random values."""
-        color = tuple(random.random() * v for _ in range(3))
-        return cls(*color, a)
-
-    def alternate_color(self, *, drift: float = 0.5) -> "XColor":
-        """Return a color that is offset from self by *drift* amount."""
-        alt_rgb = [(c + drift) % 1 for c in self.rgb]
-        return self.__class__(*alt_rgb, self.a)
-
-    @property
-    def r(self) -> float:
-        """The red component."""
-        return self.__rgba[0]
-
-    @property
-    def g(self) -> float:
-        """The green component."""
-        return self.__rgba[1]
-
-    @property
-    def b(self) -> float:
-        """The blue component."""
-        return self.__rgba[2]
-
-    @property
-    def a(self) -> float:
-        """The alpha component."""
-        return self.__rgba[3]
-
-    @property
-    def rgb(self) -> tuple[float, float, float]:
-        """The red, green, and blue components."""
-        return self.__rgba[:3]
-
-    @property
-    def rgba(self) -> ColorType:
-        """The red, green, blue, and alpha components."""
-        return self.__rgba
-
-
-get_color = XColor.from_name
-random_color = XColor.from_random
 
 
 def queue_around_frame(
@@ -232,10 +118,6 @@ def snooze_trigger(ev: "kivy.clock.ClockEvent"):  # noqa: F821
 
 
 __all__ = (
-    "ColorType",
-    "XColor",
-    "get_color",
-    "random_color",
     "center_sprite",
     "text_texture",
     "from_atlas",

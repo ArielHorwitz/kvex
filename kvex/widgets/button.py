@@ -1,17 +1,12 @@
 
 from .. import kivy as kv
-from ..util import XColor, ColorType
 from .widget import XWidget
 
 
 class XButton(XWidget, kv.Button):
     """Button."""
 
-    def __init__(
-        self,
-        background_color: ColorType = XColor.from_name("blue", v=0.5).rgba,
-        **kwargs,
-    ):
+    def __init__(self, **kwargs):
         """Initialize the class.
 
         Args:
@@ -23,7 +18,6 @@ class XButton(XWidget, kv.Button):
             "valign": "center",
         } | kwargs
         super().__init__(**kwargs)
-        self.background_color = background_color
 
     def on_touch_down(self, m):
         """Overrides base class method to only react to left clicks."""

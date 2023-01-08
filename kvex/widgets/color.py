@@ -1,6 +1,6 @@
 
 from .. import kivy as kv
-from ..util import XColor
+from ..colors import XColor
 from .layouts import XBox
 from .label import XLabelClick
 from .dropdown import XDropDown
