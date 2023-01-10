@@ -1,17 +1,13 @@
 
 from .. import kivy as kv
-from .widget import XWidget
+from .widget import XWidget, XThemed
 
 
-class XButton(XWidget, kv.Button):
+class XButton(XThemed, XWidget, kv.Button):
     """Button."""
 
     def __init__(self, **kwargs):
-        """Initialize the class.
-
-        Args:
-            background_color: Background color of the button.
-        """
+        """Initialize the class."""
         kwargs = {
             "markup": True,
             "halign": "center",
@@ -24,6 +20,11 @@ class XButton(XWidget, kv.Button):
         if m.button != "left":
             return False
         return super().on_touch_down(m)
+
+    def on_subtheme(self, subtheme):
+        """Override base method."""
+        self.background_color = subtheme.bg.rgba
+        self.color = subtheme.fg.rgba
 
 
 class XToggleButton(kv.ToggleButtonBehavior, XButton):

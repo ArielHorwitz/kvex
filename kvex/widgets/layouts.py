@@ -1,8 +1,8 @@
 """Layout widgets."""
 
-from typing import Literal, Optional
+from typing import Type, Optional
 from .. import kivy as kv
-from .widget import XWidget
+from .widget import XWidget, XThemed
 
 
 class XBox(XWidget, kv.BoxLayout):
@@ -80,16 +80,48 @@ class XAnchor(XWidget, kv.AnchorLayout):
     def wrap(
         cls,
         w: kv.Widget,
+        /,
         x: float = 0.95,
         y: float = 0.95,
+        *,
+        inner_class: Optional[Type["XAnchor"]] = None,
         **kwargs,
     ):
-        padding_anchor = cls()
-        padding_anchor.set_size(hx=x, hy=y)
-        padding_anchor.add_widget(w)
+        """Wrap a widget with padding using size hint.
+
+        Args:
+            w: Widget to wrap.
+            x: Size hint of horizontal padding.
+            y: Size hint of vertical padding.
+            inner_class: Class to use as inner (padded) anchor. Useful for subclasses.
+            kwargs: Keyword arguments for the outer anchor.
+        """
+        inner_class = inner_class or cls
+        inner_anchor = inner_class()
+        inner_anchor.set_size(hx=x, hy=y)
+        inner_anchor.add_widget(w)
         anchor = cls(**kwargs)
-        anchor.add_widget(padding_anchor)
+        anchor.add_widget(inner_anchor)
         return anchor
+
+
+class XTAnchor(XThemed, XAnchor):
+    """Themed XAnchor."""
+
+    @classmethod
+    def wrap(cls, *args, **kwargs):
+        """Overrride base method.
+
+        Uses `XAnchor` as the inner class (to prevent overriding our own background),
+        and defualts to no padding.
+        """
+        kwargs = dict(inner_class=XAnchor, x=1, y=1) | kwargs
+        xtanchor = super().wrap(*args, **kwargs)
+        return xtanchor
+
+    def on_subtheme(self, subtheme):
+        """Override base method."""
+        self.make_bg(subtheme.bg)
 
 
 class XCurtain(XAnchor):
@@ -141,5 +173,6 @@ __all__ = (
     "XRelative",
     "XStack",
     "XAnchor",
+    "XTAnchor",
     "XCurtain",
 )

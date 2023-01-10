@@ -1,14 +1,24 @@
+"""Home of `XButtonBar`."""
 
 from typing import Optional, Callable
 from functools import partial
-from .layouts import XAnchor, XBox
+from .layouts import XTAnchor, XBox
 from .dropdown import XDropDown
 from .spinner import XSpinner, XSpinnerOption
+from ..colors import THEMES
 
 
-class XButtonBar(XAnchor):
-    def __init__(self):
-        super().__init__()
+class XButtonBar(XTAnchor):
+    """A bar of buttons nested in two layers."""
+
+    def __init__(self, nested_subtheme: Optional[str] = None, **kwargs):
+        """Initialize the class.
+
+        Args:
+            nested_subtheme: Specify subtheme for nested buttons.
+        """
+        super().__init__(**kwargs)
+        self._nested_subtheme = nested_subtheme
         self._names: dict[list[str]] = dict()
         self._spinners: dict[XSpinner] = dict()
         self._callbacks: dict[str, Callable] = dict()
@@ -27,10 +37,11 @@ class XButtonBar(XAnchor):
             raise ValueError(f"Category {category!r} already in use.")
         if display_as is None:
             display_as = category.capitalize()
-        spinner = XSpinner(
-            text=display_as,
-            option_cls=XButtonBarSpinnerOption,
-        )
+        with self.app.subtheme_context(self.subtheme_name):
+            spinner = XSpinner(
+                text=display_as,
+                option_cls=XButtonBarSpinnerOption,
+            )
         self._spinners[category] = spinner
         self._box.add_widget(spinner)
         self._names[category] = []
@@ -58,7 +69,8 @@ class XButtonBar(XAnchor):
         if display_as is None:
             display_as = name.replace("_", " ").capitalize()
         spinner = self._spinners[category]
-        spinner.values.append(display_as)
+        with self.app.subtheme_context(self._nested_subtheme):
+            spinner.values.append(display_as)
         self._names[category].append(name)
         self._callbacks[f"{category}.{name}"] = callback
 
@@ -89,10 +101,28 @@ class XButtonBar(XAnchor):
             callback()
         self.dispatch("on_select", category, button)
 
+    def add_theme_selectors(
+        self,
+        *,
+        category: str = "Themes",
+        prefix: str = "Change to: ",
+        suffix: str = "",
+    ):
+        """Add theme selection buttons."""
+        for tname in THEMES.keys():
+            self.add_button(
+                "theme",
+                tname,
+                display_as=f"{prefix}{tname.capitalize()}{suffix}",
+                callback=lambda *a, t=tname: self.app.set_theme(t),
+            )
+
 
 class XButtonBarSpinnerOption(XSpinnerOption):
     """SpinnerOption."""
+
     def __init__(self, *args, **kwargs):
+        """Initialize the class."""
         kwargs |= dict(
             halign="left",
             valign="middle",
@@ -103,6 +133,7 @@ class XButtonBarSpinnerOption(XSpinnerOption):
         self.bind(size=self.on_size)
 
     def on_size(self, w, size):
+        """Fix text size to widget size for alignment."""
         self.text_size = size
 
 

@@ -1,10 +1,10 @@
 """Home of `XLabel` and `XLabelClick`."""
 
 from .. import kivy as kv
-from .widget import XWidget
+from .widget import XWidget, XThemed
 
 
-class XLabel(XWidget, kv.Label):
+class XLabel(XThemed, XWidget, kv.Label):
     """Label."""
 
     def __init__(self, fixed_width: bool = False, **kwargs):
@@ -40,6 +40,10 @@ class XLabel(XWidget, kv.Label):
 
     def _on_size(self, *a):
         self.text_size = self.size
+
+    def on_subtheme(self, subtheme):
+        """Override base method."""
+        self.color = subtheme.fg.rgba
 
 
 class XLabelClick(kv.ButtonBehavior, XLabel):

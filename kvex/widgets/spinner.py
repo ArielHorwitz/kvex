@@ -1,16 +1,18 @@
 
 from .. import kivy as kv
-from .widget import XWidget
+from .widget import XWidget, XThemed
 from .dropdown import XDropDown
 
 
-class XSpinnerOption(kv.SpinnerOption):
+class XSpinnerOption(XThemed, XWidget, kv.SpinnerOption):
     """SpinnerOption."""
 
-    pass
+    def on_subtheme(self, subtheme):
+        self.background_color = subtheme.bg.rgba
+        self.color = subtheme.fg.rgba
 
 
-class XSpinner(XWidget, kv.Spinner):
+class XSpinner(XThemed, XWidget, kv.Spinner):
     """Spinner."""
 
     def __init__(self, *args, **kwargs):
@@ -26,6 +28,11 @@ class XSpinner(XWidget, kv.Spinner):
             self.text = text
         self.is_open = False
         self.dispatch("on_select", self.values.index(text), text)
+
+    def on_subtheme(self, subtheme):
+        """Override base method."""
+        self.background_color = subtheme.bg.rgba
+        self.color = subtheme.fg.rgba
 
 
 __all__ = (

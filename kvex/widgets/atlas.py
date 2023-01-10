@@ -36,7 +36,7 @@ class XAtlasPreview(XScroll):
         self._widgets = dict()
         stack = XStack()
         for item in ATLAS_ITEMS:
-            label = XLabel(text=item)
+            label = XLabel(text=item, kvex_theme=False)
             image = XAnchor()
             image.make_fg(source=from_atlas(item))
             image.set_size(50, 50)

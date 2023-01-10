@@ -1,10 +1,10 @@
 """Home of `XScroll`."""
 
 from .. import kivy as kv
-from .widget import XWidget
+from .widget import XWidget, XThemed
 
 
-class XScroll(XWidget, kv.ScrollView):
+class XScroll(XThemed, XWidget, kv.ScrollView):
     """ScrollView."""
 
     reset_scroll_value = kv.NumericProperty(1, allownone=True)
@@ -30,6 +30,10 @@ class XScroll(XWidget, kv.ScrollView):
         self.bind(size=self._on_size, on_touch_down=self._on_touch_down)
         self.view.bind(size=self._on_size)
         self._on_size()
+
+    def on_subtheme(self, subtheme):
+        self.bar_color = subtheme.accent1.rgba
+        self.bar_inactive_color = subtheme.accent2.rgba
 
     def reset_scroll(self, *, scroll: float = 1):
         """Reset scroll to the top left."""

@@ -20,3 +20,4 @@ from .screen import *
 from .scroll import *
 from .slider import *
 from .spinner import *
+from .theme import *

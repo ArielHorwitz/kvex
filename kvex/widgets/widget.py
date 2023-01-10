@@ -2,7 +2,42 @@
 
 from typing import Optional, Literal, Union
 from .. import kivy as kv
-from ..colors import XColor
+from ..colors import XColor, SubTheme, Theme
+
+
+class XThemed:
+    """A mixin for kivy widgets to bind to the app's theme."""
+
+    subtheme_name = kv.OptionProperty(None, options=Theme._fields)
+    """Name of this widget's subtheme. See `kvex.colors.Theme`.
+
+    Defaults to subtheme from `kvex.app.XApp.subtheme_context`.
+    """
+    _subtheme = None
+
+    def __init__(self, *args, kvex_theme: bool = True, theme_debug=False, **kwargs):
+        """Binds to app's theme property."""
+        super().__init__(*args, **kwargs)
+        if self.subtheme_name is None:
+            self.subtheme_name = self.app.subtheme
+        if kvex_theme:
+            self.app.bind(theme=self._refresh_subtheme)
+            self.bind(subtheme_name=self._refresh_subtheme)
+            self._refresh_subtheme()
+
+    def _refresh_subtheme(self, *args):
+        old_subtheme = self._subtheme
+        new_subtheme = getattr(self.app.theme, self.subtheme_name)
+        self._subtheme = new_subtheme
+        if new_subtheme is not old_subtheme:
+            self.on_subtheme(new_subtheme)
+
+    def on_subtheme(self, subtheme: SubTheme):
+        """Called when the subtheme changes.
+
+        Requires that True was passed to `kvex_theme` in `XThemed.__init__`.
+        """
+        pass
 
 
 class XWidget:
@@ -117,4 +152,5 @@ class XWidget:
 
 __all__ = (
     "XWidget",
+    "XThemed",
 )

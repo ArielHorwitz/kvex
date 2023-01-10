@@ -1,11 +1,11 @@
 
 import re
 from .. import kivy as kv
-from .widget import XWidget
+from .widget import XWidget, XThemed
 from ..behaviors import XFocusBehavior
 
 
-class XInput(XFocusBehavior, XWidget, kv.TextInput):
+class XInput(XThemed, XFocusBehavior, XWidget, kv.TextInput):
     """TextInput with sane defaults."""
 
     select_on_focus = kv.BooleanProperty(False)
@@ -57,6 +57,10 @@ class XInput(XFocusBehavior, XWidget, kv.TextInput):
                 self.cancel_selection()
             return True
         return super().keyboard_on_key_down(w, key_pair, text, mods)
+
+    def on_subtheme(self, subtheme):
+        self.background_color = subtheme.bg.rgba
+        self.foreground_color = subtheme.fg.rgba
 
 
 class XIntInput(XInput):

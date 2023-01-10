@@ -6,6 +6,7 @@ from ..util import text_texture, from_atlas
 from ..colors import XColor
 from ..behaviors import XFocusBehavior
 from .layouts import XRelative
+from .widget import XThemed
 
 
 SELECTION_SOURCE = from_atlas("vkeyboard_background")
@@ -19,7 +20,7 @@ cache_get = kv.Cache.get
 cache_remove = kv.Cache.remove
 
 
-class XList(XFocusBehavior, XRelative):
+class XList(XThemed, XFocusBehavior, XRelative):
 
     font_name = kv.StringProperty("Roboto")
     font_size = kv.NumericProperty(16)
@@ -33,6 +34,7 @@ class XList(XFocusBehavior, XRelative):
     shorten = kv.BooleanProperty(True)
     shorten_from = kv.StringProperty("center")
     bg_color = kv.ColorProperty([0, 0, 0, 0])
+    text_color = kv.ColorProperty()
     selection_color = kv.ColorProperty([1, 1, 1, 0.5])
     enable_shifting = kv.BooleanProperty(False)
     invoke_double_tap_only = kv.BooleanProperty(True)
@@ -56,6 +58,7 @@ class XList(XFocusBehavior, XRelative):
             pos=self._on_geometry,
             selection=self._on_selection,
             bg_color=self._refresh_colors,
+            text_color=self._refresh_label_kwargs,
             selection_color=self._refresh_colors,
             scroll_color=self._refresh_colors,
             item_height=self._refresh_label_kwargs,
@@ -91,6 +94,13 @@ class XList(XFocusBehavior, XRelative):
             index = self.scroll
         index += delta
         self.scroll = index
+
+    def on_subtheme(self, subtheme):
+        """Override base method."""
+        self.bg_color = subtheme.bg.rgba
+        self.text_color = subtheme.fg.rgba
+        self.selection_color = subtheme.accent1.modify_alpha(0.5).rgba
+        self.scroll_color = subtheme.accent2.modify_alpha(0.5).rgba
 
     def _on_selection(self, *args):
         self.set_scroll()
@@ -218,6 +228,7 @@ class XList(XFocusBehavior, XRelative):
             padding=self.item_padding,
             shorten=self.shorten,
             shorten_from=self.shorten_from,
+            color=self.text_color,
             valign="middle",
         )
 

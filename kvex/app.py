@@ -8,9 +8,10 @@ app.run()
 ```
 """
 from typing import Callable, Optional
+from contextlib import contextmanager
 from functools import partial
 from . import kivy as kv
-from .colors import XColor
+from .colors import XColor, THEMES
 from .util import (
     queue_around_frame,
     restart_script,
@@ -21,6 +22,9 @@ from .behaviors import XFocusBehavior
 from .win_focus_patch import XWindowFocusPatch
 from .widgets.layouts import XAnchor
 from .widgets.label import XLabel
+
+
+DEFAULT_THEME_NAME = "darkpop"
 
 
 class XOverlay(XFocusBehavior, XAnchor):
@@ -43,8 +47,14 @@ class XApp(kv.App):
     """Widget that currently has focus."""
     block_input = kv.BooleanProperty(False)
     """If all user input should be blocked."""
+    theme = kv.ObjectProperty(THEMES[DEFAULT_THEME_NAME])
+    """Theme object."""
+
+    _subtheme_contexts: list[str] = []
+    """List of subthemes for nested context. See `XApp.subtheme`"""
 
     window = kv.Window
+    """Kivy `Window`."""
 
     def __init__(self, escape_exits: bool = False, **kwargs):
         """Initialize the class."""
@@ -62,6 +72,52 @@ class XApp(kv.App):
             on_touch_up=self._filter_touch,
             on_touch_move=self._filter_touch,
         )
+
+    @contextmanager
+    def subtheme_context(self, subtheme: Optional[str]):
+        """Context manager for setting the subtheme.
+
+        While in context, all `kvex.widgets.widget.XThemed` widgets will default to this
+        subtheme. Subtheme contexts can be nested. For example:
+
+        ```python
+        with app.subtheme_context("secondary"):
+            XLabel(text="Secondary")
+            with app.subtheme_context("primary"):
+                XLabel(text="Primary")
+                with app.subtheme_context("accent"):
+                    XLabel(text="Accent")
+            XLabel(text="Secondary")
+        ```
+        """
+        if subtheme:
+            context_index = len(self._subtheme_contexts)
+            self._subtheme_contexts.append(subtheme)
+        try:
+            yield
+        finally:
+            if subtheme:
+                # Remove our context and all further nested contexts from list
+                self._subtheme_contexts = self._subtheme_contexts[:context_index]
+
+    @property
+    def subtheme(self) -> str:
+        """Current subtheme, based on context from `XApp.subtheme_context`."""
+        if not self._subtheme_contexts:
+            return "primary"
+        return self._subtheme_contexts[-1]
+
+    @property
+    def theme_name(self) -> str:
+        """Theme name."""
+        for name, theme in THEMES.items():
+            if theme is self.theme:
+                return name
+        raise RuntimeError(f"Cannot find theme by name: {self.theme}")
+
+    def set_theme(self, theme_name: str, /):
+        """Set the theme by name."""
+        self.theme = THEMES[theme_name]
 
     def _check_focus(self, *args):
         self.current_focus = self.keyboard.target
@@ -88,6 +144,7 @@ class XApp(kv.App):
         return -1 if self.__restart_flag else 0
 
     def restart(self, *args):
+        """Restart the app by stopping `XApp.run` and returning -1."""
         self.__restart_flag = True
         self.stop()
 
