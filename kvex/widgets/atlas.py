@@ -1,5 +1,6 @@
 """A widgets for viewing the textures in the defaulttheme atlas."""
 
+from .. import kivy as kv
 from ..util import from_atlas
 from ..colors import XColor
 from .layouts import XStack, XAnchor, XBox
@@ -8,7 +9,10 @@ from .label import XLabel
 
 
 class XAtlasPreview(XScroll):
-    def __init__(self):
+
+    def __init__(self, image_width: float = 100, image_height: float = 100):
+        self._image_width = image_width
+        self._image_height = image_height
         super().__init__(view=self._get_stack())
         self.on_size()
         self.bind(size=self.on_size)
@@ -37,13 +41,14 @@ class XAtlasPreview(XScroll):
         stack = XStack()
         for item in ATLAS_ITEMS:
             label = XLabel(text=item, kvex_theme=False)
+            label.set_size(hy=0.5)
             image = XAnchor()
             image.make_fg(source=from_atlas(item))
-            image.set_size(50, 50)
+            image.set_size(self._image_width, self._image_height)
             box = XBox(orientation="vertical")
-            box.add_widgets(label, XAnchor.wrap(image))
+            box.add_widgets(label, XAnchor.wrap(image, 0.9, 0.9))
             frame = XAnchor.wrap(box)
-            frame.set_size(100, 125)
+            frame.set_size(image.width * 1.2, image.height * 2)
             frame.make_bg(
                 XColor.from_name("grey"),
                 source=from_atlas("textinput_active"),
@@ -53,7 +58,10 @@ class XAtlasPreview(XScroll):
         return stack
 
     def on_size(self, *args):
-        self.view.set_size(y=3000)
+        """Adjust view size based on our width and images size."""
+        per_row = max(1, self.width // (self._image_width * 1.2))
+        row_count = len(self._widgets) // per_row + 1
+        self.view.set_size(y=2*self._image_height*row_count)
         self.scroll_y = 1
 
 
