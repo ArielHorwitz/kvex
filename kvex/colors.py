@@ -7,6 +7,7 @@ add or replace palettes.
 
 from typing import NamedTuple
 import colorsys
+import random
 
 
 class XColor:
@@ -69,6 +70,11 @@ class XColor:
     def modified_alpha(self, alpha: float, /) -> "XColor":
         """Identical `XColor` with different alpha."""
         return self.from_hsv(self.h, self.s, self.v, alpha)
+
+    @classmethod
+    def random(cls) -> "XColor":
+        """Random `XColor`."""
+        return cls.from_hsv(random.random(), 1, 1)
 
     @classmethod
     def grey(cls, v: float = 0.5, /) -> "XColor":
