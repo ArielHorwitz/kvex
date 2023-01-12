@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, Optional, Callable
 from .. import kivy as kv
 from .layouts import XAnchor, XDBox, XBox, XCurtain
+from .scroll import XScroll
 from .label import XLabel
 from .button import XButton
 from .input import XInput, XIntInput, XFloatInput
@@ -224,7 +225,7 @@ INPUT_WIDGET_TYPES = tuple(INPUT_WIDGET_CLASSES.keys())
 """Input widget types."""
 
 
-class XInputPanel(XDBox):
+class XInputPanel(XScroll):
     """A widget containing arbitrary input widgets.
 
     Intended for forms or configuration user input.
@@ -246,8 +247,8 @@ class XInputPanel(XDBox):
         Args:
             widgets: Dictionary of names to widgets.
         """
-        kwargs = dict(padding="10sp") | kwargs
-        super().__init__(**kwargs)
+        main_box = XDBox(padding="10sp")
+        super().__init__(view=main_box, **kwargs)
         self.widgets: dict[str, BaseInputWidget] = dict()
         self._curtains: dict[str, XCurtain] = dict()
         # Widgets
@@ -261,7 +262,7 @@ class XInputPanel(XDBox):
             curtain.set_size(y=input_widget.height)
             self.widgets[name] = input_widget
             self._curtains[name] = curtain
-            self.add_widget(curtain)
+            main_box.add_widget(curtain)
         # Controls
         controls = XBox()
         if self.reset_text:
@@ -273,7 +274,7 @@ class XInputPanel(XDBox):
             controls = XAnchor.wrap(controls)
         controls.set_size(y=HEIGHT_UNIT)
         if len(controls.children) > 0:
-            self.add_widget(controls)
+            main_box.add_widget(controls)
         # Bindings
         self.bind(
             reset_text=self._on_reset_text,
