@@ -57,7 +57,7 @@ class XDBox(XWidget, kv.GridLayout):
         self._snooze_trigger()
 
     def _resize(self, *a):
-        self.set_size(hx=1, y=sum([c.height for c in self.children]))
+        self.set_size(hx=1, y=sum([util.sp2pixels(c.height) for c in self.children]))
 
 
 class XGrid(XWidget, kv.GridLayout):

@@ -266,9 +266,9 @@ class XInputPanel(XScroll):
         # Controls
         controls = XBox()
         if self.reset_text:
-            controls.add_widget(XAnchor.wrap(self._reset_btn))
+            controls.add_widget(XAnchor.wrap(self._reset_btn, padding=("5dp", 0)))
         if self.invoke_text:
-            controls.add_widget(XAnchor.wrap(self._invoke_btn))
+            controls.add_widget(XAnchor.wrap(self._invoke_btn, padding=("5dp", 0)))
         if len(controls.children) == 1:
             controls.set_size(hx=0.5)
             controls = XAnchor.wrap(controls)

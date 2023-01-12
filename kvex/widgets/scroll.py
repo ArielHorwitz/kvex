@@ -21,9 +21,9 @@ class XScroll(XThemed, XWidget, kv.ScrollView):
             view: A widget to put in the scroll view.
             scroll_amount: Resolution of scroll in pixels.
         """
+        kwargs = dict(bar_width="10sp") | kwargs
         super().__init__(**kwargs)
         self.scroll_amount = scroll_amount
-        self.bar_width = 15
         self.scroll_type = ["bars"]
         self.view = view
         self.add_widget(view)
@@ -32,8 +32,9 @@ class XScroll(XThemed, XWidget, kv.ScrollView):
         self._on_size()
 
     def on_subtheme(self, subtheme):
-        self.bar_color = subtheme.accent1.rgba
-        self.bar_inactive_color = subtheme.accent2.rgba
+        """Override base method."""
+        self.bar_color = subtheme.accent1.modified_alpha(0.5).rgba
+        self.bar_inactive_color = subtheme.accent2.modified_alpha(0.5).rgba
 
     def reset_scroll(self, *, scroll: float = 1):
         """Reset scroll to the top left."""
