@@ -41,6 +41,115 @@ class XInputPanelWidget:
     """Used by choice widgets."""
 
 
+class XInputPanel(XDBox):
+    """A widget containing arbitrary input widgets.
+
+    Intended for forms or configuration user input.
+    """
+
+    reset_text = kv.StringProperty("Reset defaults")
+    """Text for the reset button, leave empty to hide."""
+    invoke_text = kv.StringProperty("Send")
+    """Text to show on the invoke button, leave empty to hide."""
+
+    def __init__(
+        self,
+        widgets: dict[str, XInputPanelWidget],
+        /,
+        **kwargs,
+    ):
+        """Initialize the class.
+
+        Args:
+            widgets: Dictionary of names to widgets.
+        """
+        kwargs = dict(padding=("10sp", 0)) | kwargs
+        super().__init__(**kwargs)
+        main_box = self
+        self.widgets: dict[str, BaseInputWidget] = dict()
+        self._curtains: dict[str, XCurtain] = dict()
+        # Widgets
+        self._reset_btn = XButton(text=self.reset_text, on_release=self.reset_defaults)
+        self._invoke_btn = XButton(text=self.invoke_text, on_release=self._do_invoke)
+        # Input Widgets
+        for name, w in widgets.items():
+            iw_cls = INPUT_WIDGET_CLASSES[w.widget]
+            input_widget = iw_cls(w, self._do_values, self._do_invoke)
+            curtain = XCurtain(content=input_widget, showing=w.showing)
+            curtain.set_size(y=input_widget.height)
+            self.widgets[name] = input_widget
+            self._curtains[name] = curtain
+            main_box.add_widget(curtain)
+        # Controls
+        controls = XBox()
+        if self.reset_text:
+            controls.add_widget(XAnchor.wrap(self._reset_btn, padding=("5dp", 0)))
+        if self.invoke_text:
+            controls.add_widget(XAnchor.wrap(self._invoke_btn, padding=("5dp", 0)))
+        if len(controls.children) == 1:
+            controls.set_size(hx=0.5)
+            controls = XAnchor.wrap(controls)
+        controls.set_size(y=HEIGHT_UNIT)
+        if len(controls.children) > 0:
+            main_box.add_widget(controls)
+        # Bindings
+        self.bind(
+            reset_text=self._on_reset_text,
+            invoke_text=self._on_invoke_text,
+        )
+        self.register_event_type("on_invoke")
+        self.register_event_type("on_values")
+
+    def get_value(self, widget_name: str, /) -> Any:
+        """Get a value by name."""
+        widget = self.widgets[widget_name]
+        return widget.get_value()
+
+    def get_values(self) -> dict[str, Any]:
+        """Get all values."""
+        return {name: iw.get_value() for name, iw in self.widgets.items()}
+
+    def reset_defaults(self, *args, **kwargs):
+        """Reset all values to their defaults."""
+        for iw in self.widgets.values():
+            iw.set_value()
+
+    def set_focus(self, widget_name: str, /):
+        """Focus a widget by name."""
+        widget = self.widgets[widget_name]
+        widget.set_focus()
+
+    def set_enabled(self, widget_name: str, set_as: bool = True, /):
+        """Enable or disable a widget by name."""
+        widget = self.widgets[widget_name]
+        widget.set_enabled(set_as)
+
+    def set_showing(self, widget_name: str, set_as: bool = True, /):
+        """Show or hide a widget by name."""
+        curtain = self._curtains[widget_name]
+        curtain.showing = set_as
+
+    def on_invoke(self, values: dict):
+        """Triggered when the invoke button is pressed or otherwise sent by user."""
+        pass
+
+    def on_values(self, values: dict):
+        """Triggered when any of the values change."""
+        pass
+
+    def _do_invoke(self, *args):
+        self.dispatch("on_invoke", self.get_values())
+
+    def _do_values(self, *args):
+        self.dispatch("on_values", self.get_values())
+
+    def _on_reset_text(self, w, text):
+        self._reset_btn.text = text
+
+    def _on_invoke_text(self, w, text):
+        self._invoke_btn.text = text
+
+
 class BaseInputWidget(XBox):
     def __init__(self, w: XInputPanelWidget, on_value: Callable, on_invoke: Callable):
         assert w.widget == self.wtype
@@ -223,114 +332,6 @@ INPUT_WIDGET_CLASSES: dict[str, BaseInputWidget] = dict(
 )
 INPUT_WIDGET_TYPES = tuple(INPUT_WIDGET_CLASSES.keys())
 """Input widget types."""
-
-
-class XInputPanel(XScroll):
-    """A widget containing arbitrary input widgets.
-
-    Intended for forms or configuration user input.
-    """
-
-    reset_text = kv.StringProperty("Reset defaults")
-    """Text for the reset button, leave empty to hide."""
-    invoke_text = kv.StringProperty("Send")
-    """Text to show on the invoke button, leave empty to hide."""
-
-    def __init__(
-        self,
-        widgets: dict[str, XInputPanelWidget],
-        /,
-        **kwargs,
-    ):
-        """Initialize the class.
-
-        Args:
-            widgets: Dictionary of names to widgets.
-        """
-        main_box = XDBox(padding="10sp")
-        super().__init__(view=main_box, **kwargs)
-        self.widgets: dict[str, BaseInputWidget] = dict()
-        self._curtains: dict[str, XCurtain] = dict()
-        # Widgets
-        self._reset_btn = XButton(text=self.reset_text, on_release=self.reset_defaults)
-        self._invoke_btn = XButton(text=self.invoke_text, on_release=self._do_invoke)
-        # Input Widgets
-        for name, w in widgets.items():
-            iw_cls = INPUT_WIDGET_CLASSES[w.widget]
-            input_widget = iw_cls(w, self._do_values, self._do_invoke)
-            curtain = XCurtain(content=input_widget, showing=w.showing)
-            curtain.set_size(y=input_widget.height)
-            self.widgets[name] = input_widget
-            self._curtains[name] = curtain
-            main_box.add_widget(curtain)
-        # Controls
-        controls = XBox()
-        if self.reset_text:
-            controls.add_widget(XAnchor.wrap(self._reset_btn, padding=("5dp", 0)))
-        if self.invoke_text:
-            controls.add_widget(XAnchor.wrap(self._invoke_btn, padding=("5dp", 0)))
-        if len(controls.children) == 1:
-            controls.set_size(hx=0.5)
-            controls = XAnchor.wrap(controls)
-        controls.set_size(y=HEIGHT_UNIT)
-        if len(controls.children) > 0:
-            main_box.add_widget(controls)
-        # Bindings
-        self.bind(
-            reset_text=self._on_reset_text,
-            invoke_text=self._on_invoke_text,
-        )
-        self.register_event_type("on_invoke")
-        self.register_event_type("on_values")
-
-    def get_value(self, widget_name: str, /) -> Any:
-        """Get a value by name."""
-        widget = self.widgets[widget_name]
-        return widget.get_value()
-
-    def get_values(self) -> dict[str, Any]:
-        """Get all values."""
-        return {name: iw.get_value() for name, iw in self.widgets.items()}
-
-    def reset_defaults(self, *args, **kwargs):
-        """Reset all values to their defaults."""
-        for iw in self.widgets.values():
-            iw.set_value()
-
-    def set_focus(self, widget_name: str, /):
-        """Focus a widget by name."""
-        widget = self.widgets[widget_name]
-        widget.set_focus()
-
-    def set_enabled(self, widget_name: str, set_as: bool = True, /):
-        """Enable or disable a widget by name."""
-        widget = self.widgets[widget_name]
-        widget.set_enabled(set_as)
-
-    def set_showing(self, widget_name: str, set_as: bool = True, /):
-        """Show or hide a widget by name."""
-        curtain = self._curtains[widget_name]
-        curtain.showing = set_as
-
-    def on_invoke(self, values: dict):
-        """Triggered when the invoke button is pressed or otherwise sent by user."""
-        pass
-
-    def on_values(self, values: dict):
-        """Triggered when any of the values change."""
-        pass
-
-    def _do_invoke(self, *args):
-        self.dispatch("on_invoke", self.get_values())
-
-    def _do_values(self, *args):
-        self.dispatch("on_values", self.get_values())
-
-    def _on_reset_text(self, w, text):
-        self._reset_btn.text = text
-
-    def _on_invoke_text(self, w, text):
-        self._invoke_btn.text = text
 
 
 __all__ = (
