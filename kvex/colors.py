@@ -70,6 +70,21 @@ class XColor:
         """Identical `XColor` with different alpha."""
         return self.from_hsv(self.h, self.s, self.v, alpha)
 
+    @classmethod
+    def grey(cls, v: float = 0.5, /) -> "XColor":
+        """Grey `XColor`."""
+        return cls.from_hsv(0, 0, v=v)
+
+    @classmethod
+    def white(cls) -> "XColor":
+        """White `XColor`."""
+        return cls.from_hsv(0, 0, v=1)
+
+    @classmethod
+    def black(cls) -> "XColor":
+        """Black `XColor`."""
+        return cls.from_hsv(0, 0, v=0)
+
     @property
     def r(self) -> float:
         """The red component."""
