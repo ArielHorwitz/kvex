@@ -1,7 +1,8 @@
 """Home of `XWidget`."""
 
-from typing import Optional, Literal, Union
+from typing import Optional
 from .. import kivy as kv
+from ..util import sp2pixels
 from ..colors import XColor, SubTheme, Theme
 
 
@@ -82,67 +83,34 @@ class XWidget:
         self.size_hint = hx, hy
         self.size = x, y
 
-    def set_position(self, x: float, y: float):
-        """Set the x, y position of the widget."""
-        self.pos = int(x), int(y)
-
     def set_focus(self, *args):
         """Set the focus on this widget."""
         self.focus = True
 
     def make_bg(self, color: Optional[XColor] = None, source: Optional[str] = None):
         """Add or update a background image using self.canvas.before."""
-        self._set_image("_bg", color, source)
-
-    def make_fg(self, color: Optional[XColor] = None, source: Optional[str] = None):
-        """Add or update a foreground image using self.canvas.after."""
-        self._set_image("_fg", color, source)
-
-    def _get_image(
-        self,
-        attribute_name: Literal["_bg", "_fg"],
-    ) -> Union[tuple[kv.Rectangle, kv.Color], tuple[None, None]]:
-        """Get the background/foreground of the widget."""
-        attribute_name_color = f"{attribute_name}_color"
-        if not hasattr(self, attribute_name) or not hasattr(self, attribute_name_color):
-            return None, None
-        image = getattr(self, attribute_name)
-        color = getattr(self, attribute_name_color)
-        assert isinstance(image, kv.Rectangle)
-        assert isinstance(color, kv.Color)
-        return image, color
-
-    def _set_image(
-        self,
-        attribute_name: Literal["_bg", "_fg"],
-        color: Optional[XColor],
-        source: Optional[str],
-    ):
-        """Set the background/foreground of the widget."""
-        is_bg = attribute_name == "_bg"
-        if color is None:
-            color = XColor(1, 1, 1, 1)
-        image, color_instruction = self._get_image(attribute_name)
-        if image:
-            color_instruction.rgba = color.rgba
-            image.source = source
+        if hasattr(self, "_kvex_bg") and hasattr(self, "_kvex_bg_color"):
+            if color is not None:
+                self._kvex_bg_color.rgba = color.rgba
+            if source is not None:
+                self._kvex_bg.source = source
         else:
-            canvas = self.canvas.before if is_bg else self.canvas.after
-            with canvas:
-                color_instruction = kv.Color(*color.rgba)
-                image = kv.Rectangle(size=self.size, pos=self.pos, source=source)
-            setattr(self, f"{attribute_name}_color", color_instruction)
-            setattr(self, attribute_name, image)
-            update_func = self._update_bg if is_bg else self._update_fg
-            self.bind(pos=update_func, size=update_func)
+            if color is None:
+                color = XColor(1, 1, 1, 1)
+            with self.canvas.before:
+                self._kvex_bg_color = kv.Color(*color.rgba)
+                self._kvex_bg = kv.Rectangle(
+                    size=self.size,
+                    pos=self.pos,
+                    source=source,
+                )
+            self.bind(pos=self._update_kvex_bg_pos, size=self._update_kvex_bg_size)
 
-    def _update_bg(self, *args):
-        self._bg.pos = self.pos
-        self._bg.size = self.size
+    def _update_kvex_bg_pos(self, w, pos):
+        self._kvex_bg.pos = pos
 
-    def _update_fg(self, *args):
-        self._fg.pos = self.pos
-        self._fg.size = self.size
+    def _update_kvex_bg_size(self, w, size):
+        self._kvex_bg.size = sp2pixels(size)
 
     @property
     def app(self):
