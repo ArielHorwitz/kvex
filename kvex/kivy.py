@@ -8,6 +8,7 @@ from kivy.core.text import Label as CoreLabel
 from kivy.core.text.markup import MarkupLabel as CoreMarkupLabel
 from kivy.core.window import Window, Keyboard
 from kivy.event import EventDispatcher
+from kivy import metrics
 from kivy.utils import escape_markup
 from kivy.properties import (
     ObjectProperty,

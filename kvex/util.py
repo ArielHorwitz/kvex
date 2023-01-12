@@ -1,6 +1,6 @@
 """Kvex utilities."""
 
-from typing import Optional, Any, Callable
+from typing import Optional, Any, Callable, Iterable
 from functools import partial, wraps
 import os
 import sys
@@ -117,6 +117,43 @@ def snooze_trigger(ev: "kivy.clock.ClockEvent"):  # noqa: F821
     ev()
 
 
+_metrics_dp = kv.metrics.dp
+_metrics_sp = kv.metrics.sp
+
+
+def _str2pixels(s) -> float:
+    vstr = str(s)
+    if vstr.endswith("dp"):
+        return _metrics_dp(vstr[:-2])
+    if vstr.endswith("sp"):
+        return _metrics_sp(vstr[:-2])
+    raise ValueError(f"Unkown format: {s!r} (please use 'dp' or 'sp')")
+
+
+def sp2pixels(value: float | str | Iterable[float | str]) -> float | list[float]:
+    """Convert values in 'sp', 'dp', or pixels to pixels.
+
+    Useful when wishing to convert values to pixels but it is unknown if they are given
+    in pixels or 'sp' format.
+    """
+    if isinstance(value, int) or isinstance(value, float):
+        return value
+    if isinstance(value, str):
+        return _str2pixels(value)
+    # Handle as iterable
+    values = []
+    append = values.append
+    for v in value:
+        if isinstance(v, int) or isinstance(v, float):
+            append(v)
+        elif isinstance(v, str):
+            append(_str2pixels(v))
+        else:
+            m = f"Expected float or str, instead got: {v!r} {type(v)}"
+            raise ValueError(m)
+    return values
+
+
 __all__ = (
     "center_sprite",
     "text_texture",
@@ -129,4 +166,5 @@ __all__ = (
     "schedule_interval",
     "snooze_trigger",
     "queue_around_frame",
+    "sp2pixels",
 )
