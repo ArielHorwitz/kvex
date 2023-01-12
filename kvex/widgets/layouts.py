@@ -3,6 +3,7 @@
 from typing import Type, Optional
 from .. import kivy as kv
 from .. import assets
+from .. import util
 from .widget import XWidget, XThemed
 
 
@@ -45,12 +46,14 @@ class XDBox(XWidget, kv.GridLayout):
         """Initialize the class."""
         super().__init__(cols=cols, **kwargs)
         self.bind(children=self._resize)
+        trigger = util.create_trigger(self._resize)
+        self._snooze_trigger = lambda *a: util.snooze_trigger(trigger)
 
     def add_widget(self, w, *args, **kwargs):
         """Overrides base method in order to bind to size changes."""
         w.bind(size=self._resize)
         super().add_widget(w, *args, **kwargs)
-        kv.Clock.schedule_once(self._resize, 0)
+        self._snooze_trigger()
 
     def _resize(self, *a):
         self.set_size(hx=1, y=sum([c.height for c in self.children]))
