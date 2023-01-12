@@ -1,16 +1,16 @@
 """A widgets for viewing the textures in the defaulttheme atlas."""
 
-from .. import kivy as kv
 from ..util import from_atlas
-from ..colors import XColor
-from .layouts import XStack, XAnchor, XBox
+from .layouts import XStack, XAnchor, XTAnchor, XBox
 from .scroll import XScroll
 from .label import XLabel
 
 
 class XAtlasPreview(XScroll):
+    """Widget to preview kivy defaulttheme atlas."""
 
     def __init__(self, image_width: float = 100, image_height: float = 100):
+        """Initialize the class."""
         self._image_width = image_width
         self._image_height = image_height
         super().__init__(view=self._get_stack())
@@ -19,6 +19,7 @@ class XAtlasPreview(XScroll):
         self.register_event_type("on_item")
 
     def on_touch_down(self, touch):
+        """Override base method."""
         consumed = super().on_touch_down(touch)
         if consumed:
             return consumed
@@ -47,12 +48,12 @@ class XAtlasPreview(XScroll):
             image.set_size(self._image_width, self._image_height)
             box = XBox(orientation="vertical")
             box.add_widgets(label, XAnchor.wrap(image, 0.9, 0.9))
-            frame = XAnchor.wrap(box)
+            frame = XTAnchor.wrap(box)
             frame.set_size(image.width * 1.2, image.height * 2)
-            frame.make_bg(
-                XColor.from_name("grey"),
-                source=from_atlas("textinput_active"),
-            )
+            # frame.make_bg(
+            #     XColor.from_name("grey"),
+            #     source=from_atlas("textinput_active"),
+            # )
             stack.add_widget(frame)
             self._widgets[item] = frame
         return stack

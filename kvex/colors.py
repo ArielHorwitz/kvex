@@ -54,15 +54,19 @@ class XColor:
         h = (self.h + offset) % 1
         return self.from_hsv(h, self.s, self.v, self.a)
 
-    def modify_value(self, value: float, /) -> "XColor":
+    def modified_hue(self, hue: float, /) -> "XColor":
+        """Identical `XColor` with different hue."""
+        return self.from_hsv(hue, self.s, self.v, self.a)
+
+    def modified_value(self, value: float, /) -> "XColor":
         """Identical `XColor` with different value."""
         return self.from_hsv(self.h, self.s, value, self.a)
 
-    def modify_saturation(self, saturation: float, /) -> "XColor":
+    def modified_saturation(self, saturation: float, /) -> "XColor":
         """Identical `XColor` with different saturation."""
         return self.from_hsv(self.h, saturation, self.v, self.a)
 
-    def modify_alpha(self, alpha: float, /):
+    def modified_alpha(self, alpha: float, /) -> "XColor":
         """Identical `XColor` with different alpha."""
         return self.from_hsv(self.h, self.s, self.v, alpha)
 

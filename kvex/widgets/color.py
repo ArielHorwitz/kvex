@@ -1,3 +1,4 @@
+"""Home of `XPickColor` and `XSelectColor`."""
 
 from .. import kivy as kv
 from ..colors import XColor

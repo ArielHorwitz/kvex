@@ -11,13 +11,24 @@ from ..colors import THEMES
 class XButtonBar(XTAnchor):
     """A bar of buttons nested in two layers."""
 
-    def __init__(self, nested_subtheme: Optional[str] = None, **kwargs):
+    def __init__(
+        self,
+        *,
+        category_subtheme: Optional[str] = None,
+        dropdown_subtheme: Optional[str] = None,
+        nested_subtheme: Optional[str] = None,
+        **kwargs,
+    ):
         """Initialize the class.
 
         Args:
-            nested_subtheme: Specify subtheme for nested buttons.
+            category_subtheme: Subtheme of category buttons.
+            dropdown_subtheme: Subtheme of dropdown.
+            nested_subtheme: Subtheme of nested buttons.
         """
         super().__init__(**kwargs)
+        self._category_subtheme = category_subtheme
+        self._dropdown_subtheme = dropdown_subtheme
         self._nested_subtheme = nested_subtheme
         self._names: dict[list[str]] = dict()
         self._spinners: dict[XSpinner] = dict()
@@ -25,6 +36,9 @@ class XButtonBar(XTAnchor):
         self._box = XBox()
         self.add_widget(self._box)
         self.register_event_type("on_select")
+
+    def _dropdown_factory(self, *args, **kwargs):
+        return XDropDown(*args, subtheme_name=self._dropdown_subtheme, **kwargs)
 
     def add_category(self, category: str, /, *, display_as: Optional[str] = None):
         """Add a category for buttons.
@@ -37,11 +51,12 @@ class XButtonBar(XTAnchor):
             raise ValueError(f"Category {category!r} already in use.")
         if display_as is None:
             display_as = category.capitalize()
-        with self.app.subtheme_context(self.subtheme_name):
-            spinner = XSpinner(
-                text=display_as,
-                option_cls=XButtonBarSpinnerOption,
-            )
+        spinner = XSpinner(
+            text=display_as,
+            dropdown_cls=self._dropdown_factory,
+            option_cls=XButtonBarSpinnerOption,
+            subtheme_name=self._category_subtheme,
+        )
         self._spinners[category] = spinner
         self._box.add_widget(spinner)
         self._names[category] = []

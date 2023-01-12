@@ -2,6 +2,7 @@
 
 from typing import Type, Optional
 from .. import kivy as kv
+from .. import assets
 from .widget import XWidget, XThemed
 
 
@@ -108,6 +109,8 @@ class XAnchor(XWidget, kv.AnchorLayout):
 class XTAnchor(XThemed, XAnchor):
     """Themed XAnchor."""
 
+    BG = str(assets.get_image("xtanchor_bg"))
+
     @classmethod
     def wrap(cls, *args, **kwargs):
         """Overrride base method.
@@ -121,7 +124,7 @@ class XTAnchor(XThemed, XAnchor):
 
     def on_subtheme(self, subtheme):
         """Override base method."""
-        self.make_bg(subtheme.bg)
+        self.make_bg(subtheme.bg, source=self.BG)
 
 
 class XCurtain(XAnchor):

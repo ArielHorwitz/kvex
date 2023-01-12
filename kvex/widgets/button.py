@@ -1,6 +1,12 @@
+"""Home of `XButton` and `XToggleButton`."""
 
 from .. import kivy as kv
+from .. import assets
 from .widget import XWidget, XThemed
+
+
+BG_NORMAL = str(assets.get_image("button"))
+BG_DOWN = str(assets.get_image("button_down"))
 
 
 class XButton(XThemed, XWidget, kv.Button):
@@ -8,11 +14,14 @@ class XButton(XThemed, XWidget, kv.Button):
 
     def __init__(self, **kwargs):
         """Initialize the class."""
-        kwargs = {
-            "markup": True,
-            "halign": "center",
-            "valign": "center",
-        } | kwargs
+        kwargs = dict(
+            markup=True,
+            halign="center",
+            valign="center",
+            background_normal=BG_NORMAL,
+            background_down=BG_DOWN,
+            border=(2, 1, 2, 1),
+        ) | kwargs
         super().__init__(**kwargs)
 
     def on_touch_down(self, m):
