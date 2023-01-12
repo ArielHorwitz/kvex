@@ -2,13 +2,13 @@
 
 from typing import Optional, Callable
 from functools import partial
-from .layouts import XTAnchor, XBox
+from .layouts import XFrame, XBox
 from .dropdown import XDropDown
 from .spinner import XSpinner, XSpinnerOption
 from ..colors import THEMES
 
 
-class XButtonBar(XTAnchor):
+class XButtonBar(XFrame):
     """A bar of buttons nested in two layers."""
 
     def __init__(

@@ -1,7 +1,7 @@
 """A widgets for viewing the textures in the defaulttheme atlas."""
 
 from ..util import from_atlas
-from .layouts import XStack, XAnchor, XTAnchor, XBox
+from .layouts import XStack, XAnchor, XFrame, XBox
 from .scroll import XScroll
 from .label import XLabel
 
@@ -47,9 +47,9 @@ class XAtlasPreview(XScroll):
             image.make_fg(source=from_atlas(item))
             image.set_size(self._image_width, self._image_height)
             box = XBox(orientation="vertical")
-            box.add_widgets(label, XAnchor.wrap(image, 0.9, 0.9))
-            frame = XTAnchor.wrap(box)
-            frame.set_size(image.width * 1.2, image.height * 2)
+            box.add_widgets(label, XAnchor.wrap(image, padding=10))
+            frame = XFrame.wrap(box)
+            frame.set_size(image.width + 20, image.height * 2)
             # frame.make_bg(
             #     XColor.from_name("grey"),
             #     source=from_atlas("textinput_active"),

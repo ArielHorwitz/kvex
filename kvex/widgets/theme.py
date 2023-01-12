@@ -38,7 +38,7 @@ class XThemeManager(XAnchor):
         scroll_view = XBox(orientation="vertical")
         for i, (theme_name, theme) in enumerate(THEMES.items()):
             box = _ThemePreview(i, theme_name, theme)
-            scroll_view.add_widget(XAnchor.wrap(box))
+            scroll_view.add_widget(box)
         scroll_view.set_size(y=250*len(THEMES))
         scroll = XScroll(
             view=scroll_view,
@@ -69,7 +69,7 @@ class _ThemePreview(kv.ButtonBehavior, XBox):
             outline_width=1.5,
             color=(0, 0, 0),
         )
-        title = XAnchor.wrap(palette, 1, 0.8)
+        title = XAnchor.wrap(palette, padding=(0, "5dp", 0, 0))
         title.add_widget(theme_lbl)
         title.set_size(y=50)
         primary = self._get_subtheme_frame(

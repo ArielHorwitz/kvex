@@ -1,6 +1,7 @@
 """Layout widgets."""
 
-from typing import Type, Optional
+from typing import Optional
+import functools
 from .. import kivy as kv
 from .. import assets
 from .. import util
@@ -81,63 +82,53 @@ class XAnchor(XWidget, kv.AnchorLayout):
     """AnchorLayout."""
 
     @classmethod
-    def wrap(
-        cls,
-        w: kv.Widget,
-        /,
-        x: float = 0.95,
-        y: float = 0.95,
-        *,
-        inner_class: Optional[Type["XAnchor"]] = None,
-        **kwargs,
-    ):
-        """Wrap a widget with padding using size hint.
+    def wrap(cls, widget: kv.Widget, /, **kwargs) -> "XAnchor":
+        """Create `XAnchor` with child widget.
 
         Args:
-            w: Widget to wrap.
-            x: Size hint of horizontal padding.
-            y: Size hint of vertical padding.
-            inner_class: Class to use as inner (padded) anchor. Useful for subclasses.
-            kwargs: Keyword arguments for the outer anchor.
+            widget: Widget to wrap.
+            kwargs: Keyword arguments for the XAnchor.
         """
-        inner_class = inner_class or cls
-        inner_anchor = inner_class()
-        inner_anchor.set_size(hx=x, hy=y)
-        inner_anchor.add_widget(w)
         anchor = cls(**kwargs)
-        anchor.add_widget(inner_anchor)
+        anchor.add_widget(widget)
         return anchor
 
 
-class XTAnchor(XThemed, XAnchor):
-    """Themed XAnchor."""
+class XFrame(XThemed, XAnchor):
+    """Themed `XAnchor` with a background."""
 
-    BG = str(assets.get_image("xtanchor_bg"))
+    BG = str(assets.get_image("xframe_bg"))
 
-    @classmethod
-    def wrap(cls, *args, **kwargs):
-        """Overrride base method.
-
-        Uses `XAnchor` as the inner class (to prevent overriding our own background),
-        and defualts to no padding.
-        """
-        kwargs = dict(inner_class=XAnchor, x=1, y=1) | kwargs
-        xtanchor = super().wrap(*args, **kwargs)
-        return xtanchor
+    def __init__(self, *args, **kwargs):
+        """Initialize the class with default padding."""
+        super().__init__(*args, **kwargs)
 
     def on_subtheme(self, subtheme):
         """Override base method."""
         self.make_bg(subtheme.bg, source=self.BG)
 
 
+wrap = XAnchor.wrap
+pwrap = functools.partial(XAnchor.wrap, padding="10sp")
+"""Like `wrap` but with '10sp' padding."""
+fwrap = XFrame.wrap
+"""Like `wrap` but with `XFrame`."""
+fpwrap = functools.partial(XFrame.wrap, padding="10sp")
+"""Like `fwrap` but with '10sp' padding."""
+
+
 class XCurtain(XAnchor):
     """AnchorLayout that can show or hide it's content."""
 
     content = kv.ObjectProperty(None, allownone=True)
+    """Widget to show and hide."""
     showing = kv.BooleanProperty(True)
+    """If the content widget is showing."""
     dynamic = kv.BooleanProperty(False)
+    """If the the curtain should resize based on content size and visibility."""
 
     def __init__(self, *args, **kwargs):
+        """Initialize the class."""
         super().__init__(*args, **kwargs)
         self.bind(
             content=self._on_properties,
@@ -160,12 +151,15 @@ class XCurtain(XAnchor):
                 self.set_size(0, 0)
 
     def show(self, *args, **kwargs):
+        """Show the content widget."""
         self.showing = True
 
     def hide(self, *args, **kwargs):
+        """Hide the content widget."""
         self.showing = False
 
     def toggle(self, *args, set_as: Optional[bool] = None, **kwargs):
+        """Toggle showing the content widget."""
         if set_as is None:
             set_as = not self.showing
         self.showing = set_as
@@ -179,6 +173,10 @@ __all__ = (
     "XRelative",
     "XStack",
     "XAnchor",
-    "XTAnchor",
+    "XFrame",
+    "wrap",
+    "pwrap",
+    "fwrap",
+    "fpwrap",
     "XCurtain",
 )

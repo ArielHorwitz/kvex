@@ -246,6 +246,7 @@ class XInputPanel(XDBox):
         Args:
             widgets: Dictionary of names to widgets.
         """
+        kwargs = dict(padding="10sp") | kwargs
         super().__init__(**kwargs)
         self.widgets: dict[str, BaseInputWidget] = dict()
         self._curtains: dict[str, XCurtain] = dict()
@@ -268,7 +269,8 @@ class XInputPanel(XDBox):
         if self.invoke_text:
             controls.add_widget(XAnchor.wrap(self._invoke_btn))
         if len(controls.children) == 1:
-            controls = XAnchor.wrap(controls, x=.5)
+            controls.set_size(hx=0.5)
+            controls = XAnchor.wrap(controls)
         controls.set_size(y=HEIGHT_UNIT)
         if len(controls.children) > 0:
             self.add_widget(controls)
