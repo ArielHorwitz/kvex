@@ -1,12 +1,14 @@
-"""Kvex - A Kivy extension library for desktop applications.
+""".. include:: ../README.md
 
-[Kivy](https://kivy.org/) is arguably the best GUI framework for Python, and the list of
-things that can be improved is short. Keeping this in mind, Kvex does not intend to
-"improve" kivy but rather make it more convenient to use, in particular for desktop
-applications.
+# Install
+```bash
+pip install git+https://github.com/ArielHorwitz/kvex.git
+```
+
+# Getting Started
 
 ## Easy importing
-Kvex provides a single namespace for many kivy objects, enabling a single import for a
+Kvex provides a single namespace for many Kivy objects, enabling a single import for a
 large part of the API:
 ```python3
 import kvex.kivy as kv
@@ -26,13 +28,13 @@ import kvex as kx
 kx.XApp
 kx.XAnchor
 kx.XButton
-kx.get_color
 kx.schedule_once
+kx.snooze_trigger
 ```
 
 ## Widgets
 All Kvex widgets use the `kvex.widgets.widget.XWidget` mixin class. It provides several
-convenience methods for kivy widgets. These include an intuitive way to set size with
+convenience methods for Kivy widgets. These include an intuitive way to set size with
 `XWidget.set_size` and a quick and easy way to create a background with
 `XWidget.make_bg`.
 
@@ -41,10 +43,15 @@ hotkey controls and large collections of input widgets of many types:
 * `kvex.widgets.hotkeycontroller.XHotkeyController`
 * `kvex.widgets.inputpanel.XInputPanel`
 * `kvex.widgets.buttonbar.XButtonBar`
-"""
+
+
+## Themes
+Many Kvex widgets use the `kvex.widgets.widgets.XThemed` mixin class. It enables using a
+consistent palette across widget via `XThemed.on_subtheme`.
+"""  # noqa: D415
 
 # flake8: noqa
-# Ignoring flake8 errors E402,F401 because of late imports and unused imports
+# Ignoring flake8 errors E402,F401,F403 because of late imports and unused imports
 
 import os as _os
 
