@@ -1,4 +1,4 @@
-"""Home of `get_color`, `XColor`.
+"""Home of `XColor`, `SubTheme`, and `Theme`.
 
 The most common use of this module is `get_color`. It is able to conveniently retrieve
 any color from any palette in `PALETTES`. The `PALETTES` dictionary can be modified to
@@ -33,7 +33,7 @@ class XColor:
 
     @classmethod
     def from_hex(cls, hex_str: str, /) -> "XColor":
-        """Convert hex string to rgb floats."""
+        """`XColor` from hex format."""
         rgb = tuple(
             int(hex_str.removeprefix("#")[i:i+2], 16) / 256
             for i in (0, 2, 4)
@@ -152,9 +152,7 @@ class XColor:
 
     def __repr__(self):
         """Object repr."""
-        cls_name = f"{self.__class__.__qualname__} object"
-        idhex = f"at 0x{id(self):x}"
-        return f"<{cls_name} {self.rgba} {idhex}>"
+        return f"<{self.__class__.__qualname__} {self.as_hex}>"
 
 
 RAINBOW = {
@@ -179,22 +177,41 @@ RAINBOW = {
 
 class SubTheme(NamedTuple):
     """Tuple of XColor for a theme."""
+
     bg: XColor
+    """Background color."""
     fg: XColor
+    """Foreground (text) color."""
     accent1: XColor
+    """Primary accent color."""
     accent2: XColor
+    """Secondary accent color."""
 
     @classmethod
-    def from_hexes(cls, *hexes):
+    def from_hexes(cls, *hexes) -> "SubTheme":
+        """`SubTheme` from list of colors in (string) hex format."""
         return cls(*(XColor.from_hex(h) for h in hexes))
 
 
+SUBTHEME_COLORS = SubTheme._fields
+"""Color names in a `SubTheme`."""
+
+
 class Theme(NamedTuple):
-    """Tuple of SubThemes."""
+    """Tuple of `SubTheme`s."""
+
     primary: SubTheme
+    """Primary subtheme."""
     secondary: SubTheme
+    """Secondary subtheme."""
     accent: SubTheme
+    """Accented subtheme."""
     palette: list[XColor]
+    """All colors in the palette of this theme."""
+
+
+SUBTHEME_NAMES = ("primary", "secondary", "accent")
+"""`SubTheme` names in a `Theme`."""
 
 
 def _convert_hexes(*hexes):
@@ -275,13 +292,14 @@ THEMES: dict[str, Theme] = dict(
         accent=SubTheme.from_hexes("#596235", "#CDCBD6", "#D96846", "#2F3020"),
     ),
 )
-SUBTHEMES = ("primary", "secondary", "accent")
 
 
 __all__ = (
     "XColor",
-    "THEMES",
-    "SUBTHEMES",
     "Theme",
+    "SubTheme",
+    "SUBTHEME_NAMES",
+    "SUBTHEME_COLORS",
+    "THEMES",
     "RAINBOW",
 )
