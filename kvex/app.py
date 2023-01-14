@@ -24,7 +24,7 @@ from .widgets.layouts import XAnchor, XAnchorDelayed
 from .widgets.label import XLabel
 
 
-DEFAULT_THEME_NAME = "darkpop"
+DEFAULT_THEME_NAME = "deepbrown"
 
 
 class XOverlay(XFocusBehavior, XAnchor):
