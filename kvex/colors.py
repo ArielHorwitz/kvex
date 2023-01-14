@@ -7,7 +7,12 @@ add or replace palettes.
 
 from typing import NamedTuple
 import colorsys
+import json
 import random
+from pathlib import Path
+
+
+_THEME_DATA_FILE = Path(__file__).parent / "defaultthemes.json"
 
 
 class XColor:
@@ -218,80 +223,24 @@ def _convert_hexes(*hexes):
     return tuple(XColor.from_hex(h) for h in hexes)
 
 
-THEMES: dict[str, Theme] = dict(
-    midnight=Theme(
-        palette=_convert_hexes("#161722", "#25273C", "#CACDE8", "#E4E5F1", "#777A92"),
-        primary=SubTheme.from_hexes("#161722", "#E4E5F1", "#25273C", "#777A92"),
-        secondary=SubTheme.from_hexes("#25273C", "#E4E5F1", "#161722", "#777A92"),
-        accent=SubTheme.from_hexes("#CACDE8", "#161722", "#777A92", "#25273C"),
-    ),
-    darkpop=Theme(
-        palette=_convert_hexes("#082032", "#2C394B", "#334756", "#FF4C29"),
-        primary=SubTheme.from_hexes("#082032", "#FF4C29", "#334756", "#2C394B"),
-        secondary=SubTheme.from_hexes("#2C394B", "#FF4C29", "#082032", "#334756"),
-        accent=SubTheme.from_hexes("#334756", "#FF4C29", "#082032", "#2C394B"),
-    ),
-    deepbrown=Theme(
-        palette=_convert_hexes("#1A120B", "#3C2A21", "#D5CEA3", "#E5E5CB"),
-        primary=SubTheme.from_hexes("#1A120B", "#E5E5CB", "#3C2A21", "#D5CEA3"),
-        secondary=SubTheme.from_hexes("#3C2A21", "#E5E5CB", "#1A120B", "#D5CEA3"),
-        accent=SubTheme.from_hexes("#D5CEA3", "#1A120B", "#3C2A21", "#E5E5CB"),
-    ),
-    market=Theme(
-        palette=_convert_hexes("#342628", "#F7F4EF", "#FEAA00", "#788402"),
-        primary=SubTheme.from_hexes("#342628", "#F7F4EF", "#FEAA00", "#788402"),
-        secondary=SubTheme.from_hexes("#F7F4EF", "#342628", "#788402", "#FEAA00"),
-        accent=SubTheme.from_hexes("#FEAA00", "#342628", "#F7F4EF", "#788402"),
-    ),
-    muted=Theme(
-        palette=_convert_hexes("#F7F1F0", "#A15C38", "#C3A6A0", "#262220"),
-        primary=SubTheme.from_hexes("#F7F1F0", "#262220", "#A15C38", "#C3A6A0"),
-        secondary=SubTheme.from_hexes("#A15C38", "#F7F1F0", "#C3A6A0", "#262220"),
-        accent=SubTheme.from_hexes("#C3A6A0", "#262220", "#A15C38", "#F7F1F0"),
-    ),
-    ocean=Theme(
-        palette=_convert_hexes("#18B7BE", "#F9F7F0", "#178CA4", "#072A40"),
-        primary=SubTheme.from_hexes("#18B7BE", "#F9F7F0", "#178CA4", "#072A40"),
-        secondary=SubTheme.from_hexes("#F9F7F0", "#072A40", "#178CA4", "#18B7BE"),
-        accent=SubTheme.from_hexes("#178CA4", "#F9F7F0", "#18B7BE", "#072A40"),
-    ),
-    subtle=Theme(
-        palette=_convert_hexes("#013328", "#CC8B65", "#E3DCD2", "#100C0D"),
-        primary=SubTheme.from_hexes("#013328", "#CC8B65", "#E3DCD2", "#100C0D"),
-        secondary=SubTheme.from_hexes("#CC8B65", "#013328", "#E3DCD2", "#100C0D"),
-        accent=SubTheme.from_hexes("#E3DCD2", "#013328", "#CC8B65", "#100C0D"),
-    ),
-    eve=Theme(
-        palette=_convert_hexes("#00003C", "#3B185F", "#C060A1", "#F0CAA3"),
-        primary=SubTheme.from_hexes("#00003C", "#F0CAA3", "#3B185F", "#C060A1"),
-        secondary=SubTheme.from_hexes("#3B185F", "#F0CAA3", "#00003C", "#C060A1"),
-        accent=SubTheme.from_hexes("#C060A1", "#00003C", "#3B185F", "#F0CAA3"),
-    ),
-    vineyard=Theme(
-        palette=_convert_hexes("#431D32", "#2A3759", "#778FD2", "#B7CB99", "#3D5220"),
-        primary=SubTheme.from_hexes("#2A3759", "#B7CB99", "#431D32", "#3D5220"),
-        secondary=SubTheme.from_hexes("#431D32", "#B7CB99", "#2A3759", "#3D5220"),
-        accent=SubTheme.from_hexes("#3D5220", "#778FD2", "#431D32", "#B7CB99"),
-    ),
-    travel=Theme(
-        palette=_convert_hexes("#285185", "#6F4849", "#D67940", "#CCD9E2"),
-        primary=SubTheme.from_hexes("#285185", "#CCD9E2", "#6F4849", "#D67940"),
-        secondary=SubTheme.from_hexes("#6F4849", "#CCD9E2", "#D67940", "#285185"),
-        accent=SubTheme.from_hexes("#D67940", "#285185", "#6F4849", "#CCD9E2"),
-    ),
-    toucan=Theme(
-        palette=_convert_hexes("#5A8100", "#FFF9E9", "#FFB400", "#FF6C02"),
-        primary=SubTheme.from_hexes("#5A8100", "#FFF9E9", "#FFB400", "#FF6C02"),
-        secondary=SubTheme.from_hexes("#FFB400", "#5A8100", "#FFF9E9", "#FF6C02"),
-        accent=SubTheme.from_hexes("#FF6C02", "#FFF9E9", "#FFB400", "#5A8100"),
-    ),
-    coral=Theme(
-        palette=_convert_hexes("#D96846", "#CDCBD6", "#596235", "#2F3020"),
-        primary=SubTheme.from_hexes("#D96846", "#CDCBD6", "#596235", "#2F3020"),
-        secondary=SubTheme.from_hexes("#CDCBD6", "#2F3020", "#D96846", "#596235"),
-        accent=SubTheme.from_hexes("#596235", "#CDCBD6", "#D96846", "#2F3020"),
-    ),
-)
+def _import_theme_data() -> dict:
+    themes = dict()
+    with open(_THEME_DATA_FILE) as f:
+        raw_data = json.load(f)
+    for theme_name, theme in raw_data.items():
+        theme_data = dict()
+        theme_data["palette"] = tuple(XColor.from_hex(h) for h in theme["palette"])
+        for subtheme_name in SUBTHEME_NAMES:
+            theme_data[subtheme_name] = SubTheme(**{
+                color_name: XColor.from_hex(color)
+                for color_name, color in theme[subtheme_name].items()
+            })
+        themes[theme_name] = Theme(**theme_data)
+    return themes
+
+
+THEMES = _import_theme_data()
+"""Themes data."""
 
 
 __all__ = (
