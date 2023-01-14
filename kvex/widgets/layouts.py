@@ -117,6 +117,27 @@ fpwrap = functools.partial(XFrame.wrap, padding="10sp")
 """Like `fwrap` but with '10sp' padding."""
 
 
+class XAnchorDelayed(XAnchor):
+    """An XAnchor that delays layout events.
+
+    Useful for preventing window drag-resize from creating too many events.
+    """
+
+    layout_event_delay = kv.NumericProperty(0.1)
+    """Delay for layout events."""
+    _delayed_layout_event = None
+
+    def do_layout(self, *args, **kwargs):
+        """Override base method. See class documentation for details."""
+        if self._delayed_layout_event:
+            self._delayed_layout_event.cancel()
+        _real_do_layout = super().do_layout
+        self._delayed_layout_event = util.schedule_once(
+            lambda dt: _real_do_layout(*args, **kwargs),
+            self.layout_event_delay,
+        )
+
+
 class XCurtain(XAnchor):
     """AnchorLayout that can show or hide it's content."""
 
@@ -178,5 +199,6 @@ __all__ = (
     "pwrap",
     "fwrap",
     "fpwrap",
+    "XAnchorDelayed",
     "XCurtain",
 )

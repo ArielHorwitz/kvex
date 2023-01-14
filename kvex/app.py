@@ -20,7 +20,7 @@ from .util import (
 )
 from .behaviors import XFocusBehavior
 from .win_focus_patch import XWindowFocusPatch
-from .widgets.layouts import XAnchor
+from .widgets.layouts import XAnchor, XAnchorDelayed
 from .widgets.label import XLabel
 
 
@@ -62,7 +62,7 @@ class XApp(kv.App):
         self.disable_multitouch()
         self.enable_escape_exit(escape_exits)
         super().__init__(**kwargs)
-        self.root = XAnchor()
+        self.root = XAnchorDelayed()
         self.keyboard = kv.Window.request_keyboard(consume_args, None)
         self.__restart_flag = False
         self.__overlay = None
