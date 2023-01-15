@@ -4,7 +4,6 @@ from dataclasses import dataclass, field
 from typing import Any, Optional, Callable
 from .. import kivy as kv
 from .layouts import XAnchor, XDBox, XBox, XCurtain
-from .scroll import XScroll
 from .label import XLabel
 from .button import XButton
 from .input import XInput, XIntInput, XFloatInput
