@@ -147,17 +147,17 @@ class XColor:
         return self.__rgba
 
     @property
-    def as_hex(self) -> str:
+    def hex(self) -> str:
         """Hex representation."""
         return "#" + "".join(hex(round(value * 256))[2:].zfill(2) for value in self.rgb)
 
     def markup(self, s: str) -> str:
         """Wrap a string in color markup."""
-        return f"[color={self.as_hex}]{s}[/color]"
+        return f"[color={self.hex}]{s}[/color]"
 
     def __repr__(self):
         """Object repr."""
-        return f"<{self.__class__.__qualname__} {self.as_hex}>"
+        return f"<{self.__class__.__qualname__} {self.hex}>"
 
 
 RAINBOW = {

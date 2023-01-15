@@ -95,7 +95,7 @@ class XThemePreview(kv.FocusBehavior, XBox):
         self._palette_box.clear_widgets()
         for c in self.app.theme.palette:
             pb = XLabel(
-                text=c.as_hex.upper(),
+                text=c.hex.upper(),
                 outline_color=(0, 0, 0),
                 outline_width=2,
                 valign="bottom",
@@ -163,7 +163,7 @@ class XSubThemePreview(XFrame):
         bullet = subtheme.accent2.markup("•")
         fg2m = subtheme.fg2.markup
         hexes = "\n".join((
-            f"{bullet} {color_name} color {fg2m(color.as_hex.upper())}"
+            f"{bullet} {color_name} color {fg2m(color.hex.upper())}"
             for color_name, color in subtheme._asdict().items()
         ))
         name = self.app.theme_name.capitalize()
