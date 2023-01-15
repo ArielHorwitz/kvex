@@ -99,10 +99,6 @@ class XFrame(XThemed, XAnchor):
 
     BG = str(assets.get_image("xframe_bg"))
 
-    def __init__(self, *args, **kwargs):
-        """Initialize the class with default padding."""
-        super().__init__(*args, **kwargs)
-
     def on_subtheme(self, subtheme):
         """Override base method."""
         self.make_bg(subtheme.bg, source=self.BG)
