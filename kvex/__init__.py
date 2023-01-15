@@ -63,6 +63,7 @@ _os.environ["KCFG_KIVY_LOG_LEVEL"] = "warning"  # no spamming console on startup
 from .kivy import *
 from .util import *
 from .colors import *
+from .assets import *
 from .widgets import *
 from .behaviors import *
 from .app import *

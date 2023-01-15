@@ -9,7 +9,6 @@ assert ASSETS_DIR.is_dir()
 
 
 ALL_ASSETS: dict[str, Path] = dict()
-"""All assets by name."""
 
 for file in ASSETS_DIR.iterdir():
     if not file.is_file() or file.suffix != ".png":
@@ -17,6 +16,16 @@ for file in ASSETS_DIR.iterdir():
     ALL_ASSETS[file.stem] = file
 
 
+IMAGES = tuple(ALL_ASSETS.keys())
+"""Image names."""
+
+
 def get_image(name: str, /) -> Path:
     """Get an image path by name."""
     return ALL_ASSETS[name]
+
+
+__all__ = (
+    "get_image",
+    "IMAGES",
+)
