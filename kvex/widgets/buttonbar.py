@@ -5,7 +5,7 @@ from functools import partial
 from .layouts import XFrame, XBox
 from .dropdown import XDropDown
 from .spinner import XSpinner, XSpinnerOption
-from ..colors import THEMES
+from ..colors import THEME_NAMES
 
 
 class XButtonBar(XFrame):
@@ -124,7 +124,7 @@ class XButtonBar(XFrame):
         suffix: str = "",
     ):
         """Add theme selection buttons."""
-        for tname in THEMES.keys():
+        for tname in THEME_NAMES:
             self.add_button(
                 "theme",
                 tname,

@@ -1,4 +1,34 @@
 {
+    "mousefox": {
+        "palette": [
+            "#1a120b",
+            "#3c2a21",
+            "#d5cea3",
+            "#e5e5cb",
+            "#fbc6bc"
+        ],
+        "primary": {
+            "bg": "#1a120b",
+            "fg": "#e5e5cb",
+            "fg2": "#fbc6bc",
+            "accent1": "#3c2a21",
+            "accent2": "#d5cea3"
+        },
+        "secondary": {
+            "bg": "#3c2a21",
+            "fg": "#e5e5cb",
+            "fg2": "#fbc6bc",
+            "accent1": "#1a120b",
+            "accent2": "#d5cea3"
+        },
+        "accent": {
+            "bg": "#d5cea3",
+            "fg": "#1a120b",
+            "fg2": "#3c2a21",
+            "accent1": "#fbc6bc",
+            "accent2": "#e5e5cb"
+        }
+    },
     "midnight": {
         "palette": [
             "#161722",
@@ -10,18 +40,21 @@
         "primary": {
             "bg": "#161722",
             "fg": "#e4e5f1",
+            "fg2": "#777a92",
             "accent1": "#25273c",
             "accent2": "#777a92"
         },
         "secondary": {
             "bg": "#25273c",
             "fg": "#e4e5f1",
+            "fg2": "#777a92",
             "accent1": "#161722",
             "accent2": "#777a92"
         },
         "accent": {
             "bg": "#cacde8",
             "fg": "#161722",
+            "fg2": "#777a92",
             "accent1": "#777a92",
             "accent2": "#25273c"
         }
@@ -31,75 +64,57 @@
             "#082032",
             "#2c394b",
             "#334756",
-            "#ff4c29"
+            "#ff4c29",
+            "#cc703c"
         ],
         "primary": {
             "bg": "#082032",
             "fg": "#ff4c29",
+            "fg2": "#cc703c",
             "accent1": "#334756",
             "accent2": "#2c394b"
         },
         "secondary": {
             "bg": "#2c394b",
             "fg": "#ff4c29",
+            "fg2": "#cc703c",
             "accent1": "#082032",
             "accent2": "#334756"
         },
         "accent": {
             "bg": "#334756",
             "fg": "#ff4c29",
+            "fg2": "#cc703c",
             "accent1": "#082032",
             "accent2": "#2c394b"
-        }
-    },
-    "deepbrown": {
-        "palette": [
-            "#1a120b",
-            "#3c2a21",
-            "#d5cea3",
-            "#e5e5cb"
-        ],
-        "primary": {
-            "bg": "#1a120b",
-            "fg": "#e5e5cb",
-            "accent1": "#3c2a21",
-            "accent2": "#d5cea3"
-        },
-        "secondary": {
-            "bg": "#3c2a21",
-            "fg": "#e5e5cb",
-            "accent1": "#1a120b",
-            "accent2": "#d5cea3"
-        },
-        "accent": {
-            "bg": "#d5cea3",
-            "fg": "#1a120b",
-            "accent1": "#3c2a21",
-            "accent2": "#e5e5cb"
         }
     },
     "market": {
         "palette": [
             "#342628",
             "#f7f4ef",
+            "#788402",
             "#feaa00",
-            "#788402"
+            "#7e7d85"
         ],
         "primary": {
             "bg": "#342628",
             "fg": "#f7f4ef",
-            "accent1": "#feaa00",
-            "accent2": "#788402"
+            "fg2": "#7e7d85",
+            "accent1": "#788402",
+            "accent2": "#feaa00"
         },
         "secondary": {
             "bg": "#f7f4ef",
             "fg": "#342628",
+            "fg2": "#7e7d85",
             "accent1": "#788402",
             "accent2": "#feaa00"
         },
         "accent": {
             "bg": "#feaa00",
             "fg": "#342628",
+            "fg2": "#7e7d85",
             "accent1": "#f7f4ef",
             "accent2": "#788402"
         }
@@ -109,23 +124,27 @@
             "#f7f1f0",
             "#a15c38",
             "#c3a6a0",
-            "#262220"
+            "#262220",
+            "#6a7a83"
         ],
         "primary": {
             "bg": "#f7f1f0",
             "fg": "#262220",
+            "fg2": "#a15c38",
             "accent1": "#a15c38",
             "accent2": "#c3a6a0"
         },
         "secondary": {
             "bg": "#a15c38",
             "fg": "#f7f1f0",
+            "fg2": "#c3a6a0",
             "accent1": "#c3a6a0",
             "accent2": "#262220"
         },
         "accent": {
             "bg": "#c3a6a0",
             "fg": "#262220",
+            "fg2": "#6a7a83",
             "accent1": "#a15c38",
             "accent2": "#f7f1f0"
         }
@@ -135,23 +154,27 @@
             "#18b7be",
             "#f9f7f0",
             "#178ca4",
-            "#072a40"
+            "#072a40",
+            "#9eefba"
         ],
         "primary": {
             "bg": "#18b7be",
-            "fg": "#f9f7f0",
+            "fg": "#072a40",
+            "fg2": "#f9f7f0",
             "accent1": "#178ca4",
             "accent2": "#072a40"
         },
         "secondary": {
             "bg": "#f9f7f0",
             "fg": "#072a40",
+            "fg2": "#178ca4",
             "accent1": "#178ca4",
             "accent2": "#18b7be"
         },
         "accent": {
             "bg": "#178ca4",
             "fg": "#f9f7f0",
+            "fg2": "#9eefba",
             "accent1": "#18b7be",
             "accent2": "#072a40"
         }
@@ -161,78 +184,59 @@
             "#013328",
             "#cc8b65",
             "#e3dcd2",
-            "#100c0d"
+            "#100c0d",
+            "#f9c2bb"
         ],
         "primary": {
             "bg": "#013328",
             "fg": "#cc8b65",
+            "fg2": "#f9c2bb",
             "accent1": "#e3dcd2",
             "accent2": "#100c0d"
         },
         "secondary": {
             "bg": "#cc8b65",
             "fg": "#013328",
+            "fg2": "#f9c2bb",
             "accent1": "#e3dcd2",
             "accent2": "#100c0d"
         },
         "accent": {
             "bg": "#e3dcd2",
             "fg": "#013328",
+            "fg2": "#100c0d",
             "accent1": "#cc8b65",
             "accent2": "#100c0d"
         }
     },
-    "eve": {
+    "evening": {
         "palette": [
             "#00003c",
             "#3b185f",
             "#c060a1",
-            "#f0caa3"
+            "#f0caa3",
+            "#571e00"
         ],
         "primary": {
             "bg": "#00003c",
             "fg": "#f0caa3",
+            "fg2": "#c060a1",
             "accent1": "#3b185f",
             "accent2": "#c060a1"
         },
         "secondary": {
             "bg": "#3b185f",
             "fg": "#f0caa3",
+            "fg2": "#c060a1",
             "accent1": "#00003c",
             "accent2": "#c060a1"
         },
         "accent": {
             "bg": "#c060a1",
             "fg": "#00003c",
+            "fg2": "#571e00",
             "accent1": "#3b185f",
             "accent2": "#f0caa3"
-        }
-    },
-    "vineyard": {
-        "palette": [
-            "#431d32",
-            "#2a3759",
-            "#778fd2",
-            "#b7cb99",
-            "#3d5220"
-        ],
-        "primary": {
-            "bg": "#2a3759",
-            "fg": "#b7cb99",
-            "accent1": "#431d32",
-            "accent2": "#3d5220"
-        },
-        "secondary": {
-            "bg": "#431d32",
-            "fg": "#b7cb99",
-            "accent1": "#2a3759",
-            "accent2": "#3d5220"
-        },
-        "accent": {
-            "bg": "#3d5220",
-            "fg": "#778fd2",
-            "accent1": "#431d32",
-            "accent2": "#b7cb99"
         }
     },
     "travel": {
@@ -240,77 +244,29 @@
             "#285185",
             "#6f4849",
             "#d67940",
-            "#ccd9e2"
+            "#ccd9e2",
+            "#93b4c9"
         ],
         "primary": {
             "bg": "#285185",
             "fg": "#ccd9e2",
+            "fg2": "#93b4c9",
             "accent1": "#6f4849",
             "accent2": "#d67940"
         },
         "secondary": {
             "bg": "#6f4849",
             "fg": "#ccd9e2",
+            "fg2": "#93b4c9",
             "accent1": "#d67940",
             "accent2": "#285185"
         },
         "accent": {
             "bg": "#d67940",
             "fg": "#285185",
+            "fg2": "#6f4849",
             "accent1": "#6f4849",
             "accent2": "#ccd9e2"
-        }
-    },
-    "toucan": {
-        "palette": [
-            "#5a8100",
-            "#fff9e9",
-            "#ffb400",
-            "#ff6c02"
-        ],
-        "primary": {
-            "bg": "#5a8100",
-            "fg": "#fff9e9",
-            "accent1": "#ffb400",
-            "accent2": "#ff6c02"
-        },
-        "secondary": {
-            "bg": "#ffb400",
-            "fg": "#5a8100",
-            "accent1": "#fff9e9",
-            "accent2": "#ff6c02"
-        },
-        "accent": {
-            "bg": "#ff6c02",
-            "fg": "#fff9e9",
-            "accent1": "#ffb400",
-            "accent2": "#5a8100"
-        }
-    },
-    "coral": {
-        "palette": [
-            "#d96846",
-            "#cdcbd6",
-            "#596235",
-            "#2f3020"
-        ],
-        "primary": {
-            "bg": "#d96846",
-            "fg": "#cdcbd6",
-            "accent1": "#596235",
-            "accent2": "#2f3020"
-        },
-        "secondary": {
-            "bg": "#cdcbd6",
-            "fg": "#2f3020",
-            "accent1": "#d96846",
-            "accent2": "#596235"
-        },
-        "accent": {
-            "bg": "#596235",
-            "fg": "#cdcbd6",
-            "accent1": "#d96846",
-            "accent2": "#2f3020"
         }
     }
 }

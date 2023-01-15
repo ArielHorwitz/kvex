@@ -9,10 +9,10 @@ from typing import NamedTuple
 import colorsys
 import json
 import random
-from pathlib import Path
+from .assets import ASSETS_DIR
 
 
-_THEME_DATA_FILE = Path(__file__).parent / "defaultthemes.json"
+_THEME_DATA_FILE = ASSETS_DIR / "defaultthemes.json"
 
 
 class XColor:
@@ -186,7 +186,9 @@ class SubTheme(NamedTuple):
     bg: XColor
     """Background color."""
     fg: XColor
-    """Foreground (text) color."""
+    """Primary foreground (text) color."""
+    fg2: XColor
+    """Secondary foreground (text) color."""
     accent1: XColor
     """Primary accent color."""
     accent2: XColor
@@ -242,6 +244,9 @@ def _import_theme_data() -> dict:
 THEMES = _import_theme_data()
 """Themes data."""
 
+THEME_NAMES = tuple(THEMES.keys())
+"""`Theme` names."""
+
 
 __all__ = (
     "XColor",
@@ -249,6 +254,6 @@ __all__ = (
     "SubTheme",
     "SUBTHEME_NAMES",
     "SUBTHEME_COLORS",
-    "THEMES",
+    "THEME_NAMES",
     "RAINBOW",
 )
