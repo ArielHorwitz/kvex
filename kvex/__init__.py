@@ -5,7 +5,7 @@
 pip install git+https://github.com/ArielHorwitz/kvex.git
 ```
 
-# Getting Started
+# Using Kvex
 
 ## Easy importing
 Kvex provides a single namespace for many Kivy objects, enabling a single import for a
@@ -21,33 +21,74 @@ kv.Rectangle
 kv.Clock
 ```
 
-Kvex offers some custom widgets (and functions), all available from a single import:
+Virtually all of the widgets and functions that Kvex offers are available from a single
+import:
 ```python3
 import kvex as kx
 
 kx.XApp
 kx.XAnchor
 kx.XButton
+kx.XThemed
+kx.wrap
 kx.schedule_once
 kx.snooze_trigger
 ```
 
 ## Widgets
-All Kvex widgets use the `kvex.widgets.widget.XWidget` mixin class. It provides several
+Kvex widgets use the `kvex.widgets.widget.XWidget` mixin class. It provides several
 convenience methods for Kivy widgets. These include an intuitive way to set size with
 `XWidget.set_size` and a quick and easy way to create a background with
 `XWidget.make_bg`.
 
-Kvex offers some more complex widgets commonly required by desktop applications, such as
-hotkey controls and large collections of input widgets of many types:
+Kvex offers some more complex widgets commonly required by desktop applications. Some
+such examples are:
 * `kvex.widgets.hotkeycontroller.XHotkeyController`
 * `kvex.widgets.inputpanel.XInputPanel`
 * `kvex.widgets.buttonbar.XButtonBar`
 
 
 ## Themes
-Many Kvex widgets use the `kvex.widgets.widgets.XThemed` mixin class. It enables using a
-consistent palette across widget via `XThemed.on_subtheme`.
+Many Kvex widgets use the `kvex.behaviors.XThemed` mixin class. It enables using a
+consistent color palette across widgets. The theme is managed by `kvex.app.XApp`:
+```python3
+import kx
+
+app = kx.XApp()
+app.set_theme("mousefox")
+```
+
+Each theme has several subthemes (which are essentially labelled color palettes) that
+can be used interchangeably (see `kvex.colors.SubTheme`). Each of these subthemes has
+background, foreground, and accent colors to be used by widgets. Everything should look
+fine as long as you match background and foreground colors from the same subtheme.
+
+When creating widgets:
+```python3
+with self.app.subtheme_context("secondary"):  # Set default subtheme
+    # All widgets in this code block will default to "secondary"
+    label = kx.XLabel(text="Secondary fg on secondary bg")
+    label_frame = kx.fwrap(label)  # Wrap label in a themed anchor widget
+```
+
+When subclassing widgets:
+```python3
+import kx
+import kx.kivy as kv
+
+class MyThemedLabel(kx.Themed, kv.Label):
+    # Example of a themed label.
+
+    def on_subtheme(self, subtheme: kx.SubTheme):
+        # Set the label's background and foreground colors.
+        self.make_bg(subtheme.bg)
+        self.color = subtheme.fg.rgba
+
+my_label = MyThemedLabel(
+    text="Secondary fg on secondary bg",
+    subtheme_name="secondary",
+)
+```
 """  # noqa: D415
 
 # flake8: noqa

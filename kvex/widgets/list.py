@@ -4,9 +4,8 @@ from typing import Optional
 from .. import kivy as kv
 from ..util import text_texture, from_atlas
 from ..colors import XColor
-from ..behaviors import XFocusBehavior
+from ..behaviors import XThemed, XFocusBehavior
 from .layouts import XRelative
-from .widget import XThemed
 
 
 SELECTION_SOURCE = from_atlas("vkeyboard_background")

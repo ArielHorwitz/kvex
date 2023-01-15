@@ -5,7 +5,8 @@ import functools
 from .. import kivy as kv
 from .. import assets
 from .. import util
-from .widget import XWidget, XThemed
+from ..behaviors import XThemed
+from .widget import XWidget
 
 
 class XBox(XWidget, kv.BoxLayout):

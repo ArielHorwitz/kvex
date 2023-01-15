@@ -2,7 +2,6 @@
 
 from .. import kivy as kv
 from ..colors import THEME_NAMES
-from .widget import XThemed
 from .label import XLabel
 from .layouts import XBox, XDBox, XAnchor, XFrame
 from .scroll import XScroll
@@ -23,7 +22,7 @@ class XThemeSelector(XSpinner):
         )
         self.set_size(y="50dp")
         self.bind(text=self._on_select)
-        self.app.bind(theme=self._on_app_theme)
+        self.app.bind(on_theme=self._on_app_theme)
 
     def _on_app_theme(self, *args):
         self.text = self.app.theme_name
@@ -47,11 +46,11 @@ class XThemePreview(kv.FocusBehavior, XBox):
             outline_color=(1, 1, 1),
             outline_width=2,
             valign="top",
-            kvex_theme=False,
+            enable_theming=False,
         )
         super().__init__(orientation="vertical")
         self._make_widgets()
-        self.app.bind(theme=self._refresh_palette_box)
+        self.app.bind(on_theme=self._refresh_palette_box)
 
     def keyboard_on_key_down(self, w, keycode, text, modifiers):
         """Switch theme using arrow keys or [shift] tab."""
@@ -61,10 +60,12 @@ class XThemePreview(kv.FocusBehavior, XBox):
         cindex = THEME_NAMES.index(self.app.theme_name)
         if key == "right" or (tabbed and not shifted):
             cindex += 1
-        if key == "left" or (tabbed and shifted):
+        elif key == "left" or (tabbed and shifted):
             cindex -= 1
-        if key.isdigit():
+        elif key.isdigit():
             cindex = int(key) - 1
+        else:
+            return True
         cindex = cindex % len(THEME_NAMES)
         self.app.set_theme(THEME_NAMES[cindex])
         return True
@@ -99,7 +100,7 @@ class XThemePreview(kv.FocusBehavior, XBox):
                 outline_color=(0, 0, 0),
                 outline_width=2,
                 valign="bottom",
-                kvex_theme=False,
+                enable_theming=False,
             )
             pb.make_bg(c)
             self._palette_box.add_widget(pb)
@@ -110,6 +111,11 @@ class XSubThemePreview(XFrame):
 
     def __init__(self, *args, **kwargs):
         """Initialize the class."""
+        super().__init__(*args, **kwargs)
+        with self.app.subtheme_context(self.subtheme_name):
+            self._make_widgets()
+
+    def _make_widgets(self):
         self._title_label = XLabel(font_size="24sp", shorten=True, shorten_from="right")
         self._title_label.set_size(y="32sp")
         self._br = XAnchor()
@@ -144,7 +150,6 @@ class XSubThemePreview(XFrame):
             self._br,
             self._label_scroll,
         )
-        super().__init__(*args, **kwargs)
         self.add_widget(main_frame)
 
     def on_subtheme(self, subtheme):
@@ -152,11 +157,7 @@ class XSubThemePreview(XFrame):
         super().on_subtheme(subtheme)
         self._br.make_bg(subtheme.accent1)
         self._br2.make_bg(subtheme.accent2)
-        self._lorem_label.subtheme_name = self.subtheme_name
-        self._label_scroll.subtheme_name = self.subtheme_name
-        self._title_label.subtheme_name = self.subtheme_name
         self._title_label.text = self.subtheme_name.capitalize()
-        self._detail_label.subtheme_name = self.subtheme_name
         self._detail_label.text = self._get_lorem_text(subtheme)
 
     def _get_lorem_text(self, subtheme):

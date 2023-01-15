@@ -2,7 +2,8 @@
 
 from .. import kivy as kv
 from .. import assets
-from .widget import XWidget, XThemed
+from ..behaviors import XThemed
+from .widget import XWidget
 from .dropdown import XDropDown
 
 

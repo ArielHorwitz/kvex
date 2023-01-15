@@ -1,7 +1,8 @@
 """Home of `XLabel` and `XLabelClick`."""
 
 from .. import kivy as kv
-from .widget import XWidget, XThemed
+from ..behaviors import XThemed
+from .widget import XWidget
 
 
 class XLabel(XThemed, XWidget, kv.Label):

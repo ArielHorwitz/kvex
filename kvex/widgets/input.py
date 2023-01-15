@@ -1,8 +1,8 @@
 
 import re
 from .. import kivy as kv
-from .widget import XWidget, XThemed
-from ..behaviors import XFocusBehavior
+from ..behaviors import XThemed, XFocusBehavior
+from .widget import XWidget
 
 
 class XInput(XThemed, XFocusBehavior, XWidget, kv.TextInput):
@@ -59,6 +59,7 @@ class XInput(XThemed, XFocusBehavior, XWidget, kv.TextInput):
         return super().keyboard_on_key_down(w, key_pair, text, mods)
 
     def on_subtheme(self, subtheme):
+        """Override base method."""
         self.background_color = subtheme.bg.rgba
         self.foreground_color = subtheme.fg.rgba
 
