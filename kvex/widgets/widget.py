@@ -93,7 +93,7 @@ class XWidget:
             if color is not None:
                 self._kvex_bg_color.rgba = color.rgba
             if source is not None:
-                self._kvex_bg.source = source
+                self._kvex_bg.source = str(source)
         else:
             if color is None:
                 color = XColor(1, 1, 1, 1)
@@ -102,7 +102,7 @@ class XWidget:
                 self._kvex_bg = kv.Rectangle(
                     size=self.size,
                     pos=self.pos,
-                    source=source,
+                    source=str(source),
                 )
             self.bind(pos=self._update_kvex_bg_pos, size=self._update_kvex_bg_size)
 
