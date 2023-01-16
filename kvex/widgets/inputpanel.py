@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, Optional, Callable
 import functools
 from .. import kivy as kv
+from .. import util
 from .layouts import XAnchor, XDBox, XBox, XCurtain
 from .label import XLabel
 from .button import XButton
@@ -12,7 +13,7 @@ from .checkbox import XCheckBox
 from .spinner import XSpinner
 
 
-HEIGHT_UNIT = 40
+HEIGHT_UNIT = "40sp"
 
 
 @dataclass
@@ -167,8 +168,7 @@ class BaseInputWidget(XBox):
         self.widget = self._get_widget(w, on_value, on_invoke)
         assert self.widget is not None
         # Assemble
-        # TODO make this work for both pixel and dp sizes?
-        height = HEIGHT_UNIT * (1 + (w.orientation == "vertical"))
+        height = util.sp2pixels(HEIGHT_UNIT) * (1 + (w.orientation == "vertical"))
         self.set_size(y=height)
         self.label.set_size(hx=w.label_hint if w.orientation == "horizontal" else 1)
         self.add_widgets(self.label, self.widget)
