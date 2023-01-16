@@ -15,7 +15,7 @@ class XDropDown(XThemed, XWidget, kv.DropDown):
 
     def on_subtheme(self, subtheme):
         """Override base method."""
-        self.make_bg(subtheme.bg.modified_alpha(0.5))
+        self.make_bg(subtheme.bg.modified_alpha(0.75))
 
 
 __all__ = (

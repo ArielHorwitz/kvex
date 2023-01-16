@@ -1,6 +1,7 @@
 """Home of `XCheckBox`."""
 
 from .. import kivy as kv
+from .. import util
 from ..behaviors import XFocusBehavior
 from .widget import XWidget
 
@@ -11,7 +12,7 @@ class XCheckBox(XFocusBehavior, XWidget, kv.CheckBox):
     def __init__(self, *args, **kwargs):
         """See class documentation for details."""
         super().__init__(*args, **kwargs)
-        self.make_bg(source="atlas://data/images/defaulttheme/button_disabled")
+        self.make_bg(source=util.from_atlas("button_disabled"))
         self._kvex_bg_color.a = int(self.focus)
 
     def toggle(self, *a):

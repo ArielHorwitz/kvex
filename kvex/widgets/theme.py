@@ -158,9 +158,9 @@ class XSubThemePreview(XFrame):
         self._br.make_bg(subtheme.accent1)
         self._br2.make_bg(subtheme.accent2)
         self._title_label.text = self.subtheme_name.capitalize()
-        self._detail_label.text = self._get_lorem_text(subtheme)
+        self._detail_label.text = self._get_detail_text(subtheme)
 
-    def _get_lorem_text(self, subtheme):
+    def _get_detail_text(self, subtheme):
         bullet = subtheme.accent2.markup("•")
         fg2m = subtheme.fg2.markup
         hexes = "\n".join((
