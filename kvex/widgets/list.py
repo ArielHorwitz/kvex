@@ -20,26 +20,44 @@ cache_remove = kv.Cache.remove
 
 
 class XList(XThemed, XFocusBehavior, XRelative):
+    """Text list widget."""
 
     font_name = kv.StringProperty("Roboto")
+    """Text font."""
     font_size = kv.NumericProperty(16)
+    """Text font size."""
     item_height = kv.NumericProperty(35)
+    """Item height size."""
     item_padding = kv.ListProperty([10, 5])
+    """Item padding."""
     items = kv.ListProperty()
+    """Items in list."""
     selection = kv.NumericProperty(0)
+    """Currently selected item index."""
     paging_size = kv.NumericProperty(None)
+    """Number of items to move when paging (e.g. page up/down)."""
     scroll_width = kv.NumericProperty(5)
+    """Scroll bar width."""
     scroll_color = kv.ColorProperty([0.5, 0.5, 0.5, 0.5])
+    """Scroll bar color."""
     shorten = kv.BooleanProperty(True)
+    """Like `Label.shorten`."""
     shorten_from = kv.StringProperty("center")
+    """Like `Label.shorten_from`."""
     bg_color = kv.ColorProperty([0, 0, 0, 0])
+    """Widget background."""
     text_color = kv.ColorProperty()
+    """Text color."""
     selection_color = kv.ColorProperty([1, 1, 1, 0.5])
+    """Selection highlighting color."""
     enable_shifting = kv.BooleanProperty(False)
+    """Enable changing the order of items."""
     invoke_double_tap_only = kv.BooleanProperty(True)
+    """Only invoke items when double clicking."""
     _label_kwargs = kv.DictProperty()
 
     def __init__(self, **kwargs):
+        """See class documentation for details."""
         super().__init__(**kwargs)
         self._rects = []
         self._scroll = 0

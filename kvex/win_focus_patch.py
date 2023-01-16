@@ -25,7 +25,10 @@ from kivy.core.window import Window
 
 
 class XWindowFocusPatch:
+    """See module documentation for details."""
+
     def __init__(self):
+        """See module documentation for details."""
         Window.bind(
             focus=self._on_focus,
             on_key_down=self._on_key_down,

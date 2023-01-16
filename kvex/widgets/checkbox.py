@@ -1,3 +1,4 @@
+"""Home of `XCheckBox`."""
 
 from .. import kivy as kv
 from ..behaviors import XFocusBehavior
@@ -8,6 +9,7 @@ class XCheckBox(XFocusBehavior, XWidget, kv.CheckBox):
     """CheckBox with focus."""
 
     def __init__(self, *args, **kwargs):
+        """See class documentation for details."""
         super().__init__(*args, **kwargs)
         self.make_bg(source="atlas://data/images/defaulttheme/button_disabled")
         self._kvex_bg_color.a = int(self.focus)
@@ -17,6 +19,7 @@ class XCheckBox(XFocusBehavior, XWidget, kv.CheckBox):
         self.active = not self.active
 
     def on_focus(self, w, focus):
+        """Set background alpha."""
         self._kvex_bg_color.a = int(focus)
 
     def keyboard_on_key_down(self, w, key_pair, text, mods):

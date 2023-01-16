@@ -1,3 +1,4 @@
+"""Home of `XSlider` and `XSliderText`."""
 
 from typing import Optional, Any
 from .. import kivy as kv
