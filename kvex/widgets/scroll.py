@@ -22,7 +22,7 @@ class XScroll(XThemed, XWidget, kv.ScrollView):
             view: A widget to put in the scroll view.
             scroll_amount: Resolution of scroll in pixels.
         """
-        kwargs = dict(bar_width="10sp") | kwargs
+        kwargs = dict(bar_width="5sp") | kwargs
         super().__init__(**kwargs)
         self.scroll_amount = scroll_amount
         self.scroll_type = ["bars"]
