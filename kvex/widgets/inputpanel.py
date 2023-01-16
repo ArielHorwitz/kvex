@@ -52,6 +52,8 @@ class XInputPanel(XDBox):
     """Text for the reset button, leave empty to hide."""
     invoke_text = kv.StringProperty("Send")
     """Text to show on the invoke button, leave empty to hide."""
+    fill_button = kv.BooleanProperty(False)
+    """Fill reset or invoke button horizontally even if only one is visible."""
 
     def __init__(
         self,
@@ -65,6 +67,7 @@ class XInputPanel(XDBox):
             widgets: Dictionary of names to widgets.
         """
         kwargs = dict(padding=("10sp", 0)) | kwargs
+        self._controls = controls = XBox()
         super().__init__(**kwargs)
         main_box = self
         self.widgets: dict[str, BaseInputWidget] = dict()
@@ -88,7 +91,7 @@ class XInputPanel(XDBox):
         if self.invoke_text:
             controls.add_widget(XAnchor.wrap(self._invoke_btn, padding=("5dp", 0)))
         if len(controls.children) == 1:
-            controls.set_size(hx=0.5)
+            controls.set_size(hx=1 if self.fill_button else 0.5)
             controls = XAnchor.wrap(controls)
         controls.set_size(y=HEIGHT_UNIT)
         if len(controls.children) > 0:
@@ -100,6 +103,13 @@ class XInputPanel(XDBox):
         )
         self.register_event_type("on_invoke")
         self.register_event_type("on_values")
+
+    def on_fill_button(self, w, fill: bool):
+        """Adjust control buttons frame size hint."""
+        if len(self._controls.children) == 1:
+            self._controls.set_size(hx=1 if fill else 0.5)
+        else:
+            self._controls.set_size(hx=1)
 
     def get_value(self, widget_name: str, /) -> Any:
         """Get a value by name."""
