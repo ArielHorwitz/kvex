@@ -18,6 +18,8 @@ exists) that gaining focus is always first and losing focus is always last.
 
 Since key releases may happen many frames in the future, we also remember to consume key
 releases of keys that we consumed their corresponding presses.
+
+.. warning:: This solution doesn't seem to fix all cases.
 """
 
 from kivy.clock import Clock

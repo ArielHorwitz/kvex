@@ -32,7 +32,7 @@ class XButton(XThemed, XWidget, kv.Button):
         return super().on_touch_down(m)
 
     def on_subtheme(self, subtheme):
-        """Override base method."""
+        """Apply colors."""
         self.background_color = subtheme.bg.rgba
         self.color = subtheme.fg.rgba
 

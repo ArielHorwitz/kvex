@@ -1,6 +1,6 @@
 """App and associated widgets.
 
-Generally, to use the GUI, one would initialize and then run an `App`:
+To use the GUI, initialize and then run an `XApp`:
 ```python
 app = XApp()
 app.hook(func_to_call_every_frame, fps=20)

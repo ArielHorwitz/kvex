@@ -33,7 +33,7 @@ class XScroll(XThemed, XWidget, kv.ScrollView):
         self._on_size()
 
     def on_subtheme(self, subtheme):
-        """Override base method."""
+        """Apply colors."""
         self.bar_color = subtheme.accent2.rgba
         self.bar_inactive_color = subtheme.accent1.rgba
 

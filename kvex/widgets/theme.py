@@ -153,7 +153,7 @@ class XSubThemePreview(XFrame):
         self.add_widget(main_frame)
 
     def on_subtheme(self, subtheme):
-        """Override base method."""
+        """Apply colors."""
         super().on_subtheme(subtheme)
         self._br.make_bg(subtheme.accent1)
         self._br2.make_bg(subtheme.accent2)

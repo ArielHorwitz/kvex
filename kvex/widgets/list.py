@@ -113,7 +113,7 @@ class XList(XThemed, XFocusBehavior, XRelative):
         self.scroll = index
 
     def on_subtheme(self, subtheme):
-        """Override base method."""
+        """Apply colors."""
         self.bg_color = subtheme.bg.rgba
         self.text_color = subtheme.fg.rgba
         self.selection_color = subtheme.accent1.modified_alpha(0.5).rgba
@@ -124,7 +124,7 @@ class XList(XThemed, XFocusBehavior, XRelative):
         self._refresh_selection_graphics()
 
     def on_touch_down(self, touch):
-        """Override base method."""
+        """Handle invoking items."""
         r = super().on_touch_down(touch)
         if not self.collide_point(*touch.pos):
             return r
@@ -285,7 +285,7 @@ class XList(XThemed, XFocusBehavior, XRelative):
         pass
 
     def keyboard_on_key_down(self, w, key_pair, text, mods):
-        """Override base method."""
+        """Handle key presses for navigation and invocation."""
         keycode, key = key_pair
         if key in {"up", "down", "pageup", "pagedown"}:
             self._handle_arrow_key(key, mods)

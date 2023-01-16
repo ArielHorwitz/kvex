@@ -23,7 +23,7 @@ class XSpinnerOption(XThemed, XWidget, kv.SpinnerOption):
         super().__init__(*args, **kwargs)
 
     def on_subtheme(self, subtheme):
-        """Override base method."""
+        """Apply colors."""
         self.background_color = subtheme.bg.rgba
         self.color = subtheme.fg.rgba
 
@@ -53,7 +53,7 @@ class XSpinner(XThemed, XWidget, kv.Spinner):
         self.dispatch("on_select", self.values.index(text), text)
 
     def on_subtheme(self, subtheme):
-        """Override base method."""
+        """Apply colors."""
         self.background_color = subtheme.bg.rgba
         self.color = subtheme.fg.rgba
 

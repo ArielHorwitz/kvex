@@ -44,7 +44,7 @@ class XInput(XThemed, XFocusBehavior, XWidget, kv.TextInput):
         return super().keyboard_on_key_down(w, key_pair, text, mods)
 
     def on_subtheme(self, subtheme):
-        """Override base method."""
+        """Apply colors."""
         self.background_color = subtheme.bg.rgba
         self.foreground_color = subtheme.fg.rgba
 

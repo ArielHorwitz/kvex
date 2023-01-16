@@ -101,7 +101,7 @@ class XFrame(XThemed, XAnchor):
     BG = str(assets.get_image("xframe_bg"))
 
     def on_subtheme(self, subtheme):
-        """Override base method."""
+        """Apply background color."""
         self.make_bg(subtheme.bg, source=self.BG)
 
 
@@ -125,7 +125,7 @@ class XAnchorDelayed(XAnchor):
     _delayed_layout_event = None
 
     def do_layout(self, *args, **kwargs):
-        """Override base method. See class documentation for details."""
+        """Override base method to delay layout events."""
         if self._delayed_layout_event:
             self._delayed_layout_event.cancel()
         _real_do_layout = super().do_layout

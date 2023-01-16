@@ -62,7 +62,7 @@ class XLabel(XThemed, XWidget, kv.Label):
         self.text_size = self.size
 
     def on_subtheme(self, subtheme):
-        """Override base method."""
+        """Apply colors."""
         self.color = subtheme.fg.rgba
 
 

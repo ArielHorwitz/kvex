@@ -19,7 +19,7 @@ class XAtlasPreview(XScroll):
         self.register_event_type("on_item")
 
     def on_touch_down(self, touch):
-        """Override base method."""
+        """Dispatch `on_item` event if an item has been clicked."""
         consumed = super().on_touch_down(touch)
         if consumed:
             return consumed
