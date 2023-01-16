@@ -2,11 +2,12 @@
 
 from dataclasses import dataclass, field
 from typing import Any, Optional, Callable
+import functools
 from .. import kivy as kv
 from .layouts import XAnchor, XDBox, XBox, XCurtain
 from .label import XLabel
 from .button import XButton
-from .input import XInput, XIntInput, XFloatInput
+from .input import XInput
 from .checkbox import XCheckBox
 from .spinner import XSpinner
 
@@ -258,7 +259,7 @@ class BooleanInputWidget(BaseInputWidget):
 
 class IntInputWidget(StringInputWidget):
     wtype = "int"
-    _entry_class = XIntInput
+    _entry_class = functools.partial(XInput, input_filter="int")
     _text_default = "0"
 
     def get_value(self) -> int:
@@ -272,7 +273,7 @@ class IntInputWidget(StringInputWidget):
 
 class FloatInputWidget(StringInputWidget):
     wtype = "float"
-    _entry_class = XFloatInput
+    _entry_class = functools.partial(XInput, input_filter="float")
     _text_default = "0"
 
     def get_value(self) -> float:
