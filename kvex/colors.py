@@ -194,11 +194,6 @@ class SubTheme(NamedTuple):
     accent2: XColor
     """Secondary accent color."""
 
-    @classmethod
-    def from_hexes(cls, *hexes) -> "SubTheme":
-        """`SubTheme` from list of colors in (string) hex format."""
-        return cls(*(XColor.from_hex(h) for h in hexes))
-
 
 SUBTHEME_COLORS = SubTheme._fields
 """Color names in a `SubTheme`."""
@@ -219,10 +214,6 @@ class Theme(NamedTuple):
 
 SUBTHEME_NAMES = ("primary", "secondary", "accent")
 """`SubTheme` names in a `Theme`."""
-
-
-def _convert_hexes(*hexes):
-    return tuple(XColor.from_hex(h) for h in hexes)
 
 
 def _import_theme_data() -> dict:
