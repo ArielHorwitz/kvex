@@ -15,7 +15,7 @@ class XDropDown(XThemed, XWidget, kv.DropDown):
 
     def on_subtheme(self, subtheme):
         """Apply background."""
-        self.make_bg(subtheme.bg.modified_alpha(0.75))
+        self.make_bg(subtheme.bg.modified_alpha(0.95))
 
 
 __all__ = (
