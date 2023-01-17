@@ -2,8 +2,8 @@
 
 from .. import kivy as kv
 from .. import assets
-from ..behaviors import XThemed
 from .widget import XWidget
+from .button import XThemedButton
 from .dropdown import XDropDown
 
 
@@ -11,24 +11,21 @@ BG_NORMAL = str(assets.get_image("spinner"))
 BG_DOWN = str(assets.get_image("button_down"))
 
 
-class XSpinnerOption(XThemed, XWidget, kv.SpinnerOption):
+class XSpinnerOption(XThemedButton, XWidget, kv.SpinnerOption):
     """SpinnerOption."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         """Initialize the class with defaults."""
         kwargs = dict(
             background_normal=BG_NORMAL,
             background_down=BG_DOWN,
+            background_disabled_normal=BG_NORMAL,
+            background_disabled_down=BG_DOWN,
         ) | kwargs
-        super().__init__(*args, **kwargs)
-
-    def on_subtheme(self, subtheme):
-        """Apply colors."""
-        self.background_color = subtheme.bg.rgba
-        self.color = subtheme.fg.rgba
+        super().__init__(**kwargs)
 
 
-class XSpinner(XThemed, XWidget, kv.Spinner):
+class XSpinner(XThemedButton, XWidget, kv.Spinner):
     """Spinner."""
 
     def __init__(self, *args, **kwargs):
@@ -38,6 +35,8 @@ class XSpinner(XThemed, XWidget, kv.Spinner):
             option_cls=XSpinnerOption,
             background_normal=BG_NORMAL,
             background_down=BG_DOWN,
+            background_disabled_normal=BG_NORMAL,
+            background_disabled_down=BG_DOWN,
         ) | kwargs
         super().__init__(*args, **kwargs)
         self.register_event_type("on_select")
@@ -51,11 +50,6 @@ class XSpinner(XThemed, XWidget, kv.Spinner):
             self.text = text
         self.is_open = False
         self.dispatch("on_select", self.values.index(text), text)
-
-    def on_subtheme(self, subtheme):
-        """Apply colors."""
-        self.background_color = subtheme.bg.rgba
-        self.color = subtheme.fg.rgba
 
 
 __all__ = (

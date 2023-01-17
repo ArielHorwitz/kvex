@@ -10,8 +10,8 @@ BG_NORMAL = str(assets.get_image("button"))
 BG_DOWN = str(assets.get_image("button_down"))
 
 
-class XButton(XThemed, XWidget, kv.Button):
-    """Button."""
+class XThemedButton(XThemed):
+    """Mixin for buttons using themes and custom backgrounds (see also: `XButton`)."""
 
     def __init__(self, **kwargs):
         """Initialize the class."""
@@ -21,9 +21,12 @@ class XButton(XThemed, XWidget, kv.Button):
             valign="center",
             background_normal=BG_NORMAL,
             background_down=BG_DOWN,
+            background_disabled_normal=BG_NORMAL,
+            background_disabled_down=BG_DOWN,
             border=(2, 1, 2, 1),
         ) | kwargs
         super().__init__(**kwargs)
+        self.bind(disabled=self._refresh_graphics)
 
     def on_touch_down(self, m):
         """Overrides base class method to only react to left clicks."""
@@ -33,8 +36,19 @@ class XButton(XThemed, XWidget, kv.Button):
 
     def on_subtheme(self, subtheme):
         """Apply colors."""
-        self.background_color = subtheme.bg.rgba
-        self.color = subtheme.fg.rgba
+        self._refresh_graphics()
+
+    def _refresh_graphics(self, *args):
+        enabled_alpha = 1 if not self.disabled else 0.5
+        self.background_color = self.subtheme.bg.modified_alpha(enabled_alpha).rgba
+        fg = self.subtheme.fg
+        self.color = fg.rgba
+        self.disabled_color = fg.modified_alpha(0.5).rgba
+
+
+class XButton(XThemedButton, XWidget, kv.Button):
+    """Button."""
+    pass
 
 
 class XToggleButton(kv.ToggleButtonBehavior, XButton):
@@ -63,4 +77,5 @@ class XToggleButton(kv.ToggleButtonBehavior, XButton):
 __all__ = (
     "XButton",
     "XToggleButton",
+    "XThemedButton",
 )
