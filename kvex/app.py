@@ -24,7 +24,7 @@ from .widgets.layouts import XAnchor, XAnchorDelayed
 from .widgets.label import XLabel
 
 
-DEFAULT_THEME_NAME = "mousefox"
+DEFAULT_THEME_NAME = "midnight"
 
 
 class XOverlay(XFocusBehavior, XAnchor):

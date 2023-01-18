@@ -39,11 +39,15 @@ class XThemedButton(XThemed):
         self._refresh_graphics()
 
     def _refresh_graphics(self, *args):
-        enabled_alpha = 1 if not self.disabled else 0.5
-        self.background_color = self.subtheme.bg.modified_alpha(enabled_alpha).rgba
-        fg = self.subtheme.fg
-        self.color = fg.rgba
-        self.disabled_color = fg.modified_alpha(0.5).rgba
+        if self.disabled:
+            bg_alpha = 0.5
+            color = self.subtheme.fg_muted
+        else:
+            bg_alpha = 1
+            color = self.subtheme.fg
+        self.background_color = self.subtheme.bg.modified_alpha(bg_alpha).rgba
+        self.color = color.rgba
+        self.disabled_color = color.modified_alpha(0.75).rgba
 
 
 class XButton(XThemedButton, XWidget, kv.Button):

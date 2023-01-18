@@ -6,7 +6,7 @@ from .widget import XWidget
 
 
 class XInput(XThemed, XFocusBehavior, XWidget, kv.TextInput):
-    """TextInput with sane defaults."""
+    """TextInput."""
 
     select_on_focus = kv.BooleanProperty(False)
     deselect_on_escape = kv.BooleanProperty(True)
@@ -47,6 +47,11 @@ class XInput(XThemed, XFocusBehavior, XWidget, kv.TextInput):
         """Apply colors."""
         self.background_color = subtheme.bg.rgba
         self.foreground_color = subtheme.fg.rgba
+        self.cursor_color = subtheme.fg.rgba
+        self.disabled_foreground_color = subtheme.fg_muted.rgba
+        self.selection_color = subtheme.accent.modified_alpha(0.5).rgba
+        self.hint_text_color = subtheme.fg_muted.rgba
+        self._trigger_update_graphics()
 
 
 __all__ = (

@@ -1,0 +1,181 @@
+
+[midnight]
+palette = ["#161722", "#25273c", "#cacde8", "#777a92"]
+
+[midnight.primary]
+bg = "#161722"
+fg = "#cacde8"
+fg_accent = "#6c67ff"
+fg_muted = "#777a92"
+fg_warn = "#f45e42"
+accent = "#cacde8"
+[midnight.secondary]
+bg = "#25273c"
+fg = "#cacde8"
+fg_accent = "#6c67ff"
+fg_muted = "#777a92"
+fg_warn = "#f45e42"
+accent = "#161722"
+[midnight.accent]
+bg = "#cacde8"
+fg = "#161722"
+fg_accent = "#4c47ff"
+fg_muted = "#777a92"
+fg_warn = "#f45e42"
+accent = "#25273c"
+
+
+[vintage]
+palette = ["#1a120b", "#3c2a21", "#d5cea3", "#a1954a", "#827975"]
+
+[vintage.primary]
+bg = "#1a120b"
+fg = "#d5cea3"
+fg_accent = "#e0c80a"
+fg_muted = "#827975"
+fg_warn = "#f45e42"
+accent = "#a1954a"
+[vintage.secondary]
+bg = "#3c2a21"
+fg = "#d5cea3"
+fg_accent = "#e0c80a"
+fg_muted = "#827975"
+fg_warn = "#f45e42"
+accent = "#a1954a"
+[vintage.accent]
+bg = "#d5cea3"
+fg = "#3c2a21"
+fg_accent = "#a1954a"
+fg_muted = "#827975"
+fg_warn = "#c44a34"
+accent = "#3c2a21"
+
+
+[darkpop]
+palette = ["#082032", "#2c394b", "#334756", "#cfaba5", "#7a2010"]
+
+[darkpop.primary]
+bg = "#082032"
+fg = "#cfaba5"
+fg_accent = "#4d4ae8"
+fg_muted = "#334756"
+fg_warn = "#ff4c29"
+accent = "#7a2010"
+[darkpop.secondary]
+bg = "#2c394b"
+fg = "#cfaba5"
+fg_accent = "#7472e8"
+fg_warn = "#ff4c29"
+fg_muted = "#082032"
+accent = "#7a2010"
+[darkpop.accent]
+bg = "#334756"
+fg = "#cfaba5"
+fg_accent = "#7472e8"
+fg_warn = "#ff4c29"
+fg_muted = "#082032"
+accent = "#7a2010"
+
+
+[market]
+palette = ["#342628", "#61484b", "#feaa00", "#f7f4ef", "#788402", "#7e7d85"]
+
+[market.primary]
+bg = "#342628"
+fg = "#f7f4ef"
+fg_accent = "#788402"
+fg_warn = "#ff4c29"
+fg_muted = "#7e7d85"
+accent = "#feaa00"
+[market.secondary]
+bg = "#61484b"
+fg = "#f7f4ef"
+fg_accent = "#788402"
+fg_warn = "#ff4c29"
+fg_muted = "#7e7d85"
+accent = "#feaa00"
+[market.accent]
+bg = "#feaa00"
+fg = "#342628"
+fg_accent = "#f7f4ef"
+fg_warn = "#ff4c29"
+fg_muted = "#61484b"
+accent = "#788402"
+
+
+[ocean]
+palette = ["#18b7be", "#aad9dc", "#178ca4", "#c3ffdf", "#072a40"]
+
+[ocean.primary]
+bg = "#18b7be"
+fg = "#072a40"
+fg_accent = "#c3ffdf"
+fg_warn = "#b8631a"
+fg_muted = "#178ca4"
+accent = "#178ca4"
+[ocean.secondary]
+bg = "#aad9dc"
+fg = "#072a40"
+fg_accent = "#18b7be"
+fg_warn = "#c2681a"
+fg_muted = "#c3ffdf"
+accent = "#072a40"
+[ocean.accent]
+bg = "#178ca4"
+fg = "#072a40"
+fg_accent = "#aad9dc"
+fg_warn = "#ed7f1f"
+fg_muted = "#18b7be"
+accent = "#c3ffdf"
+
+
+[offsubtle]
+palette = ["#013328", "#cc8b65", "#e3dcd2", "#100c0d", "#85827d"]
+
+[offsubtle.primary]
+bg = "#013328"
+fg = "#cc8b65"
+fg_accent = "#e3dcd2"
+fg_warn = "#c94242"
+fg_muted = "#100c0d"
+accent = "#85827d"
+[offsubtle.secondary]
+bg = "#cc8b65"
+fg = "#013328"
+fg_accent = "#e3dcd2"
+fg_warn = "#a61f1f"
+fg_muted = "#85827d"
+accent = "#100c0d"
+[offsubtle.accent]
+bg = "#e3dcd2"
+fg = "#013328"
+fg_accent = "#cc8b65"
+fg_warn = "#a61f1f"
+fg_muted = "#85827d"
+accent = "#100c0d"
+
+
+[evening]
+palette = ["#00003c", "#3b185f", "#c060a1", "#f0caa3", "#b398aa"]
+
+[evening.primary]
+bg = "#00003c"
+fg = "#f0caa3"
+fg_accent = "#c060a1"
+fg_warn = "#de4949"
+fg_muted = "#947d65"
+accent = "#b398aa"
+[evening.secondary]
+bg = "#3b185f"
+fg = "#f0caa3"
+fg_accent = "#c060a1"
+fg_warn = "#de4949"
+fg_muted = "#947d65"
+accent = "#b398aa"
+[evening.accent]
+bg = "#b398aa"
+fg = "#3b185f"
+fg_accent = "#f0caa3"
+fg_warn = "#571e00"
+fg_muted = "#c060a1"
+accent = "#00003c"

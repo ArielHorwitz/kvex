@@ -116,8 +116,8 @@ class XList(XThemed, XFocusBehavior, XRelative):
         """Apply colors."""
         self.bg_color = subtheme.bg.rgba
         self.text_color = subtheme.fg.rgba
-        self.selection_color = subtheme.accent1.modified_alpha(0.5).rgba
-        self.scroll_color = subtheme.accent2.modified_alpha(0.5).rgba
+        self.selection_color = subtheme.accent.modified_alpha(0.5).rgba
+        self.scroll_color = subtheme.fg.modified_alpha(0.5).rgba
 
     def _on_selection(self, *args):
         self.set_scroll()

@@ -21,7 +21,7 @@ class XLabel(XThemed, XWidget, kv.Label):
             "valign": "center",
         } | kwargs
         if fixed_width and fixed_height:
-            raise RuntimeError("Must set either fixed_width or fixed_height.")
+            raise RuntimeError("Cannot set both `fixed_width` and `fixed_height`.")
         super().__init__(**kwargs)
         self._trigger_fix_height = kv.Clock.create_trigger(self._fix_height)
         self._trigger_fix_width = kv.Clock.create_trigger(self._fix_width)
@@ -64,6 +64,9 @@ class XLabel(XThemed, XWidget, kv.Label):
     def on_subtheme(self, subtheme):
         """Apply colors."""
         self.color = subtheme.fg.rgba
+        self.outline_color = subtheme.fg_muted.rgba
+        self.disabled_color = subtheme.fg_muted.rgba
+        self.disabled_outline_color = subtheme.fg_accent.rgba
 
 
 class XLabelClick(kv.ButtonBehavior, XLabel):

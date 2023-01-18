@@ -1,18 +1,13 @@
-"""Home of `XColor`, `SubTheme`, and `Theme`.
+"""Home of `XColor`, `SubTheme`, and `Theme`."""
 
-The most common use of this module is `get_color`. It is able to conveniently retrieve
-any color from any palette in `PALETTES`. The `PALETTES` dictionary can be modified to
-add or replace palettes.
-"""
-
-from typing import NamedTuple
 import colorsys
-import json
+import functools
 import random
+import tomli
 from .assets import ASSETS_DIR
 
 
-_THEME_DATA_FILE = ASSETS_DIR / "defaultthemes.json"
+_THEME_DATA_FILE = ASSETS_DIR / "defaultthemes.toml"
 
 
 class XColor:
@@ -35,6 +30,7 @@ class XColor:
         """
         self.__rgba = r, g, b, a
         self.__hsv = colorsys.rgb_to_hsv(r, g, b)
+        self.__hash = hash(self.__rgba)
 
     @classmethod
     def from_hex(cls, hex_str: str, /) -> "XColor":
@@ -155,6 +151,10 @@ class XColor:
         """Wrap a string in color markup."""
         return f"[color={self.hex}]{s}[/color]"
 
+    def __hash__(self) -> int:
+        """Object hash."""
+        return self.__hash
+
     def __repr__(self):
         """Object repr."""
         return f"<{self.__class__.__qualname__} {self.hex}>"
@@ -180,50 +180,155 @@ RAINBOW = {
 """Rainbow colors in RGB."""
 
 
-class SubTheme(NamedTuple):
-    """Tuple of XColor for a theme."""
+class SubTheme:
+    """Collection of `XColor`s meant to be used in widgets.
 
-    bg: XColor
-    """Background color."""
-    fg: XColor
-    """Primary foreground (text) color."""
-    fg2: XColor
-    """Secondary foreground (text) color."""
-    accent1: XColor
-    """Primary accent color."""
-    accent2: XColor
-    """Secondary accent color."""
+    SubThemes are designed for a particular `Theme`, using its color palette. At least
+    "bg" and "fg" are required to create a SubTheme (see:  `COLOR_NAMES`).
+
+    Colors can be accessed via name:
+    ```python3
+    subtheme.bg
+    subtheme.fg
+    subtheme.accent
+    ```
+
+    Or via mapping:
+    ```python3
+    for name, color in dict(subtheme).items():
+        ...
+    ```
+    """
+
+    COLOR_NAMES = (
+        "bg",
+        "fg",
+        "fg_accent",
+        "fg_muted",
+        "fg_warn",
+        "accent",
+    )
+    """Names of colors in a SubTheme."""
+
+    def __init__(self, **kwargs):
+        """Initialize the class with colors from `COLOR_NAMES`.
+
+        See class documentation.
+        """
+        assert "bg" in kwargs
+        assert "fg" in kwargs
+        extra_colors = set(kwargs.keys()) - set(self.COLOR_NAMES)
+        if extra_colors:
+            raise KeyError(f"Unknown color names: {extra_colors}")
+        # Set defaults
+        fg = kwargs["fg"]
+        kwargs["fg_accent"] = kwargs.get("fg_accent", fg)
+        kwargs["fg_warn"] = kwargs.get("fg_warn", fg)
+        kwargs["fg_muted"] = fg_muted = kwargs.get("fg_muted", fg)
+        kwargs["accent"] = kwargs.get("accent", fg_muted)
+        self._colors = tuple(kwargs[color] for color in self.COLOR_NAMES)
+        self._hash = hash(self._colors)
+
+    def __getattr__(self, name):
+        """Get color by name."""
+        return self[name]
+
+    @functools.cache
+    def __getitem__(self, key) -> XColor:
+        """Get SubTheme by name."""
+        if key in self.COLOR_NAMES:
+            index = self.COLOR_NAMES.index(key)
+            return self._colors[index]
+        raise KeyError(f"No such color name {key!r}")
+
+    def keys(self) -> tuple[str, ...]:
+        """Tuple of color names."""
+        return self.COLOR_NAMES
+
+    def __hash__(self) -> int:
+        """Object hash."""
+        return self._hash
+
+    def __repr__(self):
+        """Object repr."""
+        cls_name = f"{self.__class__.__qualname__} object"
+        idhex = f"at 0x{id(self):x}"
+        return f"<{cls_name} {self.bg.hex} {self.fg.hex} {idhex}>"
 
 
-SUBTHEME_COLORS = SubTheme._fields
-"""Color names in a `SubTheme`."""
+class Theme:
+    """A collection of `SubTheme`s designed using a single color palette.
 
+    SubThemes can be accessed via name:
+    ```python3
+    theme.primary
+    theme.secondary
+    theme.accent
+    ```
 
-class Theme(NamedTuple):
-    """Tuple of `SubTheme`s."""
+    Or via mapping:
+    ```python3
+    for name, subtheme in dict(theme).items():
+        ...
+    ```
+    """
 
-    primary: SubTheme
-    """Primary subtheme."""
-    secondary: SubTheme
-    """Secondary subtheme."""
-    accent: SubTheme
-    """Accented subtheme."""
-    palette: list[XColor]
-    """All colors in the palette of this theme."""
+    SUBTHEME_NAMES = ("primary", "secondary", "accent")
+    """Names of SubThemes in a Theme."""
 
+    def __init__(
+        self,
+        *,
+        palette: tuple[XColor, ...],
+        primary: SubTheme,
+        secondary: SubTheme,
+        accent: SubTheme,
+    ):
+        """Initialize the class with palette and `SubTheme`s.
 
-SUBTHEME_NAMES = ("primary", "secondary", "accent")
-"""`SubTheme` names in a `Theme`."""
+        Args:
+            palette: Tuple of `XColor`s used in this theme.
+            primary: Primary SubTheme (used most)
+            secondary: Secondary SubTheme
+            accent: Accent SubTheme (used least)
+        """
+        self.palette = tuple(palette)
+        self._subthemes = (primary, secondary, accent)
+        self._hash = hash((self.palette, self._subthemes))
+
+    def __getattr__(self, name):
+        """Get subtheme by name."""
+        return self[name]
+
+    @functools.cache
+    def __getitem__(self, key) -> SubTheme:
+        """Get SubTheme by name."""
+        if key in self.SUBTHEME_NAMES:
+            index = self.SUBTHEME_NAMES.index(key)
+            return self._subthemes[index]
+        raise KeyError(f"No such subtheme name {key!r}")
+
+    def keys(self) -> tuple[str, ...]:
+        """Tuple of subtheme names."""
+        return self.SUBTHEME_NAMES
+
+    def __hash__(self) -> int:
+        """Object hash."""
+        return self._hash
+
+    def __repr__(self) -> str:
+        """Object repr."""
+        return f"<{self.__class__.__qualname__} object {self.palette}>"
 
 
 def _import_theme_data() -> dict:
     themes = dict()
-    with open(_THEME_DATA_FILE) as f:
-        raw_data = json.load(f)
+    with open(_THEME_DATA_FILE, "rb") as f:
+        raw_data = tomli.load(f)
     for theme_name, theme in raw_data.items():
         theme_data = dict()
         theme_data["palette"] = tuple(XColor.from_hex(h) for h in theme["palette"])
-        for subtheme_name in SUBTHEME_NAMES:
+        for subtheme_name in Theme.SUBTHEME_NAMES:
             theme_data[subtheme_name] = SubTheme(**{
                 color_name: XColor.from_hex(color)
                 for color_name, color in theme[subtheme_name].items()
@@ -234,7 +339,6 @@ def _import_theme_data() -> dict:
 
 THEMES = _import_theme_data()
 """Themes data."""
-
 THEME_NAMES = tuple(THEMES.keys())
 """`Theme` names."""
 
@@ -243,8 +347,6 @@ __all__ = (
     "XColor",
     "Theme",
     "SubTheme",
-    "SUBTHEME_NAMES",
-    "SUBTHEME_COLORS",
     "THEME_NAMES",
     "RAINBOW",
 )
