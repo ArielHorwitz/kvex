@@ -11,7 +11,7 @@ from typing import Callable, Optional
 from contextlib import contextmanager
 from functools import partial
 from . import kivy as kv
-from .colors import XColor, THEMES, Theme
+from .colors import XColor, THEMES, Theme, reload_themes
 from .util import (
     queue_around_frame,
     restart_script,
@@ -93,6 +93,14 @@ class XApp(kv.App):
     def on_theme(self, theme: Theme):
         """Called when the theme has been set."""
         pass
+
+    def reload_themes(self, *args):
+        """Reload themes from disk.
+
+        Some widgets may require manual refreshing to take effect.
+        """
+        reload_themes()
+        self.set_theme(self.theme_name)
 
     @property
     def subtheme_name(self) -> str:

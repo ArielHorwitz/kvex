@@ -343,10 +343,20 @@ THEME_NAMES = tuple(THEMES.keys())
 """`Theme` names."""
 
 
+def reload_themes(*args):
+    """Reload `THEMES` from disk. Prefer `kvex.app.XApp.reload_themes`."""
+    existing = list(THEMES.keys())
+    for k in existing:
+        del THEMES[k]
+    for k, v in _import_theme_data().items():
+        THEMES[k] = v
+
+
 __all__ = (
     "XColor",
     "Theme",
     "SubTheme",
     "THEME_NAMES",
     "RAINBOW",
+    "reload_themes",
 )

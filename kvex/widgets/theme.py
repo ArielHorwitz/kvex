@@ -33,6 +33,8 @@ class XPreview(kv.FocusBehavior, XAnchor):
             cindex -= 1
         elif key.isdigit():
             cindex = int(key) - 1
+        elif key == "f5":
+            self.app.reload_themes()
         else:
             return True
         cindex = cindex % len(THEME_NAMES)

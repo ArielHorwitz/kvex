@@ -131,6 +131,7 @@ class XButtonBar(XFrame):
                 display_as=f"{prefix}{tname.capitalize()}{suffix}",
                 callback=lambda *a, t=tname: self.app.set_theme(t),
             )
+        self.add_button("theme", "reload_themes", callback=self.app.reload_themes)
 
 
 class XButtonBarSpinnerOption(XSpinnerOption):
