@@ -11,6 +11,7 @@ def queue_around_frame(
     func,
     before: Optional[Callable] = None,
     after: Optional[Callable] = None,
+    delay: float = 0,
 ):
     """Decorator for queuing functions before and after drawing frames.
 
@@ -22,7 +23,7 @@ def queue_around_frame(
     The following order of operations will be queued:
 
     1. Call *before*
-    2. Draw GUI frame
+    2. Draw GUI frame and wait *delay* seconds
     3. Call the wrapped function
     4. Call *after*
 
@@ -42,7 +43,7 @@ def queue_around_frame(
         if before is not None:
             before()
         wrapped = partial(func, *args, **kwargs)
-        kv.Clock.schedule_once(lambda dt: _call_with_after(wrapped, after), 0.05)
+        kv.Clock.schedule_once(lambda dt: _call_with_after(wrapped, after), delay)
 
     return wrapper
 
@@ -53,7 +54,7 @@ def _call_with_after(func: Callable, after: Optional[Callable] = None):
         # In order to schedule properly, we must tick or else all the time spent
         # calling func will be counted as time waited on kivy's clock schedule.
         kv.Clock.tick()
-        kv.Clock.schedule_once(lambda dt: after(), 0.05)
+        kv.Clock.schedule_once(lambda dt: after(), 0)
 
 
 def center_sprite(

@@ -20,7 +20,7 @@ from .util import (
 )
 from .behaviors import XFocusBehavior
 from .win_focus_patch import XWindowFocusPatch
-from .widgets.layouts import XAnchor, XAnchorDelayed
+from .widgets.layouts import XAnchor, XAnchorDelayed, fpwrap
 from .widgets.label import XLabel
 
 
@@ -33,11 +33,12 @@ class XOverlay(XFocusBehavior, XAnchor):
     def __init__(self, **kwargs):
         """Initialize like an XAnchor."""
         super().__init__()
-        self.make_bg(XColor(a=0.5))
-        self.label = XLabel(**kwargs)
-        self.label.set_size(x=500, y=150)
-        self.label.make_bg(XColor.from_name("red", 0.15))
-        self.add_widget(self.label)
+        self.make_bg(XColor(*self.app.theme.secondary.bg.rgb, 0.75))
+        with self.app.subtheme_context("primary"):
+            self.label = XLabel(**kwargs)
+            frame = fpwrap(self.label)
+            frame.set_size(x="500sp", y="150sp")
+            self.add_widget(frame)
 
 
 class XApp(kv.App):
@@ -67,6 +68,7 @@ class XApp(kv.App):
         self.keyboard = kv.Window.request_keyboard(consume_args, None)
         self.__restart_flag = False
         self.__overlay = None
+        self._overlay_container = None
         schedule_interval(self._check_focus, 0)
         kv.Window.bind(
             on_touch_down=self._filter_touch,
@@ -253,7 +255,7 @@ class XApp(kv.App):
 
         Example usage:
         ```python
-        with_overlay(
+        xapp.with_overlay(
             func=lambda: my_func(arg1=True),
             text="my_func is executing...",
             after=lambda: print("finished executing my_func."),
@@ -267,10 +269,13 @@ class XApp(kv.App):
         """
         if self.__overlay is not None:
             raise RuntimeError("Cannot create an overlay when one already exists.")
+        delay = self.root.layout_event_delay
+        self.root.layout_event_delay = 0
         queue_around_frame(
             func,
             before=partial(self.__create_overlay, **kwargs),
-            after=partial(self.__destroy_overlay, after),
+            after=partial(self.__destroy_overlay, after, delay),
+            delay=0.05,
         )()
 
     def _filter_touch(self, w, touch):
@@ -284,14 +289,15 @@ class XApp(kv.App):
         self.__overlay = XOverlay(**kwargs)
         self.__overlay.focus = True
         self.block_input = True
-        self.add_widget(self.__overlay)
+        self.root.add_widget(self.__overlay)
 
-    def __destroy_overlay(self, after: Optional[Callable] = None):
+    def __destroy_overlay(self, after: Optional[Callable], delay: float):
         self.root.remove_widget(self.__overlay)
         self.__overlay = None
         self.block_input = False
         if after is not None:
             after()
+        self.root.layout_event_delay = delay
 
 
 __all__ = (
