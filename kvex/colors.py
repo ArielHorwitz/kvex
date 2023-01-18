@@ -11,7 +11,10 @@ _THEME_DATA_FILE = ASSETS_DIR / "defaultthemes.toml"
 
 
 class XColor:
-    """A class to represent a color."""
+    """A class to represent a color.
+
+    All component values are normalized between 0 and 1.
+    """
 
     def __init__(
         self,
@@ -109,27 +112,27 @@ class XColor:
 
     @property
     def a(self) -> float:
-        """Alpha."""
+        """Alpha component."""
         return self.__rgba[3]
 
     @property
-    def h(self):
-        """Hue."""
+    def h(self) -> float:
+        """Hue component."""
         return self.__hsv[0]
 
     @property
-    def s(self):
-        """Saturation."""
+    def s(self) -> float:
+        """Saturation component."""
         return self.__hsv[1]
 
     @property
-    def v(self):
-        """Value (from hsv)."""
+    def v(self) -> float:
+        """Value component."""
         return self.__hsv[2]
 
     @property
-    def hsv(self):
-        """Hue, saturation, and value."""
+    def hsv(self) -> tuple[float, float, float]:
+        """Hue, saturation, and value components."""
         return self.__hsv
 
     @property
