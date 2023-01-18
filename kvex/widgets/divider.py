@@ -1,6 +1,7 @@
 """Home of `XDivider`."""
 
 from .. import kivy as kv
+from ..util import sp2pixels
 from ..colors import XColor
 from ..assets import get_image
 from ..behaviors import XThemed
@@ -14,7 +15,7 @@ class XDivider(XThemed, XAnchor):
     """Orientation of the divider."""
     divider_hint = kv.NumericProperty(0.8)
     """Size hint of the divider."""
-    thickness = kv.ObjectProperty("10dp")
+    thickness = kv.ObjectProperty("5dp")
     """Thickness of the divider not including padding."""
     color = kv.ColorProperty()
     """Color of the divider."""
@@ -42,11 +43,13 @@ class XDivider(XThemed, XAnchor):
             color=XColor(*self.color),
             source=get_image("xframe_bg"),
         )
+        pad = self.padding[1 if self.orientation == "horizontal" else 0]
+        thick = sp2pixels(self.thickness) + sp2pixels(pad) * 2
         if self.orientation == "horizontal":
-            self.set_size(hx=1, y=self.thickness)
+            self.set_size(hx=1, y=thick)
             self.inner.set_size(hx=self.divider_hint, hy=1)
         elif self.orientation == "vertical":
-            self.set_size(x=self.thickness, hy=1)
+            self.set_size(x=thick, hy=1)
             self.inner.set_size(hx=1, hy=self.divider_hint)
 
 
