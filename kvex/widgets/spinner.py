@@ -2,6 +2,7 @@
 
 from .. import kivy as kv
 from .. import assets
+from ..util import DEFAULT_BUTTON_HEIGHT
 from .widget import XWidget
 from .button import XThemedButton
 from .dropdown import XDropDown
@@ -17,6 +18,8 @@ class XSpinnerOption(XThemedButton, XWidget, kv.SpinnerOption):
     def __init__(self, **kwargs):
         """Initialize the class with defaults."""
         kwargs = dict(
+            size_hint_y=None,
+            height=DEFAULT_BUTTON_HEIGHT,
             background_normal=BG_NORMAL,
             background_down=BG_DOWN,
             background_disabled_normal=BG_NORMAL,
@@ -31,6 +34,8 @@ class XSpinner(XThemedButton, XWidget, kv.Spinner):
     def __init__(self, *args, **kwargs):
         """Initialize the class with defaults."""
         kwargs = dict(
+            size_hint_y=None,
+            height=DEFAULT_BUTTON_HEIGHT,
             dropdown_cls=XDropDown,
             option_cls=XSpinnerOption,
             background_normal=BG_NORMAL,

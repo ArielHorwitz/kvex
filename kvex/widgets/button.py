@@ -2,6 +2,7 @@
 
 from .. import kivy as kv
 from .. import assets
+from ..util import DEFAULT_BUTTON_HEIGHT
 from ..behaviors import XThemed
 from .widget import XWidget
 
@@ -16,6 +17,8 @@ class XThemedButton(XThemed):
     def __init__(self, **kwargs):
         """Initialize the class."""
         kwargs = dict(
+            size_hint_y=None,
+            height=DEFAULT_BUTTON_HEIGHT,
             markup=True,
             halign="center",
             valign="center",

@@ -137,10 +137,10 @@ class XPreviewSubtheme(XThemed, XAnchor):
         input_panel = XInputPanel(pwidgets)
         input_panel.set_enabled("bool_dis", False)
         input_panel.set_enabled("disabled", False)
-        disbtn = XButton(text="Disabled button", disabled=True)
+        disbtn = pwrap(XButton(text="Disabled button", disabled=True))
         disbtn.set_size(hx=0.5)
         disbtn = pwrap(disbtn)
-        disbtn.set_size(y="50sp")
+        disbtn.set_size(y="40dp")
         content_scroll_view = XDBox()
         content_scroll_view.add_widgets(
             palette_box,

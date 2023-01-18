@@ -6,6 +6,7 @@ from .layouts import XFrame, XBox
 from .dropdown import XDropDown
 from .spinner import XSpinner, XSpinnerOption
 from ..colors import THEME_NAMES
+from ..util import DEFAULT_BUTTON_HEIGHT
 
 
 class XButtonBar(XFrame):
@@ -26,6 +27,7 @@ class XButtonBar(XFrame):
             dropdown_subtheme: Subtheme of dropdown.
             nested_subtheme: Subtheme of nested buttons.
         """
+        kwargs = dict(size_hint_y=None, height=DEFAULT_BUTTON_HEIGHT) | kwargs
         super().__init__(**kwargs)
         self._category_subtheme = category_subtheme
         self._dropdown_subtheme = dropdown_subtheme

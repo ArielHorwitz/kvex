@@ -93,14 +93,11 @@ class XInputPanel(XDBox):
         if len(controls.children) == 1:
             controls.set_size(hx=1 if self.fill_button else 0.5)
             controls = XAnchor.wrap(controls)
-        controls.set_size(y=HEIGHT_UNIT)
+        controls.set_size(y=util.DEFAULT_BUTTON_HEIGHT)
         if len(controls.children) > 0:
             main_box.add_widget(controls)
         # Bindings
-        self.bind(
-            reset_text=self._on_reset_text,
-            invoke_text=self._on_invoke_text,
-        )
+        self.bind(reset_text=self._on_reset_text, invoke_text=self._on_invoke_text)
         self.register_event_type("on_invoke")
         self.register_event_type("on_values")
 
@@ -178,7 +175,8 @@ class BaseInputWidget(XBox):
         self.widget = self._get_widget(w, on_value, on_invoke)
         assert self.widget is not None
         # Assemble
-        height = util.sp2pixels(HEIGHT_UNIT) * (1 + (w.orientation == "vertical"))
+        pixel_height_ = util.sp2pixels(util.DEFAULT_BUTTON_HEIGHT)
+        height = pixel_height_ * (1 + (w.orientation == "vertical"))
         self.set_size(y=height)
         self.label.set_size(hx=w.label_hint if w.orientation == "horizontal" else 1)
         self.add_widgets(self.label, self.widget)

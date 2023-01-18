@@ -7,6 +7,9 @@ import sys
 from . import kivy as kv
 
 
+DEFAULT_BUTTON_HEIGHT = "30sp"
+
+
 def queue_around_frame(
     func,
     before: Optional[Callable] = None,
@@ -168,4 +171,5 @@ __all__ = (
     "snooze_trigger",
     "queue_around_frame",
     "sp2pixels",
+    "DEFAULT_BUTTON_HEIGHT",
 )
