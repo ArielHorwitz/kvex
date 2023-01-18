@@ -8,6 +8,7 @@ from .buttonbar import *
 from .checkbox import *
 from .color import *
 from .container import *
+from .datetime import *
 from .divider import *
 from .dropdown import *
 from .hotkeycontroller import *
