@@ -185,8 +185,8 @@ class BaseInputWidget(XBox):
 
     def set_enabled(self, set_as: Optional[bool] = None, /):
         if set_as is None:
-            set_as = not self.label.disabled
-        self.label.disabled = set_as
+            set_as = self.label.disabled
+        self.label.disabled = not set_as
 
     def set_focus(self):
         pass
@@ -223,8 +223,8 @@ class StringInputWidget(BaseInputWidget):
     def set_enabled(self, set_as: Optional[bool] = None, /):
         super().set_enabled(set_as)
         if set_as is None:
-            set_as = not self._entry.disabled
-        self._entry.disabled = set_as
+            set_as = self._entry.disabled
+        self._entry.disabled = not set_as
 
     def set_focus(self):
         self._entry.focus = True
@@ -260,8 +260,8 @@ class BooleanInputWidget(BaseInputWidget):
     def set_enabled(self, set_as: Optional[bool] = None, /):
         super().set_enabled(set_as)
         if set_as is None:
-            set_as = not self._checkbox.disabled
-        self._checkbox.disabled = set_as
+            set_as = self._checkbox.disabled
+        self._checkbox.disabled = not set_as
 
     def set_focus(self):
         self._checkbox.focus = True
@@ -328,8 +328,8 @@ class ChoiceInputWidget(BaseInputWidget):
     def set_enabled(self, set_as: Optional[bool] = None, /):
         super().set_enabled(set_as)
         if set_as is None:
-            set_as = not self._spinner.disabled
-        self._spinner.disabled = set_as
+            set_as = self._spinner.disabled
+        self._spinner.disabled = not set_as
 
 
 INPUT_WIDGET_CLASSES: dict[str, BaseInputWidget] = dict(
