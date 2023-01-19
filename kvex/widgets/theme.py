@@ -7,15 +7,7 @@ from .button import XButton
 from .datetime import XDateTime
 from .divider import XDivider
 from .label import XLabel
-from .layouts import (
-    XBox,
-    XDynamic,
-    XJustify,
-    XGrid,
-    XAnchor,
-    pwrap,
-    fpwrap,
-)
+from .layouts import XBox, XDynamic, XGrid, XAnchor, wrap
 from .scroll import XScroll
 from .inputpanel import XInputPanel, XInputPanelWidget
 
@@ -146,15 +138,15 @@ class XPreviewSubtheme(XThemed, XAnchor):
         input_panel = XInputPanel(pwidgets)
         input_panel.set_enabled("bool_dis", False)
         input_panel.set_enabled("disabled", False)
-        disbtn = pwrap(XButton(text="Disabled button", disabled=True))
+        disbtn = wrap(XButton(text="Disabled button", disabled=True), pad=True)
         disbtn.set_size(hx=0.5)
-        disbtn = pwrap(disbtn)
+        disbtn = wrap(disbtn, pad=True)
         disbtn.set_size(y="40dp")
         content_scroll_view = XDynamic()
         content_scroll_view.add_widgets(
             palette_box,
             XDivider(hint=0.5),
-            XJustify.wrap(XDateTime()),
+            wrap(XDateTime(), justify="horizontal"),
             input_panel,
             disbtn,
             XDivider(hint=0.5),
@@ -168,7 +160,7 @@ class XPreviewSubtheme(XThemed, XAnchor):
             XDivider(),
             content,
         )
-        self.add_widget(fpwrap(main_frame))
+        self.add_widget(wrap(main_frame, pad=True, frame=True))
 
     def on_subtheme(self, subtheme):
         """Refresh colors."""

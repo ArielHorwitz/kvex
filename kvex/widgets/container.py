@@ -31,7 +31,7 @@ class XPlaceholder(XBox):
         if callback:
             button = XButton(text=button_text, on_release=lambda *a: callback())
             button.set_size(x="300dp", y="70dp")
-            self.add_widget(XAnchor.wrap(button))
+            self.add_widget(XAnchor.with_add(button))
 
 
 class XContainer(XAnchor):

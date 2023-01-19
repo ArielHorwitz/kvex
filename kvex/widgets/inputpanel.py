@@ -5,7 +5,7 @@ from typing import Any, Optional, Callable
 import functools
 from .. import kivy as kv
 from .. import util
-from .layouts import XAnchor, XDynamic, XBox, XCurtain
+from .layouts import XAnchor, XDynamic, XBox, XCurtain, wrap
 from .label import XLabel
 from .button import XButton
 from .input import XInput
@@ -87,12 +87,12 @@ class XInputPanel(XDynamic):
         # Controls
         controls = XBox()
         if self.reset_text:
-            controls.add_widget(XAnchor.wrap(self._reset_btn, padding=("5dp", 0)))
+            controls.add_widget(wrap(self._reset_btn, pad=("5dp", 0)))
         if self.invoke_text:
-            controls.add_widget(XAnchor.wrap(self._invoke_btn, padding=("5dp", 0)))
+            controls.add_widget(wrap(self._invoke_btn, pad=("5dp", 0)))
         if len(controls.children) == 1:
             controls.set_size(hx=1 if self.fill_button else 0.5)
-            controls = XAnchor.wrap(controls)
+            controls = wrap(controls)
         controls.set_size(y=util.DEFAULT_BUTTON_HEIGHT)
         if len(controls.children) > 0:
             main_box.add_widget(controls)

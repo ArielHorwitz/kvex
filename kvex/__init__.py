@@ -68,7 +68,7 @@ When creating widgets:
 with self.app.subtheme_context("secondary"):  # Set default subtheme
     # All widgets in this code block will default to "secondary"
     label = kx.XLabel(text="Secondary fg on secondary bg")
-    label_frame = kx.fwrap(label)  # Wrap label in a themed anchor widget
+    label_frame = kx.wrap(label, frame=True)  # Wrap label in a themed frame
 ```
 
 When subclassing widgets:

@@ -8,6 +8,7 @@ from . import kivy as kv
 
 
 DEFAULT_BUTTON_HEIGHT = "30sp"
+_KIVY_DIMENSIONS = float | tuple[float, float] | str | tuple[str, str]
 
 
 def queue_around_frame(
@@ -156,6 +157,15 @@ def sp2pixels(value: float | str | Iterable[float | str]) -> float | list[float]
             m = f"Expected float or str, instead got: {v!r} {type(v)}"
             raise ValueError(m)
     return values
+
+
+def _extend_dimensions(d: _KIVY_DIMENSIONS) -> _KIVY_DIMENSIONS:
+    if not isinstance(d, str):
+        try:
+            return tuple(c for c in d)
+        except TypeError:
+            pass
+    return d, d
 
 
 __all__ = (

@@ -1,10 +1,10 @@
 """Layout widgets."""
 
 from typing import Optional
-import functools
 from .. import kivy as kv
 from .. import assets
 from .. import util
+from ..colors import XColor
 from ..behaviors import XThemed
 from .widget import XWidget
 
@@ -76,17 +76,7 @@ class XRelative(XWidget, kv.RelativeLayout):
 class XAnchor(XWidget, kv.AnchorLayout):
     """AnchorLayout."""
 
-    @classmethod
-    def wrap(cls, widget: kv.Widget, /, **kwargs) -> "XAnchor":
-        """Create `XAnchor` with child widget.
-
-        Args:
-            widget: Widget to wrap.
-            kwargs: Keyword arguments for the XAnchor.
-        """
-        anchor = cls(**kwargs)
-        anchor.add_widget(widget)
-        return anchor
+    pass
 
 
 class XMargin(XDynamicLayoutMixin, XAnchor):
@@ -144,15 +134,6 @@ class XFrame(XThemed, XAnchor):
     def on_subtheme(self, subtheme):
         """Apply background color."""
         self.make_bg(subtheme.bg, source=self.BG)
-
-
-wrap = XAnchor.wrap
-pwrap = functools.partial(XAnchor.wrap, padding="10sp")
-"""Like `wrap` but with '10sp' padding."""
-fwrap = XFrame.wrap
-"""Like `wrap` but with `XFrame`."""
-fpwrap = functools.partial(XFrame.wrap, padding="10sp")
-"""Like `fwrap` but with '10sp' padding."""
 
 
 class XAnchorDelayed(XAnchor):
@@ -224,7 +205,132 @@ class XCurtain(XAnchor):
         self.showing = set_as
 
 
+def wrap(
+    widget: kv.Widget,
+    /,
+    pad: bool | util._KIVY_DIMENSIONS | XAnchor = False,
+    frame: bool | XFrame = False,
+    margin: bool | util._KIVY_DIMENSIONS | XMargin = False,
+    justify: Optional[str | XJustify] = None,
+    debug: bool = False,
+    **kwargs,
+):
+    """Wrap a widget in layouts.
+
+    Wraps the widget with a layout for each argument ***in order***: pad, frame, margin,
+    and justify. For more fine-grained control, each layout can be premade manually and
+    passed as the argument.
+
+    Will skip any layout not specified. If no other layout has been used or if any extra
+    keyword arguments are passed, they will be passed to a final `XAnchor` which will
+    wrap everything.
+
+    For example:
+    ```python3
+    widget = kx.XLabel()
+    widget.set_size("50dp", "50dp")
+    # This:
+    outer = kx.wrap(widget, margin="10dp", justify="horizontal")
+    # Is equivalent to:
+    inner = kx.XMargin(margin="10dp")
+    inner.add_widget(widget)
+    outer = kx.wrap(inner, justify="horizontal")
+    # Is equivalent to:
+    inner = kx.XMargin(margin="10dp")
+    inner.add_widget(widget)
+    outer = kx.XJustify(orientation="horizontal")
+    outer.add_widget(inner)
+    ```
+
+    .. warning::
+        Wrapping all these layouts in sequence may not lead to the results you are
+        looking for.
+
+    Some layouts are responsive to the children's size, others are not. For example,
+    wrapping padding and then wrapping justify will not seem to have an effect, since
+    the padding layout (which is not responsive to children's size) will simply take up
+    all available space and justifying may not seem to work.
+
+    For this reason, automatically wrapping in this order may not be enough, and would
+    require you to call this function multiple times for each layout to achieve the
+    intended behavior. See class documentations for details.
+
+    Args:
+        pad: Add padding using an `XAnchor` layout.
+        frame: Frame using an `XFrame` layout.
+        margin: Add margins using an `XMargin` layout.
+        justify: Orientation to justify using an `XJustify` layout.
+        debug: Add background color to layouts: blue for padding, green for frame, red
+            for margin, and cyan for justify.
+        kwargs: Keyword arguments for an outermost `XAnchor`.
+    """
+    outer = widget
+    if debug:
+        outer.make_bg(XColor(0, 0, 0))
+    outer = _wrap_pad(outer, pad, debug)
+    outer = _wrap_frame(outer, frame, debug)
+    outer = _wrap_margin(outer, margin, debug)
+    outer = _wrap_justify(outer, justify, debug)
+    if kwargs or outer is widget:
+        outer = XAnchor.with_add(outer, **kwargs)
+        if debug:
+            outer.make_bg(XColor(1, 0, 1))
+    return outer
+
+
+def _wrap_pad(outer, pad, debug):
+    # Blue
+    if pad is not False:
+        if pad is True:
+            padding = "10dp", "10dp"
+        else:
+            padding = util._extend_dimensions(pad)
+        outer = XAnchor.with_add(outer, padding=padding)
+        if debug:
+            outer.make_bg(XColor(0, 0, 1))
+    return outer
+
+
+def _wrap_frame(outer, frame, debug):
+    # Green
+    if frame:
+        if not isinstance(frame, XFrame):
+            frame = XFrame(enable_theming=not debug)
+        frame.add_widget(outer)
+        outer = frame
+        if debug:
+            outer.make_bg(XColor(0, 1, 0))
+    return outer
+
+
+def _wrap_margin(outer, margin, debug):
+    # Red
+    if margin is not False:
+        if margin is True:
+            margin = "10dp", "10dp"
+        if not isinstance(margin, XMargin):
+            margin = XMargin(margin=util._extend_dimensions(margin))
+        margin.add_widget(outer)
+        outer = margin
+        if debug:
+            outer.make_bg(XColor(1, 0, 0))
+    return outer
+
+
+def _wrap_justify(outer, justify, debug):
+    # Cyan
+    if justify is not None:
+        if not isinstance(justify, XJustify):
+            justify = XJustify(orientation=justify)
+        justify.add_widget(outer)
+        outer = justify
+        if debug:
+            outer.make_bg(XColor(0, 1, 1))
+    return outer
+
+
 __all__ = (
+    "wrap",
     "XBox",
     "XDynamic",
     "XJustify",
@@ -234,10 +340,6 @@ __all__ = (
     "XStack",
     "XAnchor",
     "XFrame",
-    "wrap",
-    "pwrap",
-    "fwrap",
-    "fpwrap",
     "XAnchorDelayed",
     "XCurtain",
     "XDynamicLayoutMixin",
