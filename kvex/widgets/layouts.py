@@ -78,6 +78,39 @@ class XAnchor(XWidget, kv.AnchorLayout):
         return anchor
 
 
+class XMargin(XAnchor):
+    """XAnchor that will dynamically resize to child's size with added margins."""
+
+    margin_x = kv.NumericProperty("10dp")
+    """Horizontal margin."""
+    margin_y = kv.NumericProperty("10dp")
+    """Vertical margin."""
+    margin = kv.ReferenceListProperty(margin_x, margin_y)
+    """Margins of x and y."""
+
+    def __init__(self, **kwargs):
+        """Initialize the class."""
+        super().__init__(**kwargs)
+        self._layout_trigger = util.create_trigger(self.do_layout)
+
+    def _trigger_layout(self, *args):
+        util.snooze_trigger(self._layout_trigger)
+
+    def do_layout(self, *args, **kwargs):
+        """Resize to first child's size plus margins."""
+        if self.children:
+            child = self.children[0]
+            if not child.size_hint_x:
+                margin_x = util.sp2pixels(self.margin_x)
+                w = util.sp2pixels(child.width)
+                self.set_size(x=w + margin_x * 2)
+            if not child.size_hint_y:
+                margin_y = util.sp2pixels(self.margin_y)
+                h = util.sp2pixels(child.height)
+                self.set_size(y=h + margin_y * 2)
+        super().do_layout(*args, **kwargs)
+
+
 class XFrame(XThemed, XAnchor):
     """Themed `XAnchor` with a background."""
 
@@ -169,6 +202,7 @@ class XCurtain(XAnchor):
 __all__ = (
     "XBox",
     "XDynamic",
+    "XMargin",
     "XGrid",
     "XRelative",
     "XStack",
