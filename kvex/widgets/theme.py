@@ -144,10 +144,10 @@ class XPreviewSubtheme(XThemed, XAnchor):
         content_scroll_view = XDynamic()
         content_scroll_view.add_widgets(
             palette_box,
-            XDivider(divider_hint=0.5),
+            XDivider(hint=0.5),
             input_panel,
             disbtn,
-            XDivider(divider_hint=0.5),
+            XDivider(hint=0.5),
             self._lorem_label,
         )
         content = XScroll(view=content_scroll_view)
