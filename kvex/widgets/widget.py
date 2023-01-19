@@ -1,6 +1,6 @@
 """Home of `XWidget`."""
 
-from typing import Optional
+from typing import Optional, Iterable
 from .. import kivy as kv
 from ..util import sp2pixels
 from ..colors import XColor
@@ -15,12 +15,13 @@ class XWidget:
         insert_last: bool = False,
         **kwargs,
     ):
+    def add_widgets(self, *children: Iterable[kv.Widget], **kwargs):
         """Add multiple widgets."""
         if not children:
-            raise ValueError("Must supply children to add.")
+            raise ValueError("No children given.")
         for child in children:
-            if insert_last:
-                kwargs["index"] = len(self.children)
+            if not isinstance(child, kv.Widget):
+                raise TypeError(f"Expected widgets only, instead got: {children}")
             self.add_widget(child, **kwargs)
 
     def set_size(
