@@ -9,13 +9,28 @@ from ..behaviors import XThemed
 from .widget import XWidget
 
 
+class XDynamicLayoutMixin:
+    """Mixin for layouts that are responsive to their children.
+
+    Overrides the layout trigger to delay layout effects to the next frame. Subclasses
+    should override `do_layout` (and call super) to leverage this mixin.
+    """
+    def __init__(self, **kwargs):
+        """Initialize the class."""
+        self._layout_trigger = util.create_trigger(self.do_layout)
+        super().__init__(**kwargs)
+
+    def _trigger_layout(self, *args):
+        util.snooze_trigger(self._layout_trigger)
+
+
 class XBox(XWidget, kv.BoxLayout):
     """BoyLayout."""
 
     pass
 
 
-class XDynamic(XBox):
+class XDynamic(XDynamicLayoutMixin, XBox):
     """XBox that will dynamically resize based on orientation and children's size.
 
     When vertical, height will be adjusted to fit children exactly. When horizontal,
@@ -28,10 +43,6 @@ class XDynamic(XBox):
         """Initialize the class."""
         kwargs = dict(orientation="vertical") | kwargs
         super().__init__(**kwargs)
-        self._layout_trigger = util.create_trigger(self.do_layout)
-
-    def _trigger_layout(self, *args):
-        util.snooze_trigger(self._layout_trigger)
 
     def do_layout(self, *args, **kwargs):
         """Resize based on children, before doing layout."""
@@ -78,7 +89,7 @@ class XAnchor(XWidget, kv.AnchorLayout):
         return anchor
 
 
-class XMargin(XAnchor):
+class XMargin(XDynamicLayoutMixin, XAnchor):
     """XAnchor that will dynamically resize to child's size with added margins."""
 
     margin_x = kv.NumericProperty("10dp")
@@ -87,14 +98,6 @@ class XMargin(XAnchor):
     """Vertical margin."""
     margin = kv.ReferenceListProperty(margin_x, margin_y)
     """Margins of x and y."""
-
-    def __init__(self, **kwargs):
-        """Initialize the class."""
-        super().__init__(**kwargs)
-        self._layout_trigger = util.create_trigger(self.do_layout)
-
-    def _trigger_layout(self, *args):
-        util.snooze_trigger(self._layout_trigger)
 
     def do_layout(self, *args, **kwargs):
         """Resize to first child's size plus margins."""
@@ -111,7 +114,7 @@ class XMargin(XAnchor):
         super().do_layout(*args, **kwargs)
 
 
-class XJustify(XAnchor):
+class XJustify(XDynamicLayoutMixin, XAnchor):
     """XAnchor that will dynamically resize to justify the first child widget.
 
     First child widget must not have size_hint set along the specified axis in
@@ -120,14 +123,6 @@ class XJustify(XAnchor):
 
     orientation = kv.OptionProperty("horizontal", options=["horizontal", "vertical"])
     """Axis to justify."""
-
-    def __init__(self, **kwargs):
-        """Initialize the class."""
-        super().__init__(**kwargs)
-        self._layout_trigger = util.create_trigger(self.do_layout)
-
-    def _trigger_layout(self, *args):
-        util.snooze_trigger(self._layout_trigger)
 
     def do_layout(self, *args, **kwargs):
         """Resize to center first child."""
@@ -245,4 +240,5 @@ __all__ = (
     "fpwrap",
     "XAnchorDelayed",
     "XCurtain",
+    "XDynamicLayoutMixin",
 )
