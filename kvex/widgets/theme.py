@@ -4,9 +4,18 @@ from .. import kivy as kv
 from ..colors import THEME_NAMES
 from ..behaviors import XThemed
 from .button import XButton
+from .datetime import XDateTime
 from .divider import XDivider
 from .label import XLabel
-from .layouts import XBox, XDynamic, XGrid, XAnchor, pwrap, fpwrap
+from .layouts import (
+    XBox,
+    XDynamic,
+    XJustify,
+    XGrid,
+    XAnchor,
+    pwrap,
+    fpwrap,
+)
 from .scroll import XScroll
 from .inputpanel import XInputPanel, XInputPanelWidget
 
@@ -145,6 +154,7 @@ class XPreviewSubtheme(XThemed, XAnchor):
         content_scroll_view.add_widgets(
             palette_box,
             XDivider(hint=0.5),
+            XJustify.wrap(XDateTime()),
             input_panel,
             disbtn,
             XDivider(hint=0.5),
