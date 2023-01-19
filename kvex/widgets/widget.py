@@ -27,8 +27,8 @@ class XWidget:
         self,
         x: Optional[float | str] = None,
         y: Optional[float | str] = None,
-        hx: float = 1,
-        hy: float = 1,
+        hx: Optional[float] = None,
+        hy: Optional[float] = None,
     ):
         """Set the size of the widget.
 
@@ -36,17 +36,21 @@ class XWidget:
         specifying the other.
 
         Args:
-            x: Width in pixels.
-            y: Height in pixels.
-            hx: Width hint.
-            hy: Height hint.
+            x: Width in pixels. If none given, will use size hint.
+            y: Height in pixels. If none given, will use size hint.
+            hx: Width hint. If none given, will not modify axis.
+            hy: Height hint. If none given, will not modify axis.
         """
-        hx = hx if x is None else None
-        hy = hy if y is None else None
-        x = self.width if x is None else x
-        y = self.height if y is None else y
-        self.size_hint = hx, hy
-        self.size = x, y
+        if x is not None:
+            self.width = x
+            self.size_hint_x = None
+        elif hx is not None:
+            self.size_hint_x = hx
+        if y is not None:
+            self.height = y
+            self.size_hint_y = None
+        elif hy is not None:
+            self.size_hint_y = hy
 
     def set_focus(self, *args):
         """Set the focus on this widget."""
