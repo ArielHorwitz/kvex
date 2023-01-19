@@ -15,24 +15,33 @@ class XBox(XWidget, kv.BoxLayout):
     pass
 
 
-class XDBox(XWidget, kv.GridLayout):
-    """Behaves like a Box that will dynamically resize based on children's height."""
+class XDynamic(XBox):
+    """XBox that will dynamically resize based on orientation and children's size.
 
-    def __init__(self, cols: int = 1, **kwargs):
+    When vertical, height will be adjusted to fit children exactly. When horizontal,
+    width will be adjusted to fit children exactly.
+
+    .. warning:: Layout behavior will break if children's size hint is set.
+    """
+
+    def __init__(self, **kwargs):
         """Initialize the class."""
-        super().__init__(cols=cols, **kwargs)
-        self.bind(children=self._resize)
-        trigger = util.create_trigger(self._resize)
-        self._snooze_trigger = lambda *a: util.snooze_trigger(trigger)
+        kwargs = dict(orientation="vertical") | kwargs
+        super().__init__(**kwargs)
+        self._layout_trigger = util.create_trigger(self.do_layout)
 
-    def add_widget(self, w, *args, **kwargs):
-        """Overrides base method in order to bind to size changes."""
-        w.bind(size=self._resize)
-        super().add_widget(w, *args, **kwargs)
-        self._snooze_trigger()
+    def _trigger_layout(self, *args):
+        util.snooze_trigger(self._layout_trigger)
 
-    def _resize(self, *a):
-        self.set_size(hx=1, y=sum([util.sp2pixels(c.height) for c in self.children]))
+    def do_layout(self, *args, **kwargs):
+        """Resize based on children, before doing layout."""
+        if self.orientation == "horizontal":
+            width = sum([util.sp2pixels(c.width) for c in self.children])
+            self.set_size(x=width)
+        elif self.orientation == "vertical":
+            height = sum([util.sp2pixels(c.height) for c in self.children])
+            self.set_size(y=height)
+        super().do_layout(*args, **kwargs)
 
 
 class XGrid(XWidget, kv.GridLayout):
@@ -159,7 +168,7 @@ class XCurtain(XAnchor):
 
 __all__ = (
     "XBox",
-    "XDBox",
+    "XDynamic",
     "XGrid",
     "XRelative",
     "XStack",

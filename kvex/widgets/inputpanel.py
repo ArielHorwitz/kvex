@@ -5,7 +5,7 @@ from typing import Any, Optional, Callable
 import functools
 from .. import kivy as kv
 from .. import util
-from .layouts import XAnchor, XDBox, XBox, XCurtain
+from .layouts import XAnchor, XDynamic, XBox, XCurtain
 from .label import XLabel
 from .button import XButton
 from .input import XInput
@@ -42,7 +42,7 @@ class XInputPanelWidget:
     """Used by choice widgets."""
 
 
-class XInputPanel(XDBox):
+class XInputPanel(XDynamic):
     """A widget containing arbitrary input widgets.
 
     Intended for forms or configuration user input.

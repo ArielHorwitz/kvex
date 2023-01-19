@@ -6,7 +6,7 @@ from ..behaviors import XThemed
 from .button import XButton
 from .divider import XDivider
 from .label import XLabel
-from .layouts import XBox, XDBox, XGrid, XAnchor, pwrap, fpwrap
+from .layouts import XBox, XDynamic, XGrid, XAnchor, pwrap, fpwrap
 from .scroll import XScroll
 from .inputpanel import XInputPanel, XInputPanelWidget
 
@@ -141,7 +141,7 @@ class XPreviewSubtheme(XThemed, XAnchor):
         disbtn.set_size(hx=0.5)
         disbtn = pwrap(disbtn)
         disbtn.set_size(y="40dp")
-        content_scroll_view = XDBox()
+        content_scroll_view = XDynamic()
         content_scroll_view.add_widgets(
             palette_box,
             XDivider(divider_hint=0.5),
