@@ -15,32 +15,6 @@ class XBox(XWidget, kv.BoxLayout):
     pass
 
 
-class XZBox(XWidget, kv.GridLayout):
-    """Behaves like a Box where widgets are drawn in reverse order."""
-
-    def __init__(
-        self,
-        *,
-        orientation: str = "horizontal",
-        **kwargs,
-    ):
-        """Initialize the class."""
-        if orientation == "horizontal":
-            kwargs["orientation"] = "rl-tb"
-            kwargs["rows"] = 1
-        elif orientation == "vertical":
-            kwargs["orientation"] = "lr-bt"
-            kwargs["cols"] = 1
-        else:
-            raise ValueError('orientation must be "horizontal" or "vertical"')
-        super().__init__(**kwargs)
-
-    def add_widget(self, *args, **kwargs):
-        """Overrides base method to insert correctly."""
-        kwargs["insert_last"] = True
-        super().add_widget(*args, **kwargs)
-
-
 class XDBox(XWidget, kv.GridLayout):
     """Behaves like a Box that will dynamically resize based on children's height."""
 
@@ -185,7 +159,6 @@ class XCurtain(XAnchor):
 
 __all__ = (
     "XBox",
-    "XZBox",
     "XDBox",
     "XGrid",
     "XRelative",
