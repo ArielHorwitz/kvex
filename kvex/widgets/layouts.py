@@ -111,6 +111,36 @@ class XMargin(XAnchor):
         super().do_layout(*args, **kwargs)
 
 
+class XJustify(XAnchor):
+    """XAnchor that will dynamically resize to justify the first child widget.
+
+    First child widget must not have size_hint set along the specified axis in
+    `orientation`.
+    """
+
+    orientation = kv.OptionProperty("horizontal", options=["horizontal", "vertical"])
+    """Axis to justify."""
+
+    def __init__(self, **kwargs):
+        """Initialize the class."""
+        super().__init__(**kwargs)
+        self._layout_trigger = util.create_trigger(self.do_layout)
+
+    def _trigger_layout(self, *args):
+        util.snooze_trigger(self._layout_trigger)
+
+    def do_layout(self, *args, **kwargs):
+        """Resize to center first child."""
+        if self.children:
+            child = self.children[0]
+            hx, hy = child.size_hint
+            if self.orientation == "horizontal" and child.size_hint_x is None:
+                self.set_size(y=child.height)
+            elif self.orientation == "vertical" and child.size_hint_y is None:
+                self.set_size(x=child.width)
+        super().do_layout(*args, **kwargs)
+
+
 class XFrame(XThemed, XAnchor):
     """Themed `XAnchor` with a background."""
 
@@ -202,6 +232,7 @@ class XCurtain(XAnchor):
 __all__ = (
     "XBox",
     "XDynamic",
+    "XJustify",
     "XMargin",
     "XGrid",
     "XRelative",
