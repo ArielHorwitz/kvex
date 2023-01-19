@@ -9,6 +9,24 @@ from ..colors import XColor
 class XWidget:
     """A mixin for kivy widgets with useful methods."""
 
+    def __init__(
+        self,
+        ssx: Optional[float | str] = None,
+        ssy: Optional[float | str] = None,
+        sshx: Optional[float] = None,
+        sshy: Optional[float] = None,
+        **kwargs,
+    ):
+        """Initialize the class.
+
+        The `ss` args (`ssx`, `sshy`, etc.) are used for calling `ssize_size` during
+        initialization.
+        """
+        super().__init__(**kwargs)
+        size_args = ssx, ssy, sshx, sshy
+        if any(s is not None for s in size_args):
+            self.set_size(*size_args)
+
     @classmethod
     def with_add(cls, *children: Iterable[kv.Widget], **kwargs) -> "XWidget":
         """Create the widget and add children."""
