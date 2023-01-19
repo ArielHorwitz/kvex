@@ -9,12 +9,13 @@ from ..colors import XColor
 class XWidget:
     """A mixin for kivy widgets with useful methods."""
 
-    def add_widgets(
-        self,
-        *children: tuple[kv.Widget, ...],
-        insert_last: bool = False,
-        **kwargs,
-    ):
+    @classmethod
+    def with_add(cls, *children: Iterable[kv.Widget], **kwargs) -> "XWidget":
+        """Create the widget and add children."""
+        instance = cls(**kwargs)
+        instance.add_widgets(*children)
+        return instance
+
     def add_widgets(self, *children: Iterable[kv.Widget], **kwargs):
         """Add multiple widgets."""
         if not children:
