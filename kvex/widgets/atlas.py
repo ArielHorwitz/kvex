@@ -44,7 +44,7 @@ class XAtlasPreview(XScroll):
             label = XLabel(text=item, enable_theming=False)
             label.set_size(hy=0.5)
             image = XAnchor()
-            image.make_fg(source=from_atlas(item))
+            image.make_bg(source=from_atlas(item))
             image.set_size(self._image_width, self._image_height)
             box = XBox(orientation="vertical")
             box.add_widgets(label, XAnchor.wrap(image, padding=10))
