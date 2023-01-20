@@ -128,6 +128,7 @@ class XPreviewSubtheme(XThemed, XAnchor):
         # Input panel
         pwidgets = dict(
             str=XInputPanelWidget("String:", default=self.subtheme_name),
+            invalid=XInputPanelWidget("Invalid:", default="invalid text"),
             disabled=XInputPanelWidget("Disabled:", default="disabled input"),
             float=XInputPanelWidget("Float:", "float", default=42),
             password=XInputPanelWidget("Password:", "password", default="foobar"),
@@ -138,6 +139,7 @@ class XPreviewSubtheme(XThemed, XAnchor):
         input_panel = XInputPanel(pwidgets)
         input_panel.set_enabled("bool_dis", False)
         input_panel.set_enabled("disabled", False)
+        input_panel.get_widget("invalid").valid = False
         disbtn = wrap(XButton(text="Disabled button", disabled=True), pad=True)
         disbtn.set_size(hx=0.5)
         disbtn = wrap(disbtn, pad=True)

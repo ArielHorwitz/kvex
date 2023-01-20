@@ -9,7 +9,11 @@ class XInput(XThemed, XFocusBehavior, XWidget, kv.TextInput):
     """TextInput."""
 
     select_on_focus = kv.BooleanProperty(False)
+    """If all text is selected when entering focus. Defaults to False."""
     deselect_on_escape = kv.BooleanProperty(True)
+    """If text is deselected when escape is pressed. Defaults to True."""
+    valid = kv.BooleanProperty(True)
+    """If current text is valid."""
 
     def __init__(self, **kwargs):
         """Initialize the class."""
@@ -19,6 +23,7 @@ class XInput(XThemed, XFocusBehavior, XWidget, kv.TextInput):
             write_tab=False,
         ) | kwargs
         super().__init__(**kwargs)
+        self.bind(valid=self._refresh_graphics)
 
     def _on_textinput_focused(self, *args, **kwargs):
         """Overrides base method to handle selection on focus."""
@@ -45,12 +50,16 @@ class XInput(XThemed, XFocusBehavior, XWidget, kv.TextInput):
 
     def on_subtheme(self, subtheme):
         """Apply colors."""
-        self.background_color = subtheme.bg.rgba
-        self.foreground_color = subtheme.fg.rgba
-        self.cursor_color = subtheme.fg.rgba
-        self.disabled_foreground_color = subtheme.fg_muted.rgba
-        self.selection_color = subtheme.accent.modified_alpha(0.5).rgba
-        self.hint_text_color = subtheme.fg_muted.rgba
+        self._refresh_graphics()
+
+    def _refresh_graphics(self, *args):
+        st = self.subtheme
+        self.background_color = st.bg.rgba
+        self.foreground_color = st.fg.rgba if self.valid else st.fg_warn.rgba
+        self.cursor_color = st.fg.rgba
+        self.disabled_foreground_color = st.fg_muted.rgba
+        self.selection_color = st.accent.modified_alpha(0.5).rgba
+        self.hint_text_color = st.fg_muted.rgba
         self._trigger_update_graphics()
 
 
