@@ -2,11 +2,13 @@
 
 import arrow
 from .. import kivy as kv
+from .. import util
 from ..behaviors import XThemed
-from .label import XLabel
-from .layouts import XBox, XDynamic, XJustify
+from .label import XLabel, XLabelClick
+from .layouts import XBox, XGrid, XDynamic, XJustify
 from .button import XButton
 from .divider import XDivider
+from .dropdown import XDropDown
 from .input import XInput
 from .spinner import XSpinner
 
@@ -48,7 +50,14 @@ class XDateTime(XThemed, XDynamic):
 
     def _make_widgets(self):
         # Date
-        self.day_input = XInput(input_filter="int", halign="center")
+        self._day_selector = _DaySelector(self._day_dropdown_callback)
+        self._day_dropdown = XDropDown(
+            auto_width=False,
+            bg_alpha=1,
+            ssx=self._day_selector.width,
+        )
+        self._day_dropdown.add_widget(self._day_selector)
+        self.day_input = XButton(halign="center", on_release=self._on_day_input)
         self.month_input = XSpinner(
             values=_MONTH_NAMES,
             text_autoupdate=True,
@@ -136,6 +145,14 @@ class XDateTime(XThemed, XDynamic):
         else:
             self.add_widgets(time_box, self._main_divider, self._date_box)
 
+    def _on_day_input(self, *args):
+        self._day_selector.set_month(self.time)
+        self._day_dropdown.open(self.day_input)
+
+    def _day_dropdown_callback(self, day: int):
+        self.day_input.text = str(day)
+        self._day_dropdown.dismiss()
+
     @property
     def time(self) -> arrow.Arrow:
         """Current time as an `arrow.Arrow` object."""
@@ -180,6 +197,43 @@ class XDateTime(XThemed, XDynamic):
 
     def _increment(self, name, increment):
         self._do_set_time(self.time.shift(**{name: increment}))
+
+
+class _DaySelector(XGrid):
+
+    WIDTH = util.sp2pixels("35sp") * 7
+    LABELS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
+
+    def __init__(self, callback):
+        """Initialize the class."""
+        super().__init__(cols=7, ssx=self.WIDTH)
+        self._callback = callback
+        self._labels = tuple(XLabel(text=self.LABELS[i]) for i in range(7))
+        self._days = tuple(self._get_label(day) for day in range(31))
+
+    def set_month(self, time: arrow.Arrow):
+        first, last = time.span("month")
+        start = first.weekday() + 1
+        # Adjust for monday being "first" day of the week
+        if start == 7:
+            start = 0
+        end_fill = 42 - last.day - start
+        end_fill %= 7
+        self.clear_widgets()
+        self.add_widgets(*self._labels)
+        if start:
+            self.add_widgets(*(kv.Widget() for i in range(start)))
+        self.add_widgets(*self._days[:last.day])
+        if end_fill:
+            self.add_widgets(*(kv.Widget() for i in range(end_fill)))
+        row_count = len(self.children) // 7
+        self.set_size(y=row_count * util.sp2pixels("40sp"))
+
+    def _get_label(self, day: int):
+        return XLabelClick(text=str(day + 1), on_release=self._on_select)
+
+    def _on_select(self, w):
+        self._callback(int(w.text))
 
 
 __all__ = (
