@@ -34,10 +34,16 @@ class XDynamic(XDynamicLayoutMixin, XBox):
     """XBox that will dynamically resize based on orientation and children's size.
 
     When vertical, height will be adjusted to fit children exactly. When horizontal,
-    width will be adjusted to fit children exactly.
+    width will be adjusted to fit children exactly. If `both_axes` is True, will also
+    adjust the other axis based on maximum size of children widgets.
 
-    .. warning:: Layout behavior will break if children's size hint is set.
+    .. warning::
+        Layout behavior will break if children's size hint is set on an axis that is
+        responsive (based on `orientation` and `both_axes`).
     """
+
+    both_axes = kv.BooleanProperty(False)
+    """If layout should be responsive on both axes."""
 
     def __init__(self, **kwargs):
         """Initialize the class."""
@@ -47,11 +53,25 @@ class XDynamic(XDynamicLayoutMixin, XBox):
     def do_layout(self, *args, **kwargs):
         """Resize based on children, before doing layout."""
         if self.orientation == "horizontal":
-            width = sum([util.sp2pixels(c.width) for c in self.children])
+            width = sum(util.sp2pixels(c.width) for c in self.children)
             self.set_size(x=width)
+            if self.both_axes:
+                heights = tuple(
+                    util.sp2pixels(c.height) for c in self.children
+                    if c.size_hint_y is None
+                )
+                if heights:
+                    self.set_size(y=max(heights))
         elif self.orientation == "vertical":
-            height = sum([util.sp2pixels(c.height) for c in self.children])
+            height = sum(util.sp2pixels(c.height) for c in self.children)
             self.set_size(y=height)
+            if self.both_axes:
+                widths = tuple(
+                    util.sp2pixels(c.width) for c in self.children
+                    if c.size_hint_x is None
+                )
+                if widths:
+                    self.set_size(x=max(widths))
         super().do_layout(*args, **kwargs)
 
 
