@@ -13,9 +13,9 @@ class XDivider(XThemed, XMargin):
     orientation = kv.OptionProperty("horizontal", options=["horizontal", "vertical"])
     """Orientation of the divider."""
     hint = kv.NumericProperty(0.8)
-    """Size hint of the divider."""
+    """Size hint of the divider along the orientation axis."""
     thickness = kv.ObjectProperty("5dp")
-    """Thickness of the divider not including margin."""
+    """Thickness of the divider on the complementary axis (not including margin)."""
     color = kv.ColorProperty()
     """Color of the divider."""
 
@@ -41,8 +41,10 @@ class XDivider(XThemed, XMargin):
         self.inner.make_bg(XColor(*self.color), get_image("xframe_bg"))
         if self.orientation == "horizontal":
             self.inner.set_size(hx=self.hint, y=self.thickness)
+            self.set_size(hx=1)
         elif self.orientation == "vertical":
             self.inner.set_size(x=self.thickness, hy=self.hint)
+            self.set_size(hy=1)
 
 
 __all__ = (
