@@ -117,6 +117,10 @@ class XInputPanel(XDynamic):
         """Get all values."""
         return {name: iw.get_value() for name, iw in self.widgets.items()}
 
+    def get_widget(self, widget_name: str, /) -> kv.Widget:
+        """Get an input widget by name."""
+        return self.widgets[widget_name].widget
+
     def reset_defaults(self, *args, **kwargs):
         """Reset all values to their defaults."""
         for iw in self.widgets.values():
