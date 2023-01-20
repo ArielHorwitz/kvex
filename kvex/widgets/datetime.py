@@ -4,7 +4,7 @@ import arrow
 from .. import kivy as kv
 from ..behaviors import XThemed
 from .label import XLabel
-from .layouts import XBox
+from .layouts import XBox, XDynamic, XJustify
 from .button import XButton
 from .divider import XDivider
 from .input import XInput
@@ -14,101 +14,127 @@ from .spinner import XSpinner
 _MONTH_NAMES = tuple(arrow.get(1, m+1, 1).format("MMMM") for m in range(12))
 
 
-class XDateTime(XThemed, XBox):
+class XDateTime(XThemed, XDynamic):
     """Widget for selecting time and date.
 
     This widget uses the [arrow](https://arrow.readthedocs.io/en/latest/guide.html)
     library to get and set date and time.
 
-    .. warning:: If `utc_time` is False (configured to local time), make sure to convert
-        to local time when calling `XDateTime.set`.
+    To use simply get and set `XDateTime.time`:
+    ```python3
+    datetime = XDateTime()
+    print(datetime.time)
+    datetime.bind(on_time=print)
+    datetime.time = arrow.now()
+    ```
+
+    .. warning::
+        If `utc_time` is False (configured to local time), make sure to convert to local
+        time when setting the time. See the arrow library for documentation.
     """
 
     utc_time = kv.BooleanProperty(False)
-    """If time should be in UTC, otherwise as local time."""
+    """If time should be in UTC, otherwise as local time. False by default."""
+    date_first = kv.BooleanProperty(False)
+    """Show date before time. False by default."""
 
     def __init__(self, **kwargs):
         """Initialize the class."""
+        kwargs = dict(orientation="horizontal", both_axes=True) | kwargs
         super().__init__(**kwargs)
-        self.set_size(x="335sp", y="70sp")
         self.register_event_type("on_time")
         with self.app.subtheme_context(self.subtheme_name):
             self._make_widgets()
 
     def _make_widgets(self):
+        # Date
         self.day_input = XInput(input_filter="int", halign="center")
-        self.month_input = XSpinner(values=_MONTH_NAMES, text_autoupdate=True)
-        self.month_input.set_size(y="30sp")
+        self.month_input = XSpinner(
+            values=_MONTH_NAMES,
+            text_autoupdate=True,
+            ssy="30sp",
+        )
         self.year_input = XInput(input_filter="int", halign="center")
-        day = XBox(orientation="vertical")
-        day.set_size(x="50sp")
+        day = XBox(orientation="vertical", ssx="50sp")
         day.add_widgets(
             self._get_increment_button("days", 1),
             self.day_input,
             self._get_increment_button("days", -1),
         )
-        month = XBox(orientation="vertical")
-        month.set_size(x="85sp")
+        month = XBox(orientation="vertical", ssx="85sp")
         month.add_widgets(
             self._get_increment_button("months", 1),
             self.month_input,
             self._get_increment_button("months", -1),
         )
-        year = XBox(orientation="vertical")
-        year.set_size(x="50sp")
+        year = XBox(orientation="vertical", ssx="50sp")
         year.add_widgets(
             self._get_increment_button("years", 1),
             self.year_input,
             self._get_increment_button("years", -1),
         )
+        self._date_box = XDynamic(orientation="horizontal", ssy="70sp")
+        self._date_box.add_widgets(day, month, year)
+        # Time
         self.hour_input = XInput(input_filter="int", halign="center")
         self.minute_input = XInput(input_filter="int", halign="center")
         self.second_input = XInput(input_filter="int", halign="center")
-        hour = XBox(orientation="vertical")
-        hour.set_size(x="40sp")
+        hour = XBox(orientation="vertical", ssx="40sp")
         hour.add_widgets(
             self._get_increment_button("hours", 1),
             self.hour_input,
             self._get_increment_button("hours", -1),
         )
-        minute = XBox(orientation="vertical")
-        minute.set_size(x="40sp")
+        minute = XBox(orientation="vertical", ssx="40sp")
         minute.add_widgets(
             self._get_increment_button("minutes", 1),
             self.minute_input,
             self._get_increment_button("minutes", -1),
         )
-        second = XBox(orientation="vertical")
-        second.set_size(x="40sp")
+        second = XBox(orientation="vertical", ssx="40sp")
         second.add_widgets(
             self._get_increment_button("seconds", 1),
             self.second_input,
             self._get_increment_button("seconds", -1),
         )
-        div0 = XDivider(orientation="vertical")
-        div1 = XLabel(text=":", bold=True)
-        div2 = XLabel(text=":", bold=True)
-        div0.set_size(x="15sp")
-        div1.set_size(x="10sp")
-        div2.set_size(x="10sp")
-        self.add_widgets(
-            day,
-            month,
-            year,
-            div0,
+        self._time_box = XDynamic(orientation="horizontal", ssy="70sp")
+        self._time_box.add_widgets(
             hour,
-            div1,
+            XLabel(text=":", bold=True, ssx="10sp"),
             minute,
-            div2,
+            XLabel(text=":", bold=True, ssx="10sp"),
             second,
         )
-        self.set(arrow.now())
+        # Assemble
+        self._time_justify = XJustify(orientation="horizontal")
+        self._main_divider = XDivider()
+        self._refresh_geometry()
+        self.time = arrow.get(0)
+        # Events
+        self.bind(orientation=self._refresh_geometry, date_first=self._refresh_geometry)
         self.day_input.bind(text=self._dispatch_time)
         self.month_input.bind(text=self._dispatch_time)
         self.year_input.bind(text=self._dispatch_time)
         self.hour_input.bind(text=self._dispatch_time)
         self.minute_input.bind(text=self._dispatch_time)
         self.second_input.bind(text=self._dispatch_time)
+
+    def _refresh_geometry(self, *args):
+        self.clear_widgets()
+        self._time_justify.clear_widgets()
+        # Orientation
+        if self.orientation == "horizontal":
+            time_box = self._time_box
+            self._main_divider.orientation = "vertical"
+        elif self.orientation == "vertical":
+            time_box = self._time_justify
+            self._time_justify.add_widget(self._time_box)
+            self._main_divider.orientation = "horizontal"
+        # Reassemble
+        if self.date_first:
+            self.add_widgets(self._date_box, self._main_divider, time_box)
+        else:
+            self.add_widgets(time_box, self._main_divider, self._date_box)
 
     @property
     def time(self) -> arrow.Arrow:
@@ -122,7 +148,12 @@ class XDateTime(XThemed, XBox):
             int(self.second_input.text or 0),
         ).replace(tzinfo="utc" if self.utc_time else "local")
 
-    def set(self, time: arrow.Arrow, /):
+    @time.setter
+    def time(self, time: arrow.Arrow, /):
+        """Set current time from an `arrow.Arrow` object."""
+        self._do_set_time(time)
+
+    def _do_set_time(self, time: arrow.Arrow, /):
         """Set the time from an `arrow.Arrow` object."""
         self.year_input.text = str(time.year)
         self.month_input.text = time.format("MMMM")
@@ -143,12 +174,12 @@ class XDateTime(XThemed, XBox):
         btn = XButton(
             text="+" if increment > 0 else "-",
             on_release=lambda *a: self._increment(name, increment),
+            ssy="20sp",
         )
-        btn.set_size(y="20sp")
         return btn
 
     def _increment(self, name, increment):
-        self.set(self.time.shift(**{name: increment}))
+        self._do_set_time(self.time.shift(**{name: increment}))
 
 
 __all__ = (
