@@ -128,9 +128,9 @@ class XPreviewSubtheme(XThemed, XAnchor):
         # Input panel
         pwidgets = dict(
             str=XInputPanelWidget("String:", default=self.subtheme_name),
-            invalid=XInputPanelWidget("Invalid:", default="invalid text"),
             disabled=XInputPanelWidget("Disabled:", default="disabled input"),
-            float=XInputPanelWidget("Float:", "float", default=42),
+            zerohundred=XInputPanelWidget("Capped -2.5 to 100:", "float"),
+            float=XInputPanelWidget("Float 0 to 42:", "float", default=42),
             password=XInputPanelWidget("Password:", "password", default="foobar"),
             choice=XInputPanelWidget("Choice:", "choice", choices=["eggs", "spam"]),
             bool=XInputPanelWidget("Checkbox:", "bool", default=True),
@@ -139,7 +139,10 @@ class XPreviewSubtheme(XThemed, XAnchor):
         input_panel = XInputPanel(pwidgets)
         input_panel.set_enabled("bool_dis", False)
         input_panel.set_enabled("disabled", False)
-        input_panel.get_widget("invalid").valid = False
+        input_panel.get_widget("zerohundred").max_value = 100
+        input_panel.get_widget("zerohundred").min_value = -2.5
+        input_panel.get_widget("zerohundred").disable_invalid = True
+        input_panel.get_widget("float").max_value = 42
         disbtn = wrap(XButton(text="Disabled button", disabled=True), pad=True)
         disbtn.set_size(hx=0.5)
         disbtn = wrap(disbtn, pad=True)

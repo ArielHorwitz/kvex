@@ -8,7 +8,7 @@ from .. import util
 from .layouts import XAnchor, XDynamic, XBox, XCurtain, wrap
 from .label import XLabel
 from .button import XButton
-from .input import XInput
+from .input import XInput, XInputNumber
 from .checkbox import XCheckBox
 from .spinner import XSpinner
 
@@ -271,11 +271,11 @@ class BooleanInputWidget(BaseInputWidget):
 
 class IntInputWidget(StringInputWidget):
     wtype = "int"
-    _entry_class = functools.partial(XInput, input_filter="int")
+    _entry_class = functools.partial(XInputNumber, input_filter="int")
     _text_default = "0"
 
     def get_value(self) -> int:
-        return int(self._entry.text or 0)
+        return self._entry.number_value
 
     def set_value(self, value: Optional[int] = None, /):
         if value is None:
@@ -285,11 +285,11 @@ class IntInputWidget(StringInputWidget):
 
 class FloatInputWidget(StringInputWidget):
     wtype = "float"
-    _entry_class = functools.partial(XInput, input_filter="float")
+    _entry_class = functools.partial(XInputNumber, input_filter="float")
     _text_default = "0"
 
     def get_value(self) -> float:
-        return float(self._entry.text or 0)
+        return self._entry.number_value
 
     def set_value(self, value: Optional[float] = None, /):
         if value is None:
