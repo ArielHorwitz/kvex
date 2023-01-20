@@ -8,14 +8,21 @@ from .widget import XWidget
 class XDropDown(XThemed, XWidget, kv.DropDown):
     """DropDown."""
 
-    def __init__(self, *args, **kwargs):
+    bg_alpha = kv.NumericProperty(0.95)
+    """Alpha component of background color."""
+
+    def __init__(self, **kwargs):
         """Initialize the class."""
-        kwargs = dict(subtheme_name="secondary") | kwargs
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
+        self.bind(bg_alpha=self._refresh_graphics)
 
     def on_subtheme(self, subtheme):
         """Apply background."""
-        self.make_bg(subtheme.bg.modified_alpha(0.95))
+        self._refresh_graphics()
+
+    def _refresh_graphics(self, *args):
+        bg = self.subtheme.bg.modified_alpha(self.bg_alpha)
+        self.make_bg(bg)
 
 
 __all__ = (
