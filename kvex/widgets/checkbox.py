@@ -1,7 +1,7 @@
 """Home of `XCheckBox`."""
 
 from .. import kivy as kv
-from .. import util
+from ..colors import XColor
 from ..assets import get_image
 from ..behaviors import XThemed, XFocusBehavior
 from .widget import XWidget
@@ -16,6 +16,9 @@ BG_DOWN_DISABLED = str(get_image("checkbox_marked_muted"))
 class XCheckBox(XThemed, XFocusBehavior, XWidget, kv.CheckBox):
     """CheckBox with focus."""
 
+    focus_color = kv.ColorProperty()
+    """Color of the focus indication."""
+
     def __init__(self, *args, **kwargs):
         """See class documentation for details."""
         kwargs = dict(
@@ -25,17 +28,16 @@ class XCheckBox(XThemed, XFocusBehavior, XWidget, kv.CheckBox):
             background_checkbox_down=BG_DOWN,
         ) | kwargs
         super().__init__(*args, **kwargs)
-        self.make_bg(source=util.from_atlas("button_disabled"))
-        self._kvex_bg_color.a = int(self.focus)
-        self.bind(disabled=self._refresh_graphics)
+        self._refresh_focus_graphics()
+        self.bind(
+            disabled=self._refresh_graphics,
+            focus=self._refresh_focus_graphics,
+            focus_color=self._refresh_focus_graphics,
+        )
 
     def toggle(self, *a):
         """Toggle the active state."""
         self.active = not self.active
-
-    def on_focus(self, w, focus):
-        """Set background alpha."""
-        self._kvex_bg_color.a = int(focus)
 
     def keyboard_on_key_down(self, w, key_pair, text, mods):
         """Implement toggling."""
@@ -51,6 +53,13 @@ class XCheckBox(XThemed, XFocusBehavior, XWidget, kv.CheckBox):
     def _refresh_graphics(self, *args):
         color = self.subtheme.fg if not self.disabled else self.subtheme.fg_muted
         self.color = color.rgba
+        self.focus_color = self.subtheme.accent.rgba
+
+    def _refresh_focus_graphics(self, *args):
+        self.make_bg(
+            color=XColor(*self.focus_color).modified_alpha(int(self.focus) / 2),
+            source=get_image("xframe_bg"),
+        )
 
 
 __all__ = (
