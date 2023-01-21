@@ -76,30 +76,47 @@ class XWidget:
         """Set the focus on this widget."""
         self.focus = True
 
-    def make_bg(self, color: Optional[XColor] = None, source: Optional[str] = None):
-        """Add or update a background image using self.canvas.before."""
-        if hasattr(self, "_kvex_bg") and hasattr(self, "_kvex_bg_color"):
+    def make_bg(
+        self,
+        color: Optional[XColor] = None,
+        source: Optional[str] = None,
+        index: int = 0,
+        border: bool = False,
+    ):
+        """Add or update a background image using `self.canvas.before`.
+
+        Args:
+            color: XColor of background.
+            source: Texture source of background.
+            index: Used as an identifier, allowing to use multiple background images.
+            border: Determines type of canvas instruction. If True will use BorderImage
+                otherwise uses Rectangle.
+        """
+        assert index >= 0
+        bg_name, color_name = f"_kvex_bg_{index}", f"_kvex_bg_color_{index}"
+        if hasattr(self, bg_name) and hasattr(self, color_name):
             if color is not None:
-                self._kvex_bg_color.rgba = color.rgba
+                getattr(self, color_name).rgba = color.rgba
             if source is not None:
-                self._kvex_bg.source = str(source)
+                getattr(self, bg_name).source = str(source)
         else:
             if color is None:
                 color = XColor(1, 1, 1, 1)
             with self.canvas.before:
-                self._kvex_bg_color = kv.Color(*color.rgba)
-                self._kvex_bg = kv.Rectangle(
-                    size=self.size,
-                    pos=self.pos,
-                    source=str(source),
-                )
-            self.bind(pos=self._update_kvex_bg_pos, size=self._update_kvex_bg_size)
+                setattr(self, color_name, kv.Color(*color.rgba))
+                image_class = kv.BorderImage if border else kv.Rectangle
+                bgi = image_class(size=self.size, pos=self.pos, source=str(source))
+                setattr(self, bg_name, bgi)
+            self.bind(
+                pos=lambda w, pos: self._update_kvex_bg_pos(bgi, pos),
+                size=lambda w, size: self._update_kvex_bg_size(bgi, size),
+            )
 
-    def _update_kvex_bg_pos(self, w, pos):
-        self._kvex_bg.pos = pos
+    def _update_kvex_bg_pos(self, instruction, pos):
+        instruction.pos = sp2pixels(pos)
 
-    def _update_kvex_bg_size(self, w, size):
-        self._kvex_bg.size = sp2pixels(size)
+    def _update_kvex_bg_size(self, instruction, size):
+        instruction.size = sp2pixels(size)
 
     @property
     def app(self):
