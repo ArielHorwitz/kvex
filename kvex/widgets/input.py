@@ -9,7 +9,7 @@ from .widget import XWidget
 class XInput(XThemed, XFocusBehavior, XWidget, kv.TextInput):
     """TextInput."""
 
-    select_on_focus = kv.BooleanProperty(False)
+    select_on_focus = kv.BooleanProperty(True)
     """If all text is selected when entering focus. Defaults to False."""
     deselect_on_escape = kv.BooleanProperty(True)
     """If text is deselected when escape is pressed. Defaults to True."""

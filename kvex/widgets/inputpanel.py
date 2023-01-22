@@ -209,7 +209,6 @@ class StringInputWidget(BaseInputWidget):
         self._entry = self._entry_class(
             text=str(w.default or self._text_default),
             password=self._password,
-            select_on_focus=True,
         )
         self._entry.bind(text=on_value, on_text_validate=on_invoke)
         return self._entry
