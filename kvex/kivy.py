@@ -21,6 +21,7 @@ from kivy.properties import (
     OptionProperty,
     ColorProperty,
     ReferenceListProperty,
+    VariableListProperty,
 )
 
 # Widgets
