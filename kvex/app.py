@@ -9,36 +9,18 @@ app.run()
 """
 from typing import Callable, Optional
 from contextlib import contextmanager
-from functools import partial
 from . import kivy as kv
-from .colors import XColor, THEMES, Theme, reload_themes
+from .colors import THEMES, Theme, reload_themes
 from .util import (
-    queue_around_frame,
     restart_script,
     consume_args,
     schedule_interval,
 )
-from .behaviors import XFocusBehavior
 from .win_focus_patch import XWindowFocusPatch
-from .widgets.layouts import XAnchor, XAnchorDelayed, XFrame
-from .widgets.label import XLabel
+from .widgets.layouts import XAnchorDelayed
 
 
 DEFAULT_THEME_NAME = "midnight"
-
-
-class XOverlay(XFocusBehavior, XAnchor):
-    """Overlay to be displayed on top of other widgets."""
-
-    def __init__(self, **kwargs):
-        """Initialize like an XAnchor."""
-        super().__init__()
-        self.make_bg(XColor(*self.app.theme.primary.bg.rgba))
-        with self.app.subtheme_context("primary"):
-            self.label = XLabel(**kwargs)
-            frame = XFrame.wrap(self.label, pad=True, background=True)
-            frame.set_size(x="500sp", y="150sp")
-            self.add_widget(frame)
 
 
 class XApp(kv.App):
@@ -46,8 +28,6 @@ class XApp(kv.App):
 
     current_focus = kv.ObjectProperty(None, allownone=True)
     """Widget that currently has focus."""
-    block_input = kv.BooleanProperty(False)
-    """If all user input should be blocked."""
 
     _theme_name: str = DEFAULT_THEME_NAME
     _theme: Theme = THEMES[DEFAULT_THEME_NAME]
@@ -236,68 +216,10 @@ class XApp(kv.App):
         """Overrides base class method to disable the builtin settings widget."""
         return False
 
-    @property
-    def overlay(self) -> Optional[XOverlay]:
-        """The current overlay."""
-        return self.__overlay
-
-    def with_overlay(
-        self,
-        func: Callable,
-        after: Optional[Callable] = None,
-        **kwargs,
-    ):
-        """Queue a function with a temporary `XOverlay` that blocks input.
-
-        Uses the `kvex.util.queue_around_frame` decorator to draw a frame before
-        calling the function, otherwise the added overlay will not be seen
-        until execution is yielded to kivy's clock.
-
-        Example usage:
-        ```python
-        xapp.with_overlay(
-            func=lambda: my_func(arg1=True),
-            text="my_func is executing...",
-            after=lambda: print("finished executing my_func."),
-        )
-        ```
-
-        Args:
-            func: Callback to queue after adding the overlay.
-            after: Optionally call after removing the overlay.
-            kwargs: Keyword arguments for the XOverlay object.
-        """
-        if self.__overlay is not None:
-            raise RuntimeError("Cannot create an overlay when one already exists.")
-        delay = self.root.layout_event_delay
-        self.root.layout_event_delay = 0
-        queue_around_frame(
-            func,
-            before=partial(self.__create_overlay, **kwargs),
-            after=partial(self.__destroy_overlay, after, delay),
-            delay=0.05,
-        )()
-
     def _filter_touch(self, w, touch):
-        if self.block_input:
-            return True
         if "button" not in touch.profile:
             return True
         return False
-
-    def __create_overlay(self, **kwargs):
-        self.__overlay = XOverlay(**kwargs)
-        self.__overlay.focus = True
-        self.block_input = True
-        self.root.add_widget(self.__overlay)
-
-    def __destroy_overlay(self, after: Optional[Callable], delay: float):
-        self.root.remove_widget(self.__overlay)
-        self.__overlay = None
-        self.block_input = False
-        if after is not None:
-            after()
-        self.root.layout_event_delay = delay
 
 
 __all__ = (
