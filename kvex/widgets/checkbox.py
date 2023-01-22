@@ -58,7 +58,7 @@ class XCheckBox(XThemed, XFocusBehavior, XWidget, kv.CheckBox):
     def _refresh_focus_graphics(self, *args):
         self.make_bg(
             color=XColor(*self.focus_color).modified_alpha(int(self.focus) / 2),
-            source=get_image("xframe_bg"),
+            source=get_image("rounded_square"),
         )
 
 

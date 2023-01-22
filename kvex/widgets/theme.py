@@ -2,12 +2,11 @@
 
 from .. import kivy as kv
 from ..colors import THEME_NAMES
-from ..behaviors import XThemed
 from .button import XButton
 from .datetime import XDateTime
 from .divider import XDivider
 from .label import XLabel
-from .layouts import XBox, XDynamic, XGrid, XAnchor, wrap
+from .layouts import XBox, XDynamicBox, XGrid, XAnchor, XFrame, XJustify
 from .scroll import XScroll
 from .inputpanel import XInputPanel, XInputPanelWidget
 
@@ -87,11 +86,17 @@ class XPreview(kv.FocusBehavior, XAnchor):
             self._palette_box.add_widget(pb)
 
 
-class XPreviewSubtheme(XThemed, XAnchor):
+class XPreviewSubtheme(XFrame):
     """Collection of various widgets for preview purposes."""
 
     def __init__(self, **kwargs):
         """Initialize the class."""
+        kwargs = dict(
+            dynamic=False,
+            pad=True,
+            bg=True,
+            frame=True,
+        ) | kwargs
         super().__init__(**kwargs)
         with self.app.subtheme_context(self.subtheme_name):
             self._make_widgets()
@@ -143,15 +148,14 @@ class XPreviewSubtheme(XThemed, XAnchor):
         input_panel.get_widget("zerohundred").min_value = -2.5
         input_panel.get_widget("zerohundred").disable_invalid = True
         input_panel.get_widget("float").max_value = 42
-        disbtn = wrap(XButton(text="Disabled button", disabled=True), pad=True)
+        disbtn = XAnchor.wrap_pad(XButton(text="Disabled button", disabled=True))
         disbtn.set_size(hx=0.5)
-        disbtn = wrap(disbtn, pad=True)
+        disbtn = XAnchor.wrap_pad(disbtn)
         disbtn.set_size(y="40dp")
-        content_scroll_view = XDynamic()
+        content_scroll_view = XDynamicBox(orientation="vertical")
         content_scroll_view.add_widgets(
             palette_box,
-            XDivider(hint=0.5),
-            wrap(XDateTime(), justify="horizontal"),
+            XJustify.wrap_justify(XFrame.wrap_frame(XDateTime(), dynamic=True)),
             input_panel,
             disbtn,
             XDivider(hint=0.5),
@@ -165,10 +169,11 @@ class XPreviewSubtheme(XThemed, XAnchor):
             XDivider(),
             content,
         )
-        self.add_widget(wrap(main_frame, pad=True, frame=True))
+        self.add_widget(XAnchor.wrap_pad(main_frame, padding="3dp"))
 
     def on_subtheme(self, subtheme):
         """Refresh colors."""
+        super().on_subtheme(subtheme)
         self._refresh_color_labels()
         self._lorem_label.text = self._get_lorem_ipsum()
         self._refresh_palette_box()

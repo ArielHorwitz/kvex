@@ -5,7 +5,7 @@ from .. import kivy as kv
 from .. import util
 from ..behaviors import XThemed
 from .label import XLabel, XLabelClick
-from .layouts import XBox, XGrid, XDynamic, XJustify
+from .layouts import XBox, XGrid, XDynamicBox, XJustify
 from .button import XButton
 from .divider import XDivider
 from .dropdown import XDropDown
@@ -20,7 +20,7 @@ _LAST_MONTH_DAY = {
 }
 
 
-class XDateTime(XThemed, XDynamic):
+class XDateTime(XThemed, XDynamicBox):
     """Widget for selecting time and date.
 
     This widget uses the [arrow](https://arrow.readthedocs.io/en/latest/guide.html)
@@ -144,7 +144,7 @@ class XDateTime(XThemed, XDynamic):
             self.year_input,
             self._get_increment_button("years", -1),
         )
-        self._date_box = XDynamic(orientation="horizontal", ssy="70sp")
+        self._date_box = XDynamicBox(orientation="horizontal", ssy="70sp")
         self._date_box.add_widgets(day, month, year)
         # Time
         self.hour_input = XInputNumber(
@@ -189,7 +189,7 @@ class XDateTime(XThemed, XDynamic):
             self.second_input,
             self._get_increment_button("seconds", -1),
         )
-        self._time_box = XDynamic(orientation="horizontal", ssy="70sp")
+        self._time_box = XDynamicBox(orientation="horizontal", ssy="70sp")
         self._time_box.add_widgets(
             hour,
             XLabel(text=":", bold=True, ssx="10sp"),

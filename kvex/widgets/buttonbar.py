@@ -27,7 +27,13 @@ class XButtonBar(XFrame):
             dropdown_subtheme: Subtheme of dropdown.
             nested_subtheme: Subtheme of nested buttons.
         """
-        kwargs = dict(size_hint_y=None, height=DEFAULT_BUTTON_HEIGHT) | kwargs
+        kwargs = dict(
+            size_hint_y=None,
+            height=DEFAULT_BUTTON_HEIGHT,
+            bg=True,
+            frame=False,
+            pad=False,
+        ) | kwargs
         super().__init__(**kwargs)
         self._category_subtheme = category_subtheme
         self._dropdown_subtheme = dropdown_subtheme

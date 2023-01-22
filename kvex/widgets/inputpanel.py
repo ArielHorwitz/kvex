@@ -5,7 +5,7 @@ from typing import Any, Optional, Callable
 import functools
 from .. import kivy as kv
 from .. import util
-from .layouts import XAnchor, XDynamic, XBox, XCurtain, wrap
+from .layouts import XAnchor, XDynamicBox, XBox, XCurtain
 from .label import XLabel
 from .button import XButton
 from .input import XInput, XInputNumber
@@ -42,7 +42,7 @@ class XInputPanelWidget:
     """Used by choice widgets."""
 
 
-class XInputPanel(XDynamic):
+class XInputPanel(XDynamicBox):
     """A widget containing arbitrary input widgets.
 
     Intended for forms or configuration user input.
@@ -66,10 +66,8 @@ class XInputPanel(XDynamic):
         Args:
             widgets: Dictionary of names to widgets.
         """
-        kwargs = dict(padding=("10sp", 0)) | kwargs
         self._controls = controls = XBox()
-        super().__init__(**kwargs)
-        main_box = self
+        super().__init__(orientation="vertical", **kwargs)
         self.widgets: dict[str, BaseInputWidget] = dict()
         self._curtains: dict[str, XCurtain] = dict()
         # Widgets
@@ -83,19 +81,19 @@ class XInputPanel(XDynamic):
             curtain.set_size(y=input_widget.height)
             self.widgets[name] = input_widget
             self._curtains[name] = curtain
-            main_box.add_widget(curtain)
+            self.add_widget(curtain)
         # Controls
-        controls = XBox()
+        controls = XBox(padding=("5dp", 0))
         if self.reset_text:
-            controls.add_widget(wrap(self._reset_btn, pad=("5dp", 0)))
+            controls.add_widget(self._reset_btn)
         if self.invoke_text:
-            controls.add_widget(wrap(self._invoke_btn, pad=("5dp", 0)))
+            controls.add_widget(self._invoke_btn)
         if len(controls.children) == 1:
             controls.set_size(hx=1 if self.fill_button else 0.5)
-            controls = wrap(controls)
+            controls = XAnchor.wrap_pad(controls, pad=False)
         controls.set_size(y=util.DEFAULT_BUTTON_HEIGHT)
         if len(controls.children) > 0:
-            main_box.add_widget(controls)
+            self.add_widget(controls)
         # Bindings
         self.bind(reset_text=self._on_reset_text, invoke_text=self._on_invoke_text)
         self.register_event_type("on_invoke")

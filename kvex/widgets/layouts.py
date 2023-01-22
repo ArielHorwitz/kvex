@@ -1,6 +1,10 @@
-"""Layout widgets."""
+"""Layout widgets.
 
-from typing import Optional
+Contains layout widgets that inherit from `kvex.widgets.widget.XWidget` and several
+common functions: `pad`, `frame`, and `justify`.
+"""
+
+from typing import Optional, Iterable
 from .. import kivy as kv
 from .. import assets
 from .. import util
@@ -9,11 +13,27 @@ from ..behaviors import XThemed
 from .widget import XWidget
 
 
+DEFAULT_SPACING = util.sp2pixels("10dp")
+
+
+class XLayout(XWidget):
+    """Layout base class with convenience methods."""
+
+    def add_widgets(self, *children: Iterable[kv.Widget], **kwargs):
+        """Add multiple widgets."""
+        if not children:
+            raise ValueError("No children given.")
+        for child in children:
+            if not isinstance(child, kv.Widget):
+                raise TypeError(f"Expected kivy widgets, instead got: {children}")
+            self.add_widget(child, **kwargs)
+
+
 class XDynamicLayoutMixin:
-    """Mixin for layouts that are responsive to their children.
+    """Mixin for layouts that dynamically resize to their (first) child's size.
 
     Overrides the layout trigger to delay layout effects to the next frame. Subclasses
-    should override `do_layout` (and call super) to leverage this mixin.
+    should override `do_layout` (and call super) to use this mixin.
     """
     def __init__(self, **kwargs):
         """Initialize the class."""
@@ -24,115 +44,199 @@ class XDynamicLayoutMixin:
         util.snooze_trigger(self._layout_trigger)
 
 
-class XBox(XWidget, kv.BoxLayout):
-    """BoyLayout."""
+class XAnchor(XLayout, kv.AnchorLayout):
+    """AnchorLayout.
 
-    pass
-
-
-class XDynamic(XDynamicLayoutMixin, XBox):
-    """XBox that will dynamically resize based on orientation and children's size.
-
-    When vertical, height will be adjusted to fit children exactly. When horizontal,
-    width will be adjusted to fit children exactly. If `both_axes` is True, will also
-    adjust the other axis based on maximum size of children widgets.
-
-    .. warning::
-        Layout behavior will break if children's size hint is set on an axis that is
-        responsive (based on `orientation` and `both_axes`).
+    See class documentation for details.
     """
 
-    both_axes = kv.BooleanProperty(False)
-    """If layout should be responsive on both axes."""
+    def __init__(self, pad: bool = False, **kwargs):
+        """Initialize the class.
 
-    def __init__(self, **kwargs):
-        """Initialize the class."""
-        kwargs = dict(orientation="vertical") | kwargs
+        Args:
+            pad: Add the default padding. Overriden by explicit `padding` in kwargs.
+            kwargs: Keyword arguments for the XAnchor.
+        """
+        if pad:
+            kwargs = dict(padding=DEFAULT_SPACING) | kwargs
         super().__init__(**kwargs)
 
-    def do_layout(self, *args, **kwargs):
-        """Resize based on children, before doing layout."""
-        if self.orientation == "horizontal":
-            width = sum(util.sp2pixels(c.width) for c in self.children)
-            self.set_size(x=width)
-            if self.both_axes:
-                heights = tuple(
-                    util.sp2pixels(c.height) for c in self.children
-                    if c.size_hint_y is None
-                )
-                if heights:
-                    self.set_size(y=max(heights))
-        elif self.orientation == "vertical":
-            height = sum(util.sp2pixels(c.height) for c in self.children)
-            self.set_size(y=height)
-            if self.both_axes:
-                widths = tuple(
-                    util.sp2pixels(c.width) for c in self.children
-                    if c.size_hint_x is None
-                )
-                if widths:
-                    self.set_size(x=max(widths))
-        super().do_layout(*args, **kwargs)
+    @classmethod
+    def wrap_pad(cls, widget: kv.Widget, /, **kwargs) -> "XAnchor":
+        """Wrap a widget in a padded XAnchor layout.
+
+        ```python3
+        padded = kx.wrap(widget)
+        normal_anchor = kx.wrap(widget, pad=False)
+        custom_padding = kx.wrap(widget, padding="20dp")
+        ```
+        """
+        kwargs = dict(pad=True) | kwargs
+        instance = cls(**kwargs)
+        instance.add_widget(widget)
+        return instance
 
 
-class XGrid(XWidget, kv.GridLayout):
-    """GridLayout."""
+class XDynamic(XDynamicLayoutMixin, XAnchor):
+    """XAnchor that will dynamically resize to first child widget's size.
 
-    pass
+    Can also add `margin`.
+    """
 
+    dynamic = kv.BooleanProperty(True)
+    """If layout should resize to match first child. Defaults to True."""
+    margins = kv.VariableListProperty(defaultvalue=0, length=4)
+    """Margins (like `Anchor.padding`)."""
 
-class XStack(XWidget, kv.StackLayout):
-    """StackLayout."""
+    def __init__(self, margin: bool = False, **kwargs):
+        """Initialize the class.
 
-    pass
-
-
-class XRelative(XWidget, kv.RelativeLayout):
-    """RelativeLayout."""
-
-    pass
-
-
-class XAnchor(XWidget, kv.AnchorLayout):
-    """AnchorLayout."""
-
-    pass
-
-
-class XMargin(XDynamicLayoutMixin, XAnchor):
-    """XAnchor that will dynamically resize to child's size with added margins."""
-
-    margin_x = kv.NumericProperty("10dp")
-    """Horizontal margin."""
-    margin_y = kv.NumericProperty("10dp")
-    """Vertical margin."""
-    margin = kv.ReferenceListProperty(margin_x, margin_y)
-    """Margins of x and y."""
+        Args:
+            margin: Add the default margin. Overriden by explicit `margins` in kwargs.
+            kwargs: Keyword arguments for the XDynamic.
+        """
+        if margin is True:
+            kwargs = dict(margins=DEFAULT_SPACING) | kwargs
+        super().__init__(**kwargs)
+        self._trigger_layout()
+        self.bind(dynamic=self._on_dynamic)
 
     def do_layout(self, *args, **kwargs):
         """Resize to first child's size plus margins."""
-        if self.children:
-            child = self.children[0]
-            if not child.size_hint_x:
-                margin_x = util.sp2pixels(self.margin_x)
-                w = util.sp2pixels(child.width)
-                self.set_size(x=w + margin_x * 2)
-            if not child.size_hint_y:
-                margin_y = util.sp2pixels(self.margin_y)
-                h = util.sp2pixels(child.height)
-                self.set_size(y=h + margin_y * 2)
+        if self.dynamic:
+            self._update_dynamic_size()
         super().do_layout(*args, **kwargs)
+
+    def _on_dynamic(self, *args):
+        if self.dynamic:
+            self._update_dynamic_size()
+        else:
+            self.set_size(hx=1, hy=1)
+
+    def _update_dynamic_size(self):
+        if not self.children:
+            return
+        child = self.children[0]
+        sp = util.sp2pixels
+        margin_left, margin_top, margin_right, margin_bottom = self.margins
+        if not child.size_hint_x:
+            self.set_size(x=sp(child.width) + sp(margin_left) + sp(margin_right))
+        if not child.size_hint_y:
+            self.set_size(y=sp(child.height) + sp(margin_top) + sp(margin_bottom))
+
+
+class XFrame(XThemed, XDynamic):
+    """Themed `XDynamic` with optional background and frame.
+
+    See class documentation for details.
+    """
+
+    _source_bg = str(assets.get_image("rounded_square"))
+    _source_frame = str(assets.get_image("frame"))
+    _frame_width = util.sp2pixels("4dp")
+
+    bg = kv.BooleanProperty(True)
+    """If background should be drawn. Defaults to True."""
+    frame = kv.BooleanProperty(True)
+    """If frame should be drawn. Defaults to True."""
+
+    def __init__(self, **kwargs):
+        """Initialize the class."""
+        super().__init__(**kwargs)
+        self._make_graphics()
+        self.bind(bg=self._refresh_graphics, frame=self._refresh_graphics)
+
+    @classmethod
+    def wrap_frame(cls, widget: kv.Widget, /, **kwargs) -> "XFrame":
+        """Wrap a widget in an XFrame.
+
+        ```python3
+        # Center widget in a frame with background color:
+        bg_frame = kx.frame(widget, bg=True)
+        # Center widget in a frame with padding:
+        padded_frame = kx.frame(widget, pad=True)
+        # Add a frame to a widget of fixed size:
+        dynamic_frame = kx.frame(widget, dynamic=True)
+        # Add margin to dynamic frame:
+        margin_frame = kx.frame(widget, dynamic=True, margin=True)
+        custom_margins = kx.frame(widget, dynamic=True, margins="20dp")
+        ```
+        """
+        dynamic = kwargs.get("dynamic", False)
+        kwargs = dict(
+            dynamic=dynamic,
+            pad=not dynamic,
+            margin=dynamic,
+            bg=False,
+            frame=True,
+        ) | kwargs
+        instance = cls(**kwargs)
+        instance.add_widget(widget)
+        return instance
+
+    def on_subtheme(self, subtheme):
+        """Apply colors."""
+        self._refresh_graphics()
+
+    def _refresh_graphics(self, *args):
+        bg_color = self.subtheme.bg if self.bg else XColor(a=0)
+        frame_color = self.subtheme.accent if self.frame else XColor(a=0)
+        self._bg_color.rgba = bg_color.rgba
+        self._frame_color.rgba = frame_color.rgba
+
+    def _make_graphics(self):
+        with self.canvas.before:
+            self._bg_color = kv.Color()
+            self._bg_image = kv.BorderImage(source=str(self._source_bg))
+            self._frame_color = kv.Color()
+            self._frame_image = kv.BorderImage(source=str(self._source_frame))
+        self.bind(
+            pos=self._update_graphics_geometry,
+            size=self._update_graphics_geometry,
+        )
+        self._refresh_graphics()
+
+    def _update_graphics_geometry(self, *args):
+        sp = util.sp2pixels
+        fw = self._frame_width
+        self._bg_image.pos = sp(self.pos)
+        self._bg_image.size = sp(self.size)
+        left, top, right, bottom = self.margins if self.dynamic else self.padding
+        x = self.x + sp(left) - fw
+        y = self.y + sp(bottom) - fw
+        w = self.width - sp(left) - sp(right) + fw + fw
+        h = self.height - sp(top) - sp(bottom) + fw + fw
+        self._frame_image.pos = max(x, 0), max(y, 0)
+        self._frame_image.size = max(w, 0), max(h, 0)
 
 
 class XJustify(XDynamicLayoutMixin, XAnchor):
-    """XAnchor that will dynamically resize to justify the first child widget.
+    """XAnchor that will resize to justify a widget of fixed size.
 
-    First child widget must not have size_hint set along the specified axis in
-    `orientation`.
+    See class documentation for details.
     """
 
     orientation = kv.OptionProperty("horizontal", options=["horizontal", "vertical"])
     """Axis to justify."""
+
+    @classmethod
+    def wrap_justify(cls, widget: kv.Widget, /, **kwargs) -> "XJustify":
+        """Wrap a widget in an XJustify layout.
+
+        ```python3
+        # Label of fixed size (200 width by 50 height)
+        label = kx.XLabel(ssx=200, ssy=50)
+        # Layout that will resize to label's height (with `size_hint_x` of 1)
+        justified_label_frame = kx.justify(label, orientation="horizontal")  # 50 height
+        ```
+
+        .. note::
+            Child widget must not have `size_hint` set along the specified axis in
+            `orientation` (only considers the first child).
+        """
+        instance = cls(**kwargs)
+        instance.add_widget(widget)
+        return instance
 
     def do_layout(self, *args, **kwargs):
         """Resize to center first child."""
@@ -144,16 +248,6 @@ class XJustify(XDynamicLayoutMixin, XAnchor):
             elif self.orientation == "vertical" and child.size_hint_y is None:
                 self.set_size(x=child.width)
         super().do_layout(*args, **kwargs)
-
-
-class XFrame(XThemed, XAnchor):
-    """Themed `XAnchor` with a background."""
-
-    BG = str(assets.get_image("xframe_bg"))
-
-    def on_subtheme(self, subtheme):
-        """Apply background color."""
-        self.make_bg(subtheme.bg, source=self.BG)
 
 
 class XAnchorDelayed(XAnchor):
@@ -225,142 +319,91 @@ class XCurtain(XAnchor):
         self.showing = set_as
 
 
-def wrap(
-    widget: kv.Widget,
-    /,
-    pad: bool | util._KIVY_DIMENSIONS | XAnchor = False,
-    frame: bool | XFrame = False,
-    margin: bool | util._KIVY_DIMENSIONS | XMargin = False,
-    justify: Optional[str | XJustify] = None,
-    debug: bool = False,
-    **kwargs,
-):
-    """Wrap a widget in layouts.
+class XBox(XLayout, kv.BoxLayout):
+    """BoyLayout."""
 
-    Wraps the widget with a layout for each argument ***in order***: pad, frame, margin,
-    and justify. For more fine-grained control, each layout can be premade manually and
-    passed as the argument.
+    pass
 
-    Will skip any layout not specified. If no other layout has been used or if any extra
-    keyword arguments are passed, they will be passed to a final `XAnchor` which will
-    wrap everything.
 
-    For example:
-    ```python3
-    widget = kx.XLabel()
-    widget.set_size("50dp", "50dp")
-    # This:
-    outer = kx.wrap(widget, margin="10dp", justify="horizontal")
-    # Is equivalent to:
-    inner = kx.XMargin(margin="10dp")
-    inner.add_widget(widget)
-    outer = kx.wrap(inner, justify="horizontal")
-    # Is equivalent to:
-    inner = kx.XMargin(margin="10dp")
-    inner.add_widget(widget)
-    outer = kx.XJustify(orientation="horizontal")
-    outer.add_widget(inner)
-    ```
+class XDynamicBox(XDynamicLayoutMixin, XBox):
+    """XBox that will dynamically resize based on orientation and children's size.
+
+    When vertical, height will be adjusted to fit children exactly. When horizontal,
+    width will be adjusted to fit children exactly. If `both_axes` is True, will also
+    adjust the other axis based on maximum size of children widgets.
 
     .. warning::
-        Wrapping all these layouts in sequence may not lead to the results you are
-        looking for.
-
-    Some layouts are responsive to the children's size, others are not. For example,
-    wrapping padding and then wrapping justify will not seem to have an effect, since
-    the padding layout (which is not responsive to children's size) will simply take up
-    all available space and justifying may not seem to work.
-
-    For this reason, automatically wrapping in this order may not be enough, and would
-    require you to call this function multiple times for each layout to achieve the
-    intended behavior. See class documentations for details.
-
-    Args:
-        pad: Add padding using an `XAnchor` layout.
-        frame: Frame using an `XFrame` layout.
-        margin: Add margins using an `XMargin` layout.
-        justify: Orientation to justify using an `XJustify` layout.
-        debug: Add background color to layouts: blue for padding, green for frame, red
-            for margin, and cyan for justify.
-        kwargs: Keyword arguments for an outermost `XAnchor`.
+        Layout behavior will break if children's size hint is set on an axis that is
+        responsive (based on `orientation` and `both_axes`).
     """
-    outer = widget
-    if debug:
-        outer.make_bg(XColor(0, 0, 0))
-    outer = _wrap_pad(outer, pad, debug)
-    outer = _wrap_frame(outer, frame, debug)
-    outer = _wrap_margin(outer, margin, debug)
-    outer = _wrap_justify(outer, justify, debug)
-    if kwargs or outer is widget:
-        outer = XAnchor.with_add(outer, **kwargs)
-        if debug:
-            outer.make_bg(XColor(1, 0, 1))
-    return outer
+
+    both_axes = kv.BooleanProperty(False)
+    """If layout should be responsive on both axes."""
+
+    def do_layout(self, *args, **kwargs):
+        """Resize based on children, before doing layout."""
+        if self.orientation == "horizontal":
+            width = sum(util.sp2pixels(c.width) for c in self.children)
+            self.set_size(x=width)
+            if self.both_axes:
+                heights = tuple(
+                    util.sp2pixels(c.height) for c in self.children
+                    if c.size_hint_y is None
+                )
+                if heights:
+                    self.set_size(y=max(heights))
+        elif self.orientation == "vertical":
+            height = sum(util.sp2pixels(c.height) for c in self.children)
+            self.set_size(y=height)
+            if self.both_axes:
+                widths = tuple(
+                    util.sp2pixels(c.width) for c in self.children
+                    if c.size_hint_x is None
+                )
+                if widths:
+                    self.set_size(x=max(widths))
+        super().do_layout(*args, **kwargs)
 
 
-def _wrap_pad(outer, pad, debug):
-    # Blue
-    if pad is not False:
-        if pad is True:
-            padding = "10dp", "10dp"
-        else:
-            padding = util._extend_dimensions(pad)
-        outer = XAnchor.with_add(outer, padding=padding)
-        if debug:
-            outer.make_bg(XColor(0, 0, 1))
-    return outer
+class XGrid(XLayout, kv.GridLayout):
+    """GridLayout."""
+
+    pass
 
 
-def _wrap_frame(outer, frame, debug):
-    # Green
-    if frame:
-        if not isinstance(frame, XFrame):
-            frame = XFrame(enable_theming=not debug)
-        frame.add_widget(outer)
-        outer = frame
-        if debug:
-            outer.make_bg(XColor(0, 1, 0))
-    return outer
+class XStack(XLayout, kv.StackLayout):
+    """StackLayout."""
+
+    pass
 
 
-def _wrap_margin(outer, margin, debug):
-    # Red
-    if margin is not False:
-        if margin is True:
-            margin = "10dp", "10dp"
-        if not isinstance(margin, XMargin):
-            margin = XMargin(margin=util._extend_dimensions(margin))
-        margin.add_widget(outer)
-        outer = margin
-        if debug:
-            outer.make_bg(XColor(1, 0, 0))
-    return outer
+class XRelative(XLayout, kv.RelativeLayout):
+    """RelativeLayout."""
+
+    pass
 
 
-def _wrap_justify(outer, justify, debug):
-    # Cyan
-    if justify is not None:
-        if not isinstance(justify, XJustify):
-            justify = XJustify(orientation=justify)
-        justify.add_widget(outer)
-        outer = justify
-        if debug:
-            outer.make_bg(XColor(0, 1, 1))
-    return outer
+pad = XAnchor.wrap_pad
+frame = XFrame.wrap_frame
+justify = XJustify.wrap_justify
 
 
 __all__ = (
-    "wrap",
-    "XBox",
+    "pad",
+    "frame",
+    "justify",
+    "XAnchor",
     "XDynamic",
+    "XFrame",
     "XJustify",
-    "XMargin",
+    "XAnchorDelayed",
+    "XCurtain",
+    "XBox",
+    "XDynamicBox",
     "XGrid",
     "XRelative",
     "XStack",
-    "XAnchor",
-    "XFrame",
-    "XAnchorDelayed",
-    "XCurtain",
+    "XLayout",
     "XDynamicLayoutMixin",
+    "DEFAULT_SPACING",
 )

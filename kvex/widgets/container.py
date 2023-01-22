@@ -7,7 +7,7 @@ from .label import XLabel
 from .button import XButton
 
 
-class XPlaceholder(XBox):
+class XPlaceholder(XAnchor):
     """A simple label and button widget for `XContainer`."""
 
     def __init__(
@@ -23,15 +23,17 @@ class XPlaceholder(XBox):
             button_text: Button text.
             callback: Function to call when button is pressed. Required to show button.
         """
-        super().__init__(orientation="vertical")
+        super().__init__()
+        box = XBox(orientation="vertical")
+        self.add_widget(box)
         if label_text:
             label = XLabel(text=label_text)
             label.set_size(hy=4)
-            self.add_widget(label)
+            box.add_widget(label)
         if callback:
             button = XButton(text=button_text, on_release=lambda *a: callback())
             button.set_size(x="300dp", y="70dp")
-            self.add_widget(XAnchor.with_add(button))
+            box.add_widget(XAnchor.wrap_pad(button, pad=False))
 
 
 class XContainer(XAnchor):

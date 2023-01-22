@@ -21,8 +21,7 @@ kv.Rectangle
 kv.Clock
 ```
 
-Virtually all of the widgets and functions that Kvex offers are available from a single
-import:
+Virtually all of the objects that Kvex offers are available from a single import:
 ```python3
 import kvex as kx
 
@@ -30,10 +29,15 @@ kx.XApp
 kx.XAnchor
 kx.XButton
 kx.XThemed
-kx.wrap
+kx.pad
+kx.frame
 kx.schedule_once
 kx.snooze_trigger
 ```
+
+.. note::
+    The documentation may name the full path (e.g. `kvex.widgets.widget.XWidget`) for
+    sake of reference, but should still be available directly from `kvex.XWidget`.
 
 ## Widgets
 Kvex widgets use the `kvex.widgets.widget.XWidget` mixin class. It provides several
@@ -68,7 +72,7 @@ When creating widgets:
 with self.app.subtheme_context("secondary"):  # Set default subtheme
     # All widgets in this code block will default to "secondary"
     label = kx.XLabel(text="Secondary fg on secondary bg")
-    label_frame = kx.wrap(label, frame=True)  # Wrap label in a themed frame
+    label_frame = kx.frame(label, background=True)  # Put label on background color
 ```
 
 When subclassing widgets:

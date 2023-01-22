@@ -20,7 +20,7 @@ from .util import (
 )
 from .behaviors import XFocusBehavior
 from .win_focus_patch import XWindowFocusPatch
-from .widgets.layouts import XAnchor, XAnchorDelayed, wrap
+from .widgets.layouts import XAnchor, XAnchorDelayed, XFrame
 from .widgets.label import XLabel
 
 
@@ -33,10 +33,10 @@ class XOverlay(XFocusBehavior, XAnchor):
     def __init__(self, **kwargs):
         """Initialize like an XAnchor."""
         super().__init__()
-        self.make_bg(XColor(*self.app.theme.secondary.bg.rgb, 0.75))
+        self.make_bg(XColor(*self.app.theme.primary.bg.rgba))
         with self.app.subtheme_context("primary"):
             self.label = XLabel(**kwargs)
-            frame = wrap(self.label, pad=True, frame=True)
+            frame = XFrame.wrap(self.label, pad=True, background=True)
             frame.set_size(x="500sp", y="150sp")
             self.add_widget(frame)
 
