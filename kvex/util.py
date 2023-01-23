@@ -7,6 +7,7 @@ import sys
 from . import kivy as kv
 
 
+DEFAULT_SPACING = "10dp"
 DEFAULT_BUTTON_HEIGHT = "30sp"
 _KIVY_DIMENSIONS = float | tuple[float, float] | str | tuple[str, str]
 
@@ -181,5 +182,6 @@ __all__ = (
     "snooze_trigger",
     "queue_around_frame",
     "to_pixels",
+    "DEFAULT_SPACING",
     "DEFAULT_BUTTON_HEIGHT",
 )

@@ -13,9 +13,6 @@ from ..behaviors import XThemed
 from .widget import XWidget
 
 
-DEFAULT_SPACING = util.to_pixels("10dp")
-
-
 class XLayout(XWidget):
     """Layout base class with convenience methods."""
 
@@ -58,7 +55,7 @@ class XAnchor(XLayout, kv.AnchorLayout):
             kwargs: Keyword arguments for the XAnchor.
         """
         if pad:
-            kwargs = dict(padding=DEFAULT_SPACING) | kwargs
+            kwargs = dict(padding=util.DEFAULT_SPACING) | kwargs
         super().__init__(**kwargs)
 
     @classmethod
@@ -96,7 +93,7 @@ class XDynamic(XDynamicLayoutMixin, XAnchor):
             kwargs: Keyword arguments for the XDynamic.
         """
         if margin is True:
-            kwargs = dict(margins=DEFAULT_SPACING) | kwargs
+            kwargs = dict(margins=util.DEFAULT_SPACING) | kwargs
         super().__init__(**kwargs)
         self._trigger_layout()
         self.bind(dynamic=self._on_dynamic)
@@ -405,5 +402,4 @@ __all__ = (
     "XStack",
     "XLayout",
     "XDynamicLayoutMixin",
-    "DEFAULT_SPACING",
 )
