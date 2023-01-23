@@ -2,7 +2,7 @@
 
 from typing import Optional
 from .. import kivy as kv
-from ..util import sp2pixels
+from ..util import to_pixels
 from ..colors import XColor
 
 
@@ -97,10 +97,10 @@ class XWidget:
             )
 
     def _update_kvex_bg_pos(self, instruction, pos):
-        instruction.pos = sp2pixels(pos)
+        instruction.pos = to_pixels(pos)
 
     def _update_kvex_bg_size(self, instruction, size):
-        instruction.size = sp2pixels(size)
+        instruction.size = to_pixels(size)
 
     @property
     def app(self):

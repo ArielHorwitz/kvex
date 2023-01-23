@@ -249,7 +249,7 @@ class XDateTime(XThemed, XDynamicBox):
 
 class _DaySelector(XGrid):
 
-    WIDTH = util.sp2pixels("35sp") * 7
+    WIDTH = util.to_pixels("35sp") * 7
     LABELS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
 
     def __init__(self, callback):
@@ -280,7 +280,7 @@ class _DaySelector(XGrid):
         if end_fill:
             self.add_widgets(*(kv.Widget() for i in range(end_fill)))
         row_count = len(self.children) // 7
-        self.set_size(y=row_count * util.sp2pixels("40sp"))
+        self.set_size(y=row_count * util.to_pixels("40sp"))
 
     def _get_label(self, day: int):
         return XLabelClick(text=str(day + 1), on_release=self._on_select)

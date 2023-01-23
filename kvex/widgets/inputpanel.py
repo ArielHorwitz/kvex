@@ -177,7 +177,7 @@ class BaseInputWidget(XBox):
         self.widget = self._get_widget(w, on_value, on_invoke)
         assert self.widget is not None
         # Assemble
-        pixel_height_ = util.sp2pixels(util.DEFAULT_BUTTON_HEIGHT)
+        pixel_height_ = util.to_pixels(util.DEFAULT_BUTTON_HEIGHT)
         height = pixel_height_ * (1 + (w.orientation == "vertical"))
         self.set_size(y=height)
         self.label.set_size(hx=w.label_hint if w.orientation == "horizontal" else 1)

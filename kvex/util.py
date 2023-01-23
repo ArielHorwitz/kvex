@@ -135,7 +135,7 @@ def _str2pixels(s) -> float:
     raise ValueError(f"Unkown format: {s!r} (please use 'dp' or 'sp')")
 
 
-def sp2pixels(value: float | str | Iterable[float | str]) -> float | list[float]:
+def to_pixels(value: float | str | Iterable[float | str]) -> float | list[float]:
     """Convert values in 'sp', 'dp', or pixels to pixels.
 
     Useful when wishing to convert values to pixels but it is unknown if they are given
@@ -180,6 +180,6 @@ __all__ = (
     "schedule_interval",
     "snooze_trigger",
     "queue_around_frame",
-    "sp2pixels",
+    "to_pixels",
     "DEFAULT_BUTTON_HEIGHT",
 )

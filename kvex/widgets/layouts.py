@@ -13,7 +13,7 @@ from ..behaviors import XThemed
 from .widget import XWidget
 
 
-DEFAULT_SPACING = util.sp2pixels("10dp")
+DEFAULT_SPACING = util.to_pixels("10dp")
 
 
 class XLayout(XWidget):
@@ -117,12 +117,12 @@ class XDynamic(XDynamicLayoutMixin, XAnchor):
         if not self.children:
             return
         child = self.children[0]
-        sp = util.sp2pixels
+        pix = util.to_pixels
         margin_left, margin_top, margin_right, margin_bottom = self.margins
         if not child.size_hint_x:
-            self.set_size(x=sp(child.width) + sp(margin_left) + sp(margin_right))
+            self.set_size(x=pix(child.width) + pix(margin_left) + pix(margin_right))
         if not child.size_hint_y:
-            self.set_size(y=sp(child.height) + sp(margin_top) + sp(margin_bottom))
+            self.set_size(y=pix(child.height) + pix(margin_top) + pix(margin_bottom))
 
 
 class XFrame(XThemed, XDynamic):
@@ -133,7 +133,7 @@ class XFrame(XThemed, XDynamic):
 
     _source_bg = str(assets.get_image("rounded_square"))
     _source_frame = str(assets.get_image("frame"))
-    _frame_width = util.sp2pixels("4dp")
+    _frame_width = util.to_pixels("4dp")
 
     bg = kv.BooleanProperty(True)
     """If background should be drawn. Defaults to True."""
@@ -197,15 +197,15 @@ class XFrame(XThemed, XDynamic):
         self._refresh_graphics()
 
     def _update_graphics_geometry(self, *args):
-        sp = util.sp2pixels
+        pix = util.to_pixels
         fw = self._frame_width
-        self._bg_image.pos = sp(self.pos)
-        self._bg_image.size = sp(self.size)
+        self._bg_image.pos = pix(self.pos)
+        self._bg_image.size = pix(self.size)
         left, top, right, bottom = self.margins if self.dynamic else self.padding
-        x = self.x + sp(left) - fw
-        y = self.y + sp(bottom) - fw
-        w = self.width - sp(left) - sp(right) + fw + fw
-        h = self.height - sp(top) - sp(bottom) + fw + fw
+        x = self.x + pix(left) - fw
+        y = self.y + pix(bottom) - fw
+        w = self.width - pix(left) - pix(right) + fw + fw
+        h = self.height - pix(top) - pix(bottom) + fw + fw
         self._frame_image.pos = max(x, 0), max(y, 0)
         self._frame_image.size = max(w, 0), max(h, 0)
 
@@ -343,21 +343,21 @@ class XDynamicBox(XDynamicLayoutMixin, XBox):
     def do_layout(self, *args, **kwargs):
         """Resize based on children, before doing layout."""
         if self.orientation == "horizontal":
-            width = sum(util.sp2pixels(c.width) for c in self.children)
+            width = sum(util.to_pixels(c.width) for c in self.children)
             self.set_size(x=width)
             if self.both_axes:
                 heights = tuple(
-                    util.sp2pixels(c.height) for c in self.children
+                    util.to_pixels(c.height) for c in self.children
                     if c.size_hint_y is None
                 )
                 if heights:
                     self.set_size(y=max(heights))
         elif self.orientation == "vertical":
-            height = sum(util.sp2pixels(c.height) for c in self.children)
+            height = sum(util.to_pixels(c.height) for c in self.children)
             self.set_size(y=height)
             if self.both_axes:
                 widths = tuple(
-                    util.sp2pixels(c.width) for c in self.children
+                    util.to_pixels(c.width) for c in self.children
                     if c.size_hint_x is None
                 )
                 if widths:
