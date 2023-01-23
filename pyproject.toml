@@ -34,3 +34,6 @@ include = [
 kvex = [
   "assets/**",
 ]
+
+[project.scripts]
+kvex-example = "kvex.example:run"

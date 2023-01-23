@@ -1,23 +1,48 @@
-"""Home of `XPreview` and `XPreviewSubtheme`."""
+"""Example app."""
 
-from .. import kivy as kv
-from ..colors import THEME_NAMES
-from .button import XButton
-from .datetime import XDateTime
-from .divider import XDivider
-from .label import XLabel
-from .layouts import XBox, XDynamicBox, XGrid, XAnchor, XFrame, XJustify
-from .scroll import XScroll
-from .inputpanel import XInputPanel, XInputPanelWidget
+import kvex as kx
 
 
-class XPreview(kv.FocusBehavior, XAnchor):
-    """Widget to preview the the theme with various widgets."""
+class ExampleApp(kx.XApp):
+    """Example application."""
+
+    def __init__(self, *args, **kwargs):
+        """Initialize the app."""
+        super().__init__(*args, **kwargs)
+        self.title = "Kvex testing"
+        self.set_position(1600, 700)
+        self.set_size(1024, 768)
+        kx.schedule_once(self.maximize)
+        self._make_widgets()
+
+    def _make_widgets(self):
+        self.controller = kx.XHotkeyController()
+        self.controller.register("quit", "^+ q", self.stop)
+        self.controller.register("restart", "^+ w", self.restart)
+        self.controller.register("debug", "^+ d", self.controller.debug)
+        btn_bar = kx.XButtonBar(
+            category_subtheme="secondary",
+            dropdown_subtheme="accent",
+            nested_subtheme="primary",
+        )
+        btn_bar.add_button("app", "quit", self.stop)
+        btn_bar.add_button("app", "restart", self.restart)
+        btn_bar.add_button("app", "debug", self.controller.debug)
+        btn_bar.add_theme_selectors()
+        outer_container = kx.XBox(orientation="vertical")
+        outer_container.add_widgets(btn_bar, MainWidget())
+        outer_frame = kx.frame(outer_container, bg=True, frame=False, pad=False)
+        self.add_widget(outer_frame)
+
+
+class MainWidget(kx.FocusBehavior, kx.XAnchor):
+    """Main example widget, for switching themes and previewing subthemes."""
 
     def __init__(self):
         """Initialize the class."""
-        self._palette_box = XBox()
+        self._palette_box = kx.XBox()
         super().__init__()
+        self.focus = True
         self._make_widgets()
         self.app.bind(on_theme=self._refresh_palette_box)
 
@@ -26,7 +51,7 @@ class XPreview(kv.FocusBehavior, XAnchor):
         code, key = keycode
         shifted = "shift" in modifiers
         tabbed = key == "tab"
-        cindex = THEME_NAMES.index(self.app.theme_name)
+        cindex = kx.THEME_NAMES.index(self.app.theme_name)
         if key == "right" or (tabbed and not shifted):
             cindex += 1
         elif key == "left" or (tabbed and shifted):
@@ -37,13 +62,13 @@ class XPreview(kv.FocusBehavior, XAnchor):
             self.app.reload_themes()
         else:
             return True
-        cindex = cindex % len(THEME_NAMES)
-        self.app.set_theme(THEME_NAMES[cindex])
+        cindex = cindex % len(kx.THEME_NAMES)
+        self.app.set_theme(kx.THEME_NAMES[cindex])
         return True
 
     def _make_widgets(self):
         # Palette
-        self._title_label = XLabel(
+        self._title_label = kx.XLabel(
             font_size="24sp",
             color=(0, 0, 0),
             outline_color=(1, 1, 1),
@@ -51,20 +76,20 @@ class XPreview(kv.FocusBehavior, XAnchor):
             valign="top",
             enable_theming=False,
         )
-        self._palette_frame = XAnchor()
+        self._palette_frame = kx.XAnchor()
         self._palette_frame.add_widgets(self._palette_box, self._title_label)
         self._palette_frame.set_size(y="50sp")
         self._refresh_palette_box()
         # Subthemes
-        primary = XPreviewSubtheme(subtheme_name="primary")
+        primary = WidgetsBox(subtheme_name="primary")
         primary.set_size(hx=2)
-        secondary = XPreviewSubtheme(subtheme_name="secondary")
+        secondary = WidgetsBox(subtheme_name="secondary")
         secondary.set_size(hx=1.5)
-        accent = XPreviewSubtheme(subtheme_name="accent")
-        preview_frame = XBox()
+        accent = WidgetsBox(subtheme_name="accent")
+        preview_frame = kx.XBox()
         preview_frame.add_widgets(primary, secondary, accent)
         # Assemble
-        main_box = XBox(orientation="vertical")
+        main_box = kx.XBox(orientation="vertical")
         main_box.add_widgets(
             self._palette_frame,
             preview_frame,
@@ -75,7 +100,7 @@ class XPreview(kv.FocusBehavior, XAnchor):
         self._title_label.text = f"{self.app.theme_name.capitalize()} Theme"
         self._palette_box.clear_widgets()
         for c in self.app.theme.palette:
-            pb = XLabel(
+            pb = kx.XLabel(
                 text=c.hex.upper(),
                 outline_color=(0, 0, 0),
                 outline_width=2,
@@ -86,24 +111,19 @@ class XPreview(kv.FocusBehavior, XAnchor):
             self._palette_box.add_widget(pb)
 
 
-class XPreviewSubtheme(XFrame):
+class WidgetsBox(kx.XFrame):
     """Collection of various widgets for preview purposes."""
 
     def __init__(self, **kwargs):
         """Initialize the class."""
-        kwargs = dict(
-            dynamic=False,
-            pad=True,
-            bg=True,
-            frame=True,
-        ) | kwargs
+        kwargs = dict(dynamic=False, pad=True, bg=True, frame=True) | kwargs
         super().__init__(**kwargs)
         with self.app.subtheme_context(self.subtheme_name):
             self._make_widgets()
 
     def _make_widgets(self):
         # Title
-        title_label = XLabel(
+        title_label = kx.XLabel(
             text=f"{self.app.subtheme_name.capitalize()} subtheme",
             font_size="24sp",
             shorten=True,
@@ -113,17 +133,17 @@ class XPreviewSubtheme(XFrame):
         # Text
         color_count = len(self.subtheme.COLOR_NAMES)
         self._color_labels = tuple(
-            XLabel(font_size="12sp", font_name="RobotoMono-Regular")
+            kx.XLabel(font_size="12sp", font_name="RobotoMono-Regular")
             for i in range(color_count)
         )
-        palette_grid = XGrid(cols=3)
+        palette_grid = kx.XGrid(cols=3)
         palette_grid.set_size(y="80sp")
         palette_grid.add_widgets(*self._color_labels)
-        self._palette_label = XLabel(font_size="12sp")
-        palette_box = XBox(orientation="vertical")
+        self._palette_label = kx.XLabel(font_size="12sp")
+        palette_box = kx.XBox(orientation="vertical")
         palette_box.set_size(y="110sp")
         palette_box.add_widgets(palette_grid, self._palette_label)
-        self._lorem_label = XLabel(
+        self._lorem_label = kx.XLabel(
             text=self._get_lorem_ipsum(),
             fixed_width=True,
             padding=(10, 10),
@@ -132,44 +152,44 @@ class XPreviewSubtheme(XFrame):
         )
         # Input panel
         pwidgets = dict(
-            str=XInputPanelWidget("String:", default=self.subtheme_name),
-            disabled=XInputPanelWidget("Disabled:", default="disabled input"),
-            zerohundred=XInputPanelWidget("Capped -2.5 to 100:", "float"),
-            float=XInputPanelWidget("Float 0 to 42:", "float", default=42),
-            password=XInputPanelWidget("Password:", "password", default="foobar"),
-            choice=XInputPanelWidget("Choice:", "choice", choices=["eggs", "spam"]),
-            bool=XInputPanelWidget("Checkbox:", "bool", default=True),
-            bool_dis=XInputPanelWidget("Disabled:", "bool", default=True),
+            str=kx.XInputPanelWidget("String:", default=self.subtheme_name),
+            disabled=kx.XInputPanelWidget("Disabled:", default="disabled input"),
+            zerohundred=kx.XInputPanelWidget("Capped -2.5 to 100:", "float"),
+            float=kx.XInputPanelWidget("Float 0 to 42:", "float", default=42),
+            password=kx.XInputPanelWidget("Password:", "password", default="foobar"),
+            choice=kx.XInputPanelWidget("Choice:", "choice", choices=["eggs", "spam"]),
+            bool=kx.XInputPanelWidget("Checkbox:", "bool", default=True),
+            bool_dis=kx.XInputPanelWidget("Disabled:", "bool", default=True),
         )
-        input_panel = XInputPanel(pwidgets)
+        input_panel = kx.XInputPanel(pwidgets)
         input_panel.set_enabled("bool_dis", False)
         input_panel.set_enabled("disabled", False)
         input_panel.get_widget("zerohundred").max_value = 100
         input_panel.get_widget("zerohundred").min_value = -2.5
         input_panel.get_widget("zerohundred").disable_invalid = True
         input_panel.get_widget("float").max_value = 42
-        disbtn = XAnchor.wrap_pad(XButton(text="Disabled button", disabled=True))
+        disbtn = kx.pad(kx.XButton(text="Disabled button", disabled=True))
         disbtn.set_size(hx=0.5)
-        disbtn = XAnchor.wrap_pad(disbtn)
+        disbtn = kx.pad(disbtn)
         disbtn.set_size(y="40dp")
-        content_scroll_view = XDynamicBox(orientation="vertical")
+        content_scroll_view = kx.XDynamicBox(orientation="vertical")
         content_scroll_view.add_widgets(
             palette_box,
-            XJustify.wrap_justify(XFrame.wrap_frame(XDateTime(), dynamic=True)),
+            kx.justify(kx.frame(kx.XDateTime(), dynamic=True)),
             input_panel,
             disbtn,
-            XDivider(hint=0.5),
+            kx.XDivider(hint=0.5),
             self._lorem_label,
         )
-        content = XScroll(view=content_scroll_view)
+        content = kx.XScroll(view=content_scroll_view)
         # Assemble
-        main_frame = XBox(orientation="vertical")
+        main_frame = kx.XBox(orientation="vertical")
         main_frame.add_widgets(
             title_label,
-            XDivider(),
+            kx.XDivider(),
             content,
         )
-        self.add_widget(XAnchor.wrap_pad(main_frame, padding="3dp"))
+        self.add_widget(kx.pad(main_frame, padding="3dp"))
 
     def on_subtheme(self, subtheme):
         """Refresh colors."""
@@ -223,7 +243,11 @@ LOREM_IPSUMS = [
 ]
 
 
-__all__ = (
-    "XPreview",
-    "XPreviewSubtheme",
-)
+def run():
+    """Run the example app."""
+    print("Running Kvex ExampleApp...")
+    ExampleApp().run()
+
+
+if __name__ == "__main__":
+    run()
