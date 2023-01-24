@@ -247,27 +247,6 @@ class XJustify(XDynamicLayoutMixin, XAnchor):
         super().do_layout(*args, **kwargs)
 
 
-class XAnchorDelayed(XAnchor):
-    """An XAnchor that delays layout events.
-
-    Useful for preventing window drag-resize from creating too many events.
-    """
-
-    layout_event_delay = kv.NumericProperty(0.1)
-    """Delay for layout events."""
-    _delayed_layout_event = None
-
-    def do_layout(self, *args, **kwargs):
-        """Override base method to delay layout events."""
-        if self._delayed_layout_event:
-            self._delayed_layout_event.cancel()
-        _real_do_layout = super().do_layout
-        self._delayed_layout_event = util.schedule_once(
-            lambda dt: _real_do_layout(*args, **kwargs),
-            self.layout_event_delay,
-        )
-
-
 class XCurtain(XAnchor):
     """AnchorLayout that can show or hide it's content."""
 
@@ -380,6 +359,38 @@ class XRelative(XLayout, kv.RelativeLayout):
     pass
 
 
+class XRoot(XAnchor):
+    """An XAnchor that can delay layout events.
+
+    Meant to be used only as the top-level widget to prevent window drag-resize from
+    triggering a ridiculous number of events by adding a small delay. Set `window_delay`
+    to enable or disable this feature.
+    """
+
+    window_delay = kv.BooleanProperty(True)
+    """Enable a delay for layout events. Defaults to False.
+
+    See class documentation for details.
+    """
+
+    def __init__(self, **kwargs):
+        """Initialize the class."""
+        self._normal_layout_trigger = util.create_trigger(self.do_layout, -1)
+        self._delayed_layout_trigger = util.create_trigger(self.do_layout, 0.1)
+        self._trigger_layout = util.create_trigger(self._gapped_layout_trigger, -1)
+        super().__init__(**kwargs)
+
+    def _gapped_layout_trigger(self, *args):
+        if self.window_delay:
+            util.snooze_trigger(self._delayed_layout_trigger)
+        else:
+            util.snooze_trigger(self._normal_layout_trigger)
+
+    def do_layout(self, *args):
+        """Override base method to delay layout events."""
+        super().do_layout(*args)
+
+
 pad = XAnchor.wrap_pad
 frame = XFrame.wrap_frame
 justify = XJustify.wrap_justify
@@ -393,13 +404,13 @@ __all__ = (
     "XDynamic",
     "XFrame",
     "XJustify",
-    "XAnchorDelayed",
     "XCurtain",
     "XBox",
     "XDynamicBox",
     "XGrid",
     "XRelative",
     "XStack",
+    "XRoot",
     "XLayout",
     "XDynamicLayoutMixin",
 )

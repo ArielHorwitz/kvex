@@ -13,7 +13,6 @@ from . import kivy as kv
 from .colors import THEMES, Theme, reload_themes
 from . import util
 from .win_focus_patch import XWindowFocusPatch
-from .widgets.layouts import XAnchorDelayed
 
 
 DEFAULT_THEME_NAME = "midnight"
@@ -40,7 +39,6 @@ class XApp(kv.App):
         self.enable_escape_exit(escape_exits)
         super().__init__(**kwargs)
         self.register_event_type("on_theme")
-        self.root = XAnchorDelayed()
         self.keyboard = kv.Window.request_keyboard(util.consume_args, None)
         self._restart_flag = False
         util.schedule_interval(self._check_focus, 0)
