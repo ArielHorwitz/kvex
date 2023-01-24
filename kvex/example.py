@@ -32,7 +32,7 @@ class ExampleApp(kx.XApp):
         outer_container = kx.XBox(orientation="vertical")
         outer_container.add_widgets(btn_bar, MainWidget())
         outer_frame = kx.frame(outer_container, bg=True, frame=False, pad=False)
-        self.add_widget(outer_frame)
+        self.root.add_widget(outer_frame)
 
 
 class MainWidget(kx.FocusBehavior, kx.XAnchor):

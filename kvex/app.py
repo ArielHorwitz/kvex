@@ -7,7 +7,7 @@ app.hook(func_to_call_every_frame, fps=20)
 app.run()
 ```
 """
-from typing import Callable, Optional
+from typing import Optional
 from contextlib import contextmanager
 from . import kivy as kv
 from .colors import THEMES, Theme, reload_themes
@@ -142,14 +142,6 @@ class XApp(kv.App):
         """Restart the app by stopping `XApp.run` and returning -1."""
         self.__restart_flag = True
         self.stop()
-
-    def hook(self, func: Callable[[float], None], fps: float):
-        """Schedule *func* to be called *fps* times per seconds."""
-        util.schedule_once(lambda *a: util.schedule_interval(func, 1 / fps))
-
-    def add_widget(self, *args, **kwargs):
-        """Add a widget to the root widget."""
-        return self.root.add_widget(*args, **kwargs)
 
     @property
     def mouse_pos(self) -> tuple[float, float]:
