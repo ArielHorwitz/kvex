@@ -11,11 +11,7 @@ from typing import Callable, Optional
 from contextlib import contextmanager
 from . import kivy as kv
 from .colors import THEMES, Theme, reload_themes
-from .util import (
-    restart_script,
-    consume_args,
-    schedule_interval,
-)
+from . import util
 from .win_focus_patch import XWindowFocusPatch
 from .widgets.layouts import XAnchorDelayed
 
@@ -45,11 +41,11 @@ class XApp(kv.App):
         super().__init__(**kwargs)
         self.register_event_type("on_theme")
         self.root = XAnchorDelayed()
-        self.keyboard = kv.Window.request_keyboard(consume_args, None)
+        self.keyboard = kv.Window.request_keyboard(util.consume_args, None)
         self.__restart_flag = False
         self.__overlay = None
         self._overlay_container = None
-        schedule_interval(self._check_focus, 0)
+        util.schedule_interval(self._check_focus, 0)
         kv.Window.bind(
             on_touch_down=self._filter_touch,
             on_touch_up=self._filter_touch,
@@ -132,14 +128,14 @@ class XApp(kv.App):
         """
         super().run(*args, **kwargs)
         if allow_restart and self.__restart_flag:
-            restart_script()
+            util.restart_script()
         return -1 if self.__restart_flag else 0
 
     async def async_run(self, *args, allow_restart: bool = True, **kwargs) -> int:
         """Run asyncronously. Arguments like `XApp.run`."""
         await super().async_run(*args, **kwargs)
         if allow_restart and self.__restart_flag:
-            restart_script()
+            util.restart_script()
         return -1 if self.__restart_flag else 0
 
     def restart(self, *args):
@@ -149,7 +145,7 @@ class XApp(kv.App):
 
     def hook(self, func: Callable[[float], None], fps: float):
         """Schedule *func* to be called *fps* times per seconds."""
-        kv.Clock.schedule_once(lambda *a: kv.Clock.schedule_interval(func, 1 / fps))
+        util.schedule_once(lambda *a: util.schedule_interval(func, 1 / fps))
 
     def add_widget(self, *args, **kwargs):
         """Add a widget to the root widget."""
