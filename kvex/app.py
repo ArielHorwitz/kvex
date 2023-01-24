@@ -9,6 +9,7 @@ app.run()
 """
 from typing import Optional
 from contextlib import contextmanager
+import platform
 from . import kivy as kv
 from .colors import THEMES, Theme, reload_themes
 from . import util
@@ -34,7 +35,9 @@ class XApp(kv.App):
 
     def __init__(self, escape_exits: bool = False, **kwargs):
         """Initialize the class."""
-        self.__window_focus_path = XWindowFocusPatch()
+        if platform.system() != "Windows":
+            # Try to fix an issue that seems to be *nix only
+            self.__window_focus_path = XWindowFocusPatch()
         self.disable_multitouch()
         self.enable_escape_exit(escape_exits)
         super().__init__(**kwargs)
