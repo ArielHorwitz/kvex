@@ -10,16 +10,32 @@ class ExampleApp(kx.XApp):
         """Initialize the app."""
         super().__init__(*args, **kwargs)
         self.title = "Kvex testing"
-        self.set_position(1600, 700)
         self.set_size(1024, 768)
-        kx.schedule_once(self.maximize)
-        self._make_widgets()
+        self.set_position(1600, 700)
 
-    def _make_widgets(self):
+    def build(self):
+        return kx.XRoot(window_delay=False)
+
+    def on_start(self):
+        """Show loading screen while making widgets."""
+        loading_sequence = [
+            self._make_loading_widgets,
+            0.1,
+            self._make_widgets,
+            0.1,
+            self._finalize_loading,
+        ]
+        kx.schedule_many(loading_sequence)
+
+    def _make_loading_widgets(self, *args):
+        self.set_size(400, 100)
+        self.root.add_widget(kx.XLabel(text="Loading Kvex example app..."))
+
+    def _make_widgets(self, *args):
         self.controller = kx.XHotkeyController()
         self.controller.register("quit", "^+ q", self.stop)
         self.controller.register("restart", "^+ w", self.restart)
-        self.controller.register("debug", "^+ d", self.controller.debug)
+        self.controller.register("debug", "^+ d", self._debug)
         btn_bar = kx.XButtonBar(
             category_subtheme="secondary",
             dropdown_subtheme="accent",
@@ -27,13 +43,20 @@ class ExampleApp(kx.XApp):
         )
         btn_bar.add_button("app", "quit", self.stop)
         btn_bar.add_button("app", "restart", self.restart)
-        btn_bar.add_button("app", "debug", self.controller.debug)
+        btn_bar.add_button("app", "debug", self._debug)
         btn_bar.add_theme_selectors()
         outer_container = kx.XBox(orientation="vertical")
         outer_container.add_widgets(btn_bar, MainWidget())
         outer_frame = kx.frame(outer_container, bg=True, frame=False, pad=False)
-        self.root = kx.XRoot()
+        self.root.clear_widgets()
         self.root.add_widget(outer_frame)
+        self.maximize()
+
+    def _finalize_loading(self, *args):
+        self.root.window_delay = True
+
+    def _debug(self, *args):
+        self.controller.debug()
 
 
 class MainWidget(kx.FocusBehavior, kx.XAnchor):
