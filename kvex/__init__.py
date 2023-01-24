@@ -32,6 +32,7 @@ kx.XThemed
 kx.pad
 kx.frame
 kx.schedule_once
+kx.schedule_many
 kx.snooze_trigger
 ```
 

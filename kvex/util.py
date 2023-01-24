@@ -1,7 +1,7 @@
 """Kvex utilities."""
 
-from typing import Optional, Any, Callable, Iterable
-from functools import partial, wraps
+from typing import Any, Callable, Iterable
+from functools import partial
 import os
 import sys
 from . import kivy as kv
@@ -10,56 +10,6 @@ from . import kivy as kv
 DEFAULT_SPACING = "10dp"
 DEFAULT_BUTTON_HEIGHT = "30sp"
 _KIVY_DIMENSIONS = float | tuple[float, float] | str | tuple[str, str]
-
-
-def queue_around_frame(
-    func,
-    before: Optional[Callable] = None,
-    after: Optional[Callable] = None,
-    delay: float = 0,
-):
-    """Decorator for queuing functions before and after drawing frames.
-
-    Used for performing GUI operations before and after functions that will
-    block code execution for a significant period of time. Functions that would
-    otherwise freeze the GUI without feedback can be wrapped with this decorator
-    to give user feedback.
-
-    The following order of operations will be queued:
-
-    1. Call *before*
-    2. Draw GUI frame and wait *delay* seconds
-    3. Call the wrapped function
-    4. Call *after*
-
-    ### Example usage:
-    ```python
-    @queue(
-        before=lambda: print("Drawing GUI frame then executing function..."),
-        after=lambda: print("Done executing..."),
-    )
-    def do_sleep():
-        time.sleep(2)
-    ```
-    """
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if before is not None:
-            before()
-        wrapped = partial(func, *args, **kwargs)
-        kv.Clock.schedule_once(lambda dt: _call_with_after(wrapped, after), delay)
-
-    return wrapper
-
-
-def _call_with_after(func: Callable, after: Optional[Callable] = None):
-    func()
-    if after is not None:
-        # In order to schedule properly, we must tick or else all the time spent
-        # calling func will be counted as time waited on kivy's clock schedule.
-        kv.Clock.tick()
-        kv.Clock.schedule_once(lambda dt: after(), 0)
 
 
 def center_sprite(
@@ -114,6 +64,55 @@ def placeholder(
 create_trigger = kv.Clock.create_trigger
 schedule_once = kv.Clock.schedule_once
 schedule_interval = kv.Clock.schedule_interval
+
+
+def schedule_many(
+    sequence: Iterable[Callable | float],
+    call_with: Any = None,
+):
+    """Schedule a list of functions with a delay between each.
+
+    Useful for loading screens and allowing a frame to be drawn between each function:
+    ```python3
+    # In `XApp.on_start`:
+    loading_sequence = [
+        lambda: setattr(label, "text", "Loading part 1..."),
+        0.1,  # Allow text to draw before execution block
+        lambda: time.sleep(2),  # Expensive blocking call
+        lambda: setattr(label, "text", "Loading part 2..."),
+        0.1,  # Allow text to draw before execution block
+        lambda: time.sleep(2),  # Expensive blocking call
+        lambda: setattr(label, "text", "Done loading."),
+    ]
+    kx.schedule_many(loading_sequence)
+    ```
+
+    See also `kvex.example.ExampleApp.on_start` to see a more practical example.
+
+    Args:
+        sequence: Iterable of functions to call and floats of delay time in seconds.
+        call_with: If given, this object will be passed as the argument for each
+            function call.
+    """
+    sequence_list = list(sequence)
+    assert len(sequence_list) > 0
+    call = partial(_schedule_many, sequence_list, call_with)
+    schedule_once(call, -1)
+
+
+def _schedule_many(sequence_list: list[Callable | float], call_with: Any, dt: float):
+    delay = -1
+    next_action = sequence_list.pop(0)
+    if callable(next_action):
+        if call_with is None:
+            next_action()
+        else:
+            next_action(call_with)
+    else:
+        delay = next_action
+    if sequence_list:
+        next_call = partial(_schedule_many, sequence_list, call_with)
+        schedule_once(next_call, delay)
 
 
 def snooze_trigger(ev: "kivy.clock.ClockEvent"):  # noqa: F821
@@ -179,8 +178,8 @@ __all__ = (
     "create_trigger",
     "schedule_once",
     "schedule_interval",
+    "schedule_many",
     "snooze_trigger",
-    "queue_around_frame",
     "to_pixels",
     "DEFAULT_SPACING",
     "DEFAULT_BUTTON_HEIGHT",
