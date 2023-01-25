@@ -35,7 +35,7 @@ class XScroll(XThemed, XWidget, kv.ScrollView):
     def on_subtheme(self, subtheme):
         """Apply colors."""
         self.bar_color = subtheme.fg_accent.rgba
-        self.bar_inactive_color = subtheme.fg_muted.rgba
+        self.bar_inactive_color = subtheme.fg_muted.modified_alpha(0.5).rgba
 
     def reset_scroll(self, *, scroll: float = 1):
         """Reset scroll to the top left."""
