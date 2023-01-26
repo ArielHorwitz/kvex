@@ -28,10 +28,17 @@ class XInput(XThemed, XFocusBehavior, XWidget, kv.TextInput):
 
     def _on_textinput_focused(self, *args, **kwargs):
         """Overrides base method to handle selection on focus."""
+        self._fix_textinput_modifiers()
         r = super()._on_textinput_focused(*args, **kwargs)
         if self.focus and self.select_on_focus:
             self.select_all()
         return r
+
+    def _fix_textinput_modifiers(self):
+        self._ctrl_l = False
+        self._ctrl_r = False
+        self._alt_l = False
+        self._alt_r = False
 
     def reset_cursor_selection(self, *a):
         """Resets the cursor position and selection."""
@@ -44,6 +51,7 @@ class XInput(XThemed, XFocusBehavior, XWidget, kv.TextInput):
         """Override base method to deselect on escape."""
         keycode, key = key_pair
         if key == "escape":
+            self._fix_textinput_modifiers()
             if self.deselect_on_escape:
                 self.cancel_selection()
             return True
