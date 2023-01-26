@@ -1,7 +1,6 @@
 """Home of `XInput`."""
 
 from .. import kivy as kv
-from .. import util
 from ..behaviors import XThemed, XFocusBehavior
 from .widget import XWidget
 
@@ -120,22 +119,18 @@ class XInputNumber(XInput):
         self._assert_properties()
         self.number_value = self.default_valid
         self.text = self._last_valid_text = str(self.default_valid)
-        self._check_valid_trigger = util.create_trigger(self._check_valid)
-        _trigger_validate = self._trigger_validate
+        _check_valid = self._check_valid
         self.bind(
             input_filter=self._assert_properties,
             default_valid=self._assert_properties,
-            text=_trigger_validate,
-            max_value=_trigger_validate,
-            min_value=_trigger_validate,
-            max_inclusive=_trigger_validate,
-            min_inclusive=_trigger_validate,
-            disable_invalid=_trigger_validate,
+            text=_check_valid,
+            max_value=_check_valid,
+            min_value=_check_valid,
+            max_inclusive=_check_valid,
+            min_inclusive=_check_valid,
+            disable_invalid=_check_valid,
         )
-        _trigger_validate()
-
-    def _trigger_validate(self, *args):
-        util.snooze_trigger(self._check_valid_trigger)
+        _check_valid()
 
     def _get_number(self) -> int | float:
         try:
