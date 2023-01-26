@@ -62,9 +62,10 @@ class XInput(XThemed, XFocusBehavior, XWidget, kv.TextInput):
 
     def _refresh_graphics(self, *args):
         st = self.subtheme
+        fg = st.fg.rgba if self.valid else st.fg_warn.rgba
         self.background_color = st.bg.rgba
-        self.foreground_color = st.fg.rgba if self.valid else st.fg_warn.rgba
-        self.cursor_color = st.fg.rgba
+        self.foreground_color = fg
+        self.cursor_color = fg
         self.disabled_foreground_color = st.fg_muted.rgba
         self.selection_color = st.accent.modified_alpha(0.5).rgba
         self.hint_text_color = st.fg_muted.rgba
