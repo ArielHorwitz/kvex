@@ -5,7 +5,7 @@ from .. import kivy as kv
 from .. import util
 from ..behaviors import XThemed
 from .label import XLabel, XLabelClick
-from .layouts import XBox, XGrid, XDynamicBox, XJustify
+from .layouts import XBox, XGrid, XDynamicBox, XJustify, XCurtain
 from .button import XButton
 from .divider import XDivider
 from .dropdown import XDropDown
@@ -59,6 +59,18 @@ class XDateTime(XThemed, XDynamicBox):
     """If time should be in UTC, otherwise as local time. Defaults to False."""
     date_first = kv.BooleanProperty(False)
     """Show date before time. Defaults to False."""
+    show_hours = kv.BooleanProperty(True)
+    """Show hour. Defaults to True."""
+    show_minutes = kv.BooleanProperty(True)
+    """Show minute. Defaults to True."""
+    show_seconds = kv.BooleanProperty(True)
+    """Show second. Defaults to True."""
+    show_days = kv.BooleanProperty(True)
+    """Show day. Defaults to True."""
+    show_months = kv.BooleanProperty(True)
+    """Show month. Defaults to True."""
+    show_years = kv.BooleanProperty(True)
+    """Show year. Defaults to True."""
 
     def __init__(self, **kwargs):
         """Initialize the class."""
@@ -125,6 +137,7 @@ class XDateTime(XThemed, XDynamicBox):
             default_valid=2000,
             disable_invalid=False,
             halign="center",
+            ssy="30sp",
         )
         day = XBox(orientation="vertical", ssx="50sp")
         day.add_widgets(
@@ -144,8 +157,15 @@ class XDateTime(XThemed, XDynamicBox):
             self.year_input,
             self._get_increment_button("years", -1),
         )
+        self._day_curtain = XCurtain(dynamic=True, content=day)
+        self._month_curtain = XCurtain(dynamic=True, content=month)
+        self._year_curtain = XCurtain(dynamic=True, content=year)
         self._date_box = XDynamicBox(orientation="horizontal", ssy="70sp")
-        self._date_box.add_widgets(day, month, year)
+        self._date_box.add_widgets(
+            self._day_curtain,
+            self._month_curtain,
+            self._year_curtain,
+        )
         # Time
         self.hour_input = XInputNumber(
             text="00",
@@ -154,6 +174,7 @@ class XDateTime(XThemed, XDynamicBox):
             max_value=23,
             disable_invalid=True,
             halign="center",
+            ssy="30sp",
         )
         self.minute_input = XInputNumber(
             text="00",
@@ -162,6 +183,7 @@ class XDateTime(XThemed, XDynamicBox):
             max_value=59,
             disable_invalid=True,
             halign="center",
+            ssy="30sp",
         )
         self.second_input = XInputNumber(
             text="00",
@@ -170,6 +192,7 @@ class XDateTime(XThemed, XDynamicBox):
             max_value=59,
             disable_invalid=True,
             halign="center",
+            ssy="30sp",
         )
         hour = XBox(orientation="vertical", ssx="40sp")
         hour.add_widgets(
@@ -189,18 +212,30 @@ class XDateTime(XThemed, XDynamicBox):
             self.second_input,
             self._get_increment_button("seconds", -1),
         )
-        self._time_box = XDynamicBox(orientation="horizontal", ssy="70sp")
-        self._time_box.add_widgets(
-            hour,
+        self._hour_curtain = XCurtain(dynamic=True, content=hour)
+        minute_content = XDynamicBox(ssx="50sp", ssy="70sp")
+        minute_content.add_widgets(
             XLabel(text=":", bold=True, ssx="10sp"),
             minute,
-            XLabel(text=":", bold=True, ssx="10sp"),
+        )
+        second_content = XDynamicBox(ssx="50sp", ssy="70sp")
+        second_content.add_widgets(
+            XLabel(text=":", bold=True, ssx="10sp", ssy="70sp"),
             second,
+        )
+        self._minute_curtain = XCurtain(dynamic=True, content=minute_content)
+        self._second_curtain = XCurtain(dynamic=True, content=second_content)
+        self._time_box = XDynamicBox(orientation="horizontal", ssy="70sp")
+        self._time_box.add_widgets(
+            self._hour_curtain,
+            self._minute_curtain,
+            self._second_curtain,
         )
         # Assemble
         self._time_justify = XJustify(orientation="horizontal")
         self._main_divider = XDivider(thickness="2dp", hint=0.5)
         self._refresh_geometry()
+        self._update_curtains()
 
     def _refresh_geometry(self, *args):
         self.clear_widgets()
@@ -227,6 +262,22 @@ class XDateTime(XThemed, XDynamicBox):
         self.hour_input.bind(number_value=self._trigger_update)
         self.minute_input.bind(number_value=self._trigger_update)
         self.second_input.bind(number_value=self._trigger_update)
+        self.bind(
+            show_hours=self._update_curtains,
+            show_minutes=self._update_curtains,
+            show_seconds=self._update_curtains,
+            show_days=self._update_curtains,
+            show_months=self._update_curtains,
+            show_years=self._update_curtains,
+        )
+
+    def _update_curtains(self, *args):
+        self._hour_curtain.showing = self.show_hours
+        self._minute_curtain.showing = self.show_minutes
+        self._second_curtain.showing = self.show_seconds
+        self._day_curtain.showing = self.show_days
+        self._month_curtain.showing = self.show_months
+        self._year_curtain.showing = self.show_years
 
     def _day_dropdown_open(self, *args):
         self._day_dropdown.open(self.day_input)
