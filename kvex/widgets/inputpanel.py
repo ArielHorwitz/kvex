@@ -271,8 +271,8 @@ class IntInputWidget(StringInputWidget):
     _entry_class = functools.partial(XInputNumber, input_filter="int")
     _text_default = "0"
 
-    def get_value(self) -> int:
-        return self._entry.number_value
+    def get_value(self) -> Optional[int]:
+        return self._entry.number
 
     def set_value(self, value: Optional[int] = None, /):
         if value is None:
@@ -285,8 +285,8 @@ class FloatInputWidget(StringInputWidget):
     _entry_class = functools.partial(XInputNumber, input_filter="float")
     _text_default = "0"
 
-    def get_value(self) -> float:
-        return self._entry.number_value
+    def get_value(self) -> Optional[float]:
+        return self._entry.number
 
     def set_value(self, value: Optional[float] = None, /):
         if value is None:

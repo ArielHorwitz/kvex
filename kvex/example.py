@@ -178,8 +178,8 @@ class WidgetsBox(kx.XFrame):
         pwidgets = dict(
             str=kx.XInputPanelWidget("String:", default=self.subtheme_name),
             disabled=kx.XInputPanelWidget("Disabled:", default="disabled input"),
-            zerohundred=kx.XInputPanelWidget("Capped -2.5 to 100:", "float"),
-            float=kx.XInputPanelWidget("Float 0 to 42:", "float", default=42),
+            int=kx.XInputPanelWidget("Capped -13 to 100:", "int"),
+            float=kx.XInputPanelWidget("Float <= 42:", "float", default=42),
             password=kx.XInputPanelWidget("Password:", "password", default="foobar"),
             choice=kx.XInputPanelWidget("Choice:", "choice", choices=["eggs", "spam"]),
             bool=kx.XInputPanelWidget("Checkbox:", "bool", default=True),
@@ -188,10 +188,11 @@ class WidgetsBox(kx.XFrame):
         input_panel = kx.XInputPanel(pwidgets)
         input_panel.set_enabled("bool_dis", False)
         input_panel.set_enabled("disabled", False)
-        input_panel.get_widget("zerohundred").max_value = 100
-        input_panel.get_widget("zerohundred").min_value = -2.5
-        input_panel.get_widget("zerohundred").disable_invalid = True
+        input_panel.get_widget("int").max_value = 100
+        input_panel.get_widget("int").min_value = -13
+        input_panel.get_widget("int").cap_invalid = True
         input_panel.get_widget("float").max_value = 42
+        input_panel.bind(on_invoke=print)
         disbtn = kx.pad(kx.XButton(text="Disabled button", disabled=True))
         disbtn.set_size(hx=0.5)
         disbtn = kx.pad(disbtn)

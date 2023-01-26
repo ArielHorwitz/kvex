@@ -101,14 +101,21 @@ class XDateTime(XThemed, XDynamicBox):
         util.snooze_trigger(self._update_trigger)
 
     def _update_time(self, *args):
+        if not all((
+            self.year_input.valid,
+            self.hour_input.valid,
+            self.minute_input.valid,
+            self.second_input.valid,
+        )):
+            return
         self._fix_month()
         time = arrow.get(
-            self.year_input.number_value,
+            self.year_input.number,
             _MONTH_NAMES.index(self.month_input.text) + 1,
             int(self.day_input.text),
-            self.hour_input.number_value,
-            self.minute_input.number_value,
-            self.second_input.number_value,
+            self.hour_input.number,
+            self.minute_input.number,
+            self.second_input.number,
         ).replace(tzinfo="utc" if self.utc_time else "local")
         if time.timestamp() != self._last_time.timestamp():
             self._last_time = time
@@ -120,7 +127,7 @@ class XDateTime(XThemed, XDynamicBox):
         if int(self.day_input.text) > last_day:
             self.day_input.text = str(last_day)
         month_index = _MONTH_NAMES.index(month_name) + 1
-        self._day_selector.set_month(self.year_input.number_value, month_index)
+        self._day_selector.set_month(self.year_input.number, month_index)
 
     def _make_widgets(self):
         # Date
@@ -146,8 +153,6 @@ class XDateTime(XThemed, XDynamicBox):
             input_filter="int",
             min_value=2,
             max_value=5000,
-            default_valid=2000,
-            disable_invalid=False,
             halign="center",
             ssy="30sp",
         )
@@ -184,7 +189,6 @@ class XDateTime(XThemed, XDynamicBox):
             input_filter="int",
             min_value=0,
             max_value=23,
-            disable_invalid=True,
             halign="center",
             ssy="30sp",
         )
@@ -193,7 +197,6 @@ class XDateTime(XThemed, XDynamicBox):
             input_filter="int",
             min_value=0,
             max_value=59,
-            disable_invalid=True,
             halign="center",
             ssy="30sp",
         )
@@ -202,7 +205,6 @@ class XDateTime(XThemed, XDynamicBox):
             input_filter="int",
             min_value=0,
             max_value=59,
-            disable_invalid=True,
             halign="center",
             ssy="30sp",
         )
@@ -270,10 +272,10 @@ class XDateTime(XThemed, XDynamicBox):
         self.bind(orientation=self._refresh_geometry, date_first=self._refresh_geometry)
         self.day_input.bind(text=self._trigger_update)
         self.month_input.bind(text=self._trigger_update)
-        self.year_input.bind(number_value=self._trigger_update)
-        self.hour_input.bind(number_value=self._trigger_update)
-        self.minute_input.bind(number_value=self._trigger_update)
-        self.second_input.bind(number_value=self._trigger_update)
+        self.year_input.bind(number=self._trigger_update)
+        self.hour_input.bind(number=self._trigger_update)
+        self.minute_input.bind(number=self._trigger_update)
+        self.second_input.bind(number=self._trigger_update)
         self.bind(
             show_hours=self._update_curtains,
             show_minutes=self._update_curtains,
