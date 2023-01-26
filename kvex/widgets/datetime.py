@@ -71,6 +71,18 @@ class XDateTime(XThemed, XDynamicBox):
     """Show month. Defaults to True."""
     show_years = kv.BooleanProperty(True)
     """Show year. Defaults to True."""
+    increment_years = kv.NumericProperty(1)
+    """Default years increment."""
+    increment_months = kv.NumericProperty(1)
+    """Default months increment."""
+    increment_days = kv.NumericProperty(1)
+    """Default days increment."""
+    increment_hours = kv.NumericProperty(1)
+    """Default hours increment."""
+    increment_minutes = kv.NumericProperty(1)
+    """Default minutes increment."""
+    increment_seconds = kv.NumericProperty(1)
+    """Default seconds increment."""
 
     def __init__(self, **kwargs):
         """Initialize the class."""
@@ -78,12 +90,12 @@ class XDateTime(XThemed, XDynamicBox):
         time = kwargs.pop("time", None)
         super().__init__(**kwargs)
         self._last_time = self._time
-        self._update_trigger = util.create_trigger(self._update_time)
+        self._update_trigger = util.create_trigger(self._update_time, -1)
         with self.app.subtheme_context(self.subtheme_name):
             self._make_widgets()
-        self._start_events()
         self._set_time(time or self._time)
         self._update_time()
+        self._start_events()
 
     def _trigger_update(self, *args):
         util.snooze_trigger(self._update_trigger)
@@ -287,15 +299,20 @@ class XDateTime(XThemed, XDynamicBox):
         self._day_dropdown.dismiss()
 
     def _get_increment_button(self, name, increment):
+        d = {name: increment}
         btn = XButton(
             text="+" if increment > 0 else "-",
-            on_release=lambda *a: self._increment(name, increment),
+            on_release=lambda *a: self.increment(**d),
             ssy="20sp",
         )
         return btn
 
-    def _increment(self, name, increment):
-        self._set_time(self.time.shift(**{name: increment}))
+    def increment(self, **increments: dict[str, int]):
+        time = self.time
+        for name, inc in increments.items():
+            increment = getattr(self, f"increment_{name}") * inc
+            time = time.shift(**{name: increment})
+        self._set_time(time)
 
 
 class _DaySelector(XGrid):
