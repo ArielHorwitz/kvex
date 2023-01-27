@@ -170,7 +170,7 @@ class XDateTime(XThemed, XDynamicBox):
         )
         # Time
         self.hour_input = XInputNumber(
-            text="00",
+            text="0",
             input_filter="int",
             min_value=0,
             max_value=23,
@@ -179,7 +179,7 @@ class XDateTime(XThemed, XDynamicBox):
             ssy="30sp",
         )
         self.minute_input = XInputNumber(
-            text="00",
+            text="0",
             input_filter="int",
             min_value=0,
             max_value=59,
@@ -188,7 +188,7 @@ class XDateTime(XThemed, XDynamicBox):
             ssy="30sp",
         )
         self.second_input = XInputNumber(
-            text="00",
+            text="0",
             input_filter="int",
             min_value=0,
             max_value=59,
