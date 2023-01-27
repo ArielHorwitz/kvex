@@ -320,12 +320,18 @@ class XDateTime(XThemed, XDynamicBox):
         tpos = touch.pos
         if not self.collide_point(*tpos):
             return False
-        if touch.button == "scrollup":
+        if touch.button == "right":
+            self.reset_time()
+            return True
+        elif touch.button == "scrollup":
             inc = -1
         elif touch.button == "scrolldown":
             inc = 1
         else:
             return super().on_touch_down(touch)
+        return self._on_touch_scroll(tpos, inc)
+
+    def _on_touch_scroll(self, tpos, inc):
         if self.year_input.collide_point(*tpos):
             self.increment(years=inc)
         elif self.month_input.collide_point(*tpos):
@@ -341,6 +347,10 @@ class XDateTime(XThemed, XDynamicBox):
         else:
             return False
         return True
+
+    def reset_time(self) -> arrow.Arrow:
+        """Reset the time. Override this method to changed default time."""
+        self.time = arrow.now()
 
 
 class _DaySelector(XGrid):
