@@ -316,6 +316,32 @@ class XDateTime(XThemed, XDynamicBox):
             time = time.shift(**{name: increment})
         self._set_time(time)
 
+    def on_touch_down(self, touch):
+        tpos = touch.pos
+        if not self.collide_point(*tpos):
+            return False
+        if touch.button == "scrollup":
+            inc = -1
+        elif touch.button == "scrolldown":
+            inc = 1
+        else:
+            return super().on_touch_down(touch)
+        if self.year_input.collide_point(*tpos):
+            self.increment(years=inc)
+        elif self.month_input.collide_point(*tpos):
+            self.increment(months=inc)
+        elif self.day_input.collide_point(*tpos):
+            self.increment(days=inc)
+        elif self.hour_input.collide_point(*tpos):
+            self.increment(hours=inc)
+        elif self.minute_input.collide_point(*tpos):
+            self.increment(minutes=inc)
+        elif self.second_input.collide_point(*tpos):
+            self.increment(seconds=inc)
+        else:
+            return False
+        return True
+
 
 class _DaySelector(XGrid):
 
