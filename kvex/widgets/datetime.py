@@ -142,11 +142,13 @@ class XDateTime(XThemed, XDynamicBox):
             text="1",
             halign="center",
             on_release=self._day_dropdown_open,
+            ssx="50sp",
         )
         self.month_input = XSpinner(
             text=_MONTH_NAMES[0],
             values=_MONTH_NAMES,
             text_autoupdate=True,
+            ssx="85sp",
             ssy="30sp",
         )
         self.year_input = XInputNumber(
@@ -154,30 +156,13 @@ class XDateTime(XThemed, XDynamicBox):
             min_value=2,
             max_value=5000,
             halign="center",
+            ssx="50sp",
             ssy="30sp",
         )
-        day = XBox(orientation="vertical", ssx="50sp")
-        day.add_widgets(
-            self._get_increment_button("days", 1),
-            self.day_input,
-            self._get_increment_button("days", -1),
-        )
-        month = XBox(orientation="vertical", ssx="85sp")
-        month.add_widgets(
-            self._get_increment_button("months", 1),
-            self.month_input,
-            self._get_increment_button("months", -1),
-        )
-        year = XBox(orientation="vertical", ssx="50sp")
-        year.add_widgets(
-            self._get_increment_button("years", 1),
-            self.year_input,
-            self._get_increment_button("years", -1),
-        )
-        self._day_curtain = XCurtain(dynamic=True, content=day)
-        self._month_curtain = XCurtain(dynamic=True, content=month)
-        self._year_curtain = XCurtain(dynamic=True, content=year)
-        self._date_box = XDynamicBox(orientation="horizontal", ssy="70sp")
+        self._day_curtain = XCurtain(dynamic=True, content=self.day_input)
+        self._month_curtain = XCurtain(dynamic=True, content=self.month_input)
+        self._year_curtain = XCurtain(dynamic=True, content=self.year_input)
+        self._date_box = XBox(orientation="horizontal", ssx="185sp", ssy="30sp")
         self._date_box.add_widgets(
             self._day_curtain,
             self._month_curtain,
@@ -190,6 +175,7 @@ class XDateTime(XThemed, XDynamicBox):
             min_value=0,
             max_value=23,
             halign="center",
+            ssx="50sp",
             ssy="30sp",
         )
         self.minute_input = XInputNumber(
@@ -198,6 +184,7 @@ class XDateTime(XThemed, XDynamicBox):
             min_value=0,
             max_value=59,
             halign="center",
+            ssx="50sp",
             ssy="30sp",
         )
         self.second_input = XInputNumber(
@@ -206,40 +193,23 @@ class XDateTime(XThemed, XDynamicBox):
             min_value=0,
             max_value=59,
             halign="center",
+            ssx="50sp",
             ssy="30sp",
         )
-        hour = XBox(orientation="vertical", ssx="40sp")
-        hour.add_widgets(
-            self._get_increment_button("hours", 1),
-            self.hour_input,
-            self._get_increment_button("hours", -1),
-        )
-        minute = XBox(orientation="vertical", ssx="40sp")
-        minute.add_widgets(
-            self._get_increment_button("minutes", 1),
-            self.minute_input,
-            self._get_increment_button("minutes", -1),
-        )
-        second = XBox(orientation="vertical", ssx="40sp")
-        second.add_widgets(
-            self._get_increment_button("seconds", 1),
-            self.second_input,
-            self._get_increment_button("seconds", -1),
-        )
-        self._hour_curtain = XCurtain(dynamic=True, content=hour)
-        minute_content = XDynamicBox(ssx="50sp", ssy="70sp")
+        self._hour_curtain = XCurtain(dynamic=True, content=self.hour_input)
+        minute_content = XBox(ssx="60sp", ssy="30sp")
         minute_content.add_widgets(
             XLabel(text=":", bold=True, ssx="10sp"),
-            minute,
+            self.minute_input,
         )
-        second_content = XDynamicBox(ssx="50sp", ssy="70sp")
+        second_content = XBox(ssx="60sp", ssy="30sp")
         second_content.add_widgets(
-            XLabel(text=":", bold=True, ssx="10sp", ssy="70sp"),
-            second,
+            XLabel(text=":", bold=True, ssx="10sp", ssy="30sp"),
+            self.second_input,
         )
         self._minute_curtain = XCurtain(dynamic=True, content=minute_content)
         self._second_curtain = XCurtain(dynamic=True, content=second_content)
-        self._time_box = XDynamicBox(orientation="horizontal", ssy="70sp")
+        self._time_box = XDynamicBox(orientation="horizontal", ssy="30sp")
         self._time_box.add_widgets(
             self._hour_curtain,
             self._minute_curtain,
