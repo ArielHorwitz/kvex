@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass, field
 from typing import Any, Optional, Callable
+import arrow
 import functools
 from .. import kivy as kv
 from .. import util
@@ -10,6 +11,7 @@ from .label import XLabel
 from .button import XButton
 from .input import XInput, XInputNumber
 from .checkbox import XCheckBox
+from .datetime import XDateTime
 from .spinner import XSpinner
 
 
@@ -40,6 +42,8 @@ class XInputPanelWidget:
     """Label text horizontal alignment."""
     choices: list = field(default_factory=list)
     """Used by choice widgets."""
+    kwargs: dict = field(default_factory=dict)
+    """Extra keyword arguments for the widget factory."""
 
 
 class XInputPanel(XDynamicBox):
@@ -181,7 +185,10 @@ class BaseInputWidget(XBox):
         height = pixel_height_ * (1 + (w.orientation == "vertical"))
         self.set_size(y=height)
         self.label.set_size(hx=w.label_hint if w.orientation == "horizontal" else 1)
-        self.add_widgets(self.label, self.widget)
+        anchor_x = "left" if w.orientation == "horizontal" else "center"
+        anchor = XAnchor(anchor_x=anchor_x)
+        anchor.add_widget(self.widget)
+        self.add_widgets(self.label, anchor)
 
     def set_enabled(self, set_as: Optional[bool] = None, /):
         if set_as is None:
@@ -204,9 +211,13 @@ class StringInputWidget(BaseInputWidget):
         on_value: Callable,
         on_invoke: Callable,
     ):
+        kwargs = dict(
+            halign="left" if w.orientation == "horizontal" else "center",
+        ) | w.kwargs
         self._entry = self._entry_class(
             text=str(w.default or self._text_default),
             password=self._password,
+            **kwargs,
         )
         self._entry.bind(text=on_value, on_text_validate=on_invoke)
         return self._entry
@@ -239,7 +250,7 @@ class BooleanInputWidget(BaseInputWidget):
         on_value: Callable,
         on_invoke: Callable,
     ):
-        self._checkbox = XCheckBox(active=w.default or False)
+        self._checkbox = XCheckBox(active=w.default or False, **w.kwargs)
         self._checkbox.bind(active=on_value)
         if w.orientation == "vertical":
             return self._checkbox
@@ -308,10 +319,11 @@ class ChoiceInputWidget(BaseInputWidget):
         on_value: Callable,
         on_invoke: Callable,
     ):
+        kwargs = dict(text_autoupdate=True) | w.kwargs
         self._spinner = XSpinner(
             text=w.default or "",
             values=w.choices,
-            text_autoupdate=True,
+            **kwargs,
         )
         self._spinner.bind(text=on_value)
         return self._spinner
@@ -331,6 +343,30 @@ class ChoiceInputWidget(BaseInputWidget):
         self._spinner.disabled = not set_as
 
 
+class DateTimeInputWidget(BaseInputWidget):
+    wtype = "datetime"
+
+    def _get_widget(
+        self,
+        w: XInputPanelWidget,
+        on_value: Callable,
+        on_invoke: Callable,
+    ):
+        self._datetime = XDateTime(**w.kwargs)
+        if w.default:
+            self._datetime.time = w.default
+        self._datetime.bind(time=on_value)
+        return self._datetime
+
+    def get_value(self) -> arrow.Arrow:
+        return self._datetime.time
+
+    def set_value(self, value: Optional[arrow.Arrow] = None, /):
+        if value is None:
+            value = self.specification.default or arrow.now()
+        self._datetime.time = value
+
+
 INPUT_WIDGET_CLASSES: dict[str, BaseInputWidget] = dict(
     str=StringInputWidget,
     bool=BooleanInputWidget,
@@ -338,6 +374,7 @@ INPUT_WIDGET_CLASSES: dict[str, BaseInputWidget] = dict(
     float=FloatInputWidget,
     password=PasswordInputWidget,
     choice=ChoiceInputWidget,
+    datetime=DateTimeInputWidget,
 )
 INPUT_WIDGET_TYPES = tuple(INPUT_WIDGET_CLASSES.keys())
 """Input widget types."""

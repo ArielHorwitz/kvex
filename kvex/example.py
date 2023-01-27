@@ -184,6 +184,7 @@ class WidgetsBox(kx.XFrame):
             choice=kx.XInputPanelWidget("Choice:", "choice", choices=["eggs", "spam"]),
             bool=kx.XInputPanelWidget("Checkbox:", "bool", default=True),
             bool_dis=kx.XInputPanelWidget("Disabled:", "bool", default=True),
+            datetime=kx.XInputPanelWidget("Date and time:", "datetime"),
         )
         input_panel = kx.XInputPanel(pwidgets)
         input_panel.set_enabled("bool_dis", False)
@@ -200,7 +201,6 @@ class WidgetsBox(kx.XFrame):
         content_scroll_view = kx.XDynamicBox(orientation="vertical")
         content_scroll_view.add_widgets(
             palette_box,
-            kx.justify(kx.frame(kx.XDateTime(), dynamic=True)),
             input_panel,
             disbtn,
             kx.XDivider(hint=0.5),
