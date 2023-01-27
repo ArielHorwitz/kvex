@@ -22,13 +22,13 @@ class XScroll(XThemed, XWidget, kv.ScrollView):
             view: A widget to put in the scroll view.
             scroll_amount: Resolution of scroll in pixels.
         """
-        kwargs = dict(bar_width="5sp") | kwargs
+        kwargs = dict(bar_width="5sp", always_overscroll=False) | kwargs
         super().__init__(**kwargs)
         self.scroll_amount = scroll_amount
         self.scroll_type = ["bars"]
         self.view = view
         self.add_widget(view)
-        self.bind(size=self._on_size, on_touch_down=self._on_touch_down)
+        self.bind(size=self._on_size)  # , on_touch_down=self._on_touch_down)
         self.view.bind(size=self._on_size)
         self._on_size()
 
@@ -47,14 +47,17 @@ class XScroll(XThemed, XWidget, kv.ScrollView):
         if self.reset_scroll_value is not None:
             self.reset_scroll(scroll=self.reset_scroll_value)
 
-    def _on_touch_down(self, w, m):
-        if m.button not in {"scrollup", "scrolldown"}:
+    def on_touch_down(self, touch):
+        """Override base method to yield scroll touches to children."""
+        if self.simulate_touch_down(touch):
+            return True
+        if touch.button not in {"scrollup", "scrolldown"}:
             return False
-        if not self.collide_point(*m.pos):
+        if not self.collide_point(*touch.pos):
             return False
-        return self.do_scroll(up=m.button != "scrollup")
+        return self._do_scroll(up=touch.button != "scrollup")
 
-    def do_scroll(self, count: int = 1, /, *, up: bool = False):
+    def _do_scroll(self, count: int = 1, /, *, up: bool = False):
         """Scroll down or up by count times self.scroll_amount."""
         if not any((self.do_scroll_x, self.do_scroll_y)):
             return False

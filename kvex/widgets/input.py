@@ -71,6 +71,16 @@ class XInput(XThemed, XFocusBehavior, XWidget, kv.TextInput):
         self.hint_text_color = st.fg_muted.rgba
         self._trigger_update_graphics()
 
+    def on_touch_down(self, touch):
+        """Override base method to disable consuming scroll touch if not scrolled."""
+        if not touch.button.startswith("scroll"):
+            return super().on_touch_down(touch)
+        x, y = self.scroll_x, self.scroll_y
+        ret = super().on_touch_down(touch)
+        if (x, y) == (self.scroll_x, self.scroll_y):
+            return False
+        return ret
+
 
 class XInputNumber(XInput):
     """XInput for numbers.
