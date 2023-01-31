@@ -134,12 +134,12 @@ class XButtonBar(XFrame):
         """Add theme selection buttons."""
         for tname in THEME_NAMES:
             self.add_button(
-                "theme",
+                category,
                 tname,
                 display_as=f"{prefix}{tname.capitalize()}{suffix}",
                 callback=lambda *a, t=tname: self.app.set_theme(t),
             )
-        self.add_button("theme", "reload_themes", callback=self.app.reload_themes)
+        self.add_button(category, "reload_themes", callback=self.app.reload_themes)
 
 
 class XButtonBarSpinnerOption(XSpinnerOption):
