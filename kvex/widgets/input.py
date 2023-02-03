@@ -120,7 +120,7 @@ class XInputNumber(XInput):
         assert self.input_filter in {"float", "int"}
         text = self.text
         number = None
-        if text in {"", "-"}:
+        if text in {"", "-", ".", "-."}:
             number = 0
         elif self.input_filter == "float":
             number = float(text)
