@@ -105,16 +105,30 @@ def placeholder(
     return placeholder_inner
 
 
+class SnoozingTrigger:
+    """A `kivy.clock.create_trigger` that schedules/snoozes when called.
+
+    Example:
+    ```
+    trigger_refresh = kvex.snoozing_trigger(lambda: print("hello"), 0.5)
+    trigger_refresh()
+    trigger_refresh()
+    # 0.5 seconds later a single "hello" will be printed
+    ```
+    """
+    def __init__(self, *args, **kwargs):
+        self.ev = kv.Clock.create_trigger(*args, **kwargs)
+
+    def __call__(self, *args):
+        if self.ev.is_triggered:
+            self.ev.cancel()
+        self.ev()
+
+
 create_trigger = kv.Clock.create_trigger
 schedule_once = kv.Clock.schedule_once
 schedule_interval = kv.Clock.schedule_interval
-
-
-def snooze_trigger(ev: "kivy.clock.ClockEvent"):  # noqa: F821
-    """Cancel and reschedule a ClockEvent."""
-    if ev.is_triggered:
-        ev.cancel()
-    ev()
+snoozing_trigger = SnoozingTrigger
 
 
 _metrics_dp = kv.metrics.dp
